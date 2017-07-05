@@ -190,7 +190,7 @@
     "message": "Memorizza dati extra del gioco (sperimentale, normalmente dovrebbe essere abilitato)"
   },
   "debugLabel": {
-    "message": "Abilita i messaggi di debug per sviluppatore (normalmente dovrebbe essere disabilitato)"
+    "message": "Abilita i messaggi di debug per sviluppatori (normalmente dovrebbe essere disabilitato)"
   },
 
   "cssThemeLabel": {
