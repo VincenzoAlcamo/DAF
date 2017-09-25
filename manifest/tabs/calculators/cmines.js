@@ -52,6 +52,7 @@ var guiTabs = (function(self) {
         uidRID = intOrDefault(bgp.daGame.daUser.region, 1);
         uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
         showEvents = self.isDev();
+
         if ((onlyRepeat = !self.isDev())) {
             bgp.exPrefs.cminesURID = uidRID;
             bgp.exPrefs.cminesMTOK = showTokens = true;
@@ -68,7 +69,7 @@ var guiTabs = (function(self) {
 
         // TODO: If we ever put the full calculator live to the community
         // We should force the Player Region for Events based on the
-        // "bg.daGame.daUser.events_region" field so it calculates on
+        // "bgp.daGame.daUser.events_region" field so it calculates on
         // the correct region at the time
         //
         buildFilters();
@@ -161,8 +162,7 @@ var guiTabs = (function(self) {
         }
         document.getElementById("cmines0Name").innerText = map.name;
 
-        // Here we add into the grand totals, any event completion rewards
-        // so we don't lose sight of them.
+        // Event completion rewards
         //
         if (!!map.rwd) {
             document.getElementById("cminesRewards").style.display = '';
@@ -1123,6 +1123,7 @@ var guiTabs = (function(self) {
         }
         return '* Unrecognized materials: ' + data.join(', ') + '\n';
     }
+    
     /*
      ** @Public - Calculate Mine Loot
      */
