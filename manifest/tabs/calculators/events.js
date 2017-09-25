@@ -4,6 +4,7 @@
 var guiTabs = (function(self) {
     // What a pain, be better if the Wiki had a tag with event ID number
     var wikiPage = {
+        82: 'Events#Around_the_World_.28Segmented_Event.29',
         81: 'Events#Beachwatch',
         80: 'Events#Paleo_Mayhem',
         79: 'Events#.5BSPECIAL_WEEK.5D_Summer_Strongman_3',
