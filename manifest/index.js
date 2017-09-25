@@ -52,14 +52,6 @@ function guiInit() {
     document.getElementById('statusTitle').innerHTML = guiString('pleaseWait');
     document.getElementById('statusText').innerHTML = guiString('gameGetData');
 
-    if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
-        document.getElementById('statusText').innerHTML = guiString('reloadNeeded');
-        document.getElementById('statusTitle').innerHTML = guiString('WARNING');
-        document.getElementById('statusAlert').className = 'warning';
-        bgp.daGame.guiReload = true;
-        return;
-    }
-
     bgp.daGame.loadGameExtra().then(function(success) {
         //
         // Extension message handler
@@ -170,9 +162,9 @@ function downloadData(data, fileName) {
 function guiInfo() {
     if ((bgp.daGame) && bgp.daGame.daUser) {
         document.getElementById('subTitle').innerHTML = guiString("subTitle", [
-            localStorage.versionName, 
-            bgp.daGame.daUser.site, 
-            unixDate(bgp.daGame.daUser.time, true), 
+            localStorage.versionName,
+            bgp.daGame.daUser.site,
+            unixDate(bgp.daGame.daUser.time, true),
             bgp.daGame.daUser.access + '#' + bgp.daGame.player_id
         ]);
     }
@@ -483,7 +475,7 @@ var guiTabs = (function() {
     self.update = function() {
         tabUpdate(active, 'update');
     }
-    
+
     self.active = function() {
         return active;
     }
@@ -587,18 +579,25 @@ var guiTabs = (function() {
         switch (bgp.daGame.daUser.result) {
             case 'OK':
             case 'CACHED':
+                if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
+                    guiStatus(guiString('reloadNeeded'), "Warning", 'warning');
+                    self.lock(false);
+                    bgp.daGame.guiReload = true;
+                    if (active != 'Options' && active != 'Help')
+                        return false;
+                }
                 break;
             case 'ERROR':
                 guiStatus(guiString('gameError', [bgp.daGame.daUser.desc]), "Error", 'error');
                 self.lock(false);
-                if (active == 'Options')
+                if (active != 'Options' && active != 'Help')
                     break;
                 return false;
             default:
             case 'EMPTY':
                 guiStatus('noGameData', "Warning", 'warning');
                 self.lock(false);
-                if (active == 'Options')
+                if (active != 'Options' && active != 'Help')
                     break;
                 return false;
         }
@@ -642,91 +641,6 @@ var guiTabs = (function() {
             }
             self.lock(false);
             return ok;
-        });
-
-        return promise;
-    }
-
-    /*
-     ** @Private tabUpdate
-     */
-    function tabUpdate_old(id, reason) {
-
-        if ((bgp.daGame) && bgp.daGame.daUser) {
-            document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
-        }
-
-        if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
-            reason = 'update';
-
-        switch (bgp.daGame.daUser.result) {
-            case 'OK':
-            case 'CACHED':
-                if (reason != 'active')
-                    guiStatus('dataProcessing', null, 'busy');
-                break;
-            case 'ERROR':
-                guiStatus(guiString('gameError', [bgp.daGame.daUser.desc]), "Error", 'error');
-                self.lock(false);
-                if (active == 'Options')
-                    break;
-                return false;
-            default:
-            case 'EMPTY':
-                guiStatus('noGameData', "Warning", 'warning');
-                self.lock(false);
-                if (active == 'Options')
-                    break;
-                return false;
-        }
-
-        let promise = new Promise((resolve, reject) => {
-            if ((reason != 'active') ||
-                self.tabs[id].time != bgp.daGame.daUser.time) {
-                if (self.tabs.hasOwnProperty(id)) {
-                    if (self.tabs[id].hasOwnProperty('onUpdate')) {
-                        setTimeout(function() {
-                            if (typeof self.tabs[id].onUpdate === 'function') try {
-                                resolve(self.tabs[id].onUpdate(id, reason));
-                            } catch (e) {
-                                console.error(e);
-                                guiStatus(guiString('errorException', [e]), "Error", 'error');
-                                resolve(false);
-                            }
-                        }, 0);
-                    }
-                }
-            } else {
-                document.getElementById('tabStatus').style.display = 'none';
-                self.hideContent(false);
-                setTimeout(function() {
-                    resolve(true);
-                }, 10);
-            }
-        }).then(function(ok) {
-
-            if (ok) {
-                document.getElementById('tabStatus').style.display = 'none';
-                if (!self.tabs[id].time) {
-                    guiCardToggle(self.tabs[id].content);
-                    guiWikiLinks(self.tabs[id].content);
-                    guiText_i18n(self.tabs[id].content);
-                }
-                self.tabs[id].time = bgp.daGame.daUser.time;
-                if (id == active)
-                    self.tabs[id].container.classList.add('is-active');
-                self.hideContent(false);
-            }
-            self.lock(false);
-            return ok;
-        }).catch(function(error) {
-            console.trace(error);
-            if (typeof error !== 'string') {
-                error = error.message;
-            }
-            guiStatus(error, "Error", 'error');
-            self.lock(false);
-            return false;
         });
 
         return promise;
@@ -908,14 +822,14 @@ var guiTabs = (function() {
         addOption(p, 16, guiString('modifierShift'), selectedValue);
         addOption(p, 17, guiString('modifierCtrl'), selectedValue);
         addOption(p, 18, guiString('modifierAlt'), selectedValue);
-        for(var i = 65; i <= 90; i++) {
+        for (var i = 65; i <= 90; i++) {
             addOption(p, i, String.fromCharCode(i), selectedValue);
         }
         p.value = selectedValue;
         return false; // Not Disabled
     };
     handlers['__linkGrabPortal2FB_checkbox'] = __devOnly;
-    
+
     handlers['__gameDebug_checkbox'] = __devOnly;
     handlers['__syncDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
@@ -1082,7 +996,7 @@ function guiWikiLinks(parent = document) {
             wikiUrl = wikiPage;
         else
             wikiUrl = bgp.wikiLink + ((wikiPage) ? bgp.wikiVars + wikiPage : '/');
-                
+
         el.title = bgp.daGame.i18n(title);
         el.classList.add('wiki-hover');
 
