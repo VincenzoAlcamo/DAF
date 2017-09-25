@@ -5,10 +5,10 @@ var guiTabs = (function(self) {
     let tabID, tab, div, cmStats, tb1Loot, tb2Loot, tblsum;
     let tb0sum, tb1sum, tb2sum, tf0sum, tf1sum, tf2sum, tf3sum;
     let cm0Warn, cm1Warn;
-    let uidRID = 0,
+    let uidRID = 1,
         uidLVL = 0,
         uidTUT = 1,
-        mapRID = 0,
+        mapRID = 1,
         mapFLT = 0,
         mapList = {},
         mapLoot = {};
@@ -608,8 +608,9 @@ var guiTabs = (function(self) {
 
         // Region Filter
         let max = bgp.daGame.maxRegions();
+        let min = Math.max(1, bgp.daGame.daUser.region);
         if (!self.isDev())
-            max = Math.min(bgp.daGame.daUser.region, max);
+            max = Math.min(min , max);
         let select1 = document.getElementById('cminesMRID');
         let select2 = document.getElementById('cminesURID');
         select2.parentElement.style.display = (showEvents ? '' : 'none');
@@ -632,7 +633,7 @@ var guiTabs = (function(self) {
 
         if ((!bgp.exPrefs.cminesMRID) || bgp.exPrefs.cminesMRID > max)
             bgp.exPrefs.cminesMRID = max;
-        select1.value = mapRID = bgp.exPrefs.cminesMRID;
+        select1.value = mapRID = Math.max(1, bgp.exPrefs.cminesMRID);
 
         select1.addEventListener('change', function(e) {
             bgp.exPrefs.cminesMRID = mapRID = self.setPref(e.target.id, e.target.value);
@@ -643,7 +644,7 @@ var guiTabs = (function(self) {
 
         if ((!bgp.exPrefs.cminesURID) || bgp.exPrefs.cminesURID > max)
             bgp.exPrefs.cminesURID = parseInt(bgp.daGame.daUser.region);
-        select2.value = uidRID = bgp.exPrefs.cminesURID;
+        select2.value = uidRID = Math.max(1, bgp.exPrefs.cminesURID);
         select2.disabled = true;
 
         select2.addEventListener('change', function(e) {
