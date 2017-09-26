@@ -832,13 +832,25 @@
             }
         }
     },
-    "linksCopy": {
-        "message": "$KEY$ = Copia",
+    "linksKey": {
+        "message": "$KEY$ = $FUNC$",
         "placeholders": {
-            "KEY": {
+            "key": {
                 "content": "$1"
+            },
+            "func": {
+                "content": "$2"
             }
         }
+    },
+    "linksFnCopy": {
+        "message": "Copia"
+    },
+    "linksFnCancel": {
+        "message": "Annulla"
+    },
+    "linksFnRefresh": {
+        "message": "Aggiorna"
     },
     "linksSelected": {
         "message": "Link: $UNIQUE$ / $TOTAL$",

@@ -2,7 +2,6 @@
  ** DA Friends - content_fb.js
  */
 (function() {
-
     DAF.initialize({
         linkGrabButton: 2,
         linkGrabKey: 0,
@@ -11,32 +10,26 @@
         linkGrabPortal2FB: false
     }, initialize);
 
-    const LEFT_BUTTON = 0,
+    const Z_INDEX = 2147483647,
+        LEFT_BUTTON = 0,
         KEY_ESC = 27,
         KEY_C = 67,
+        KEY_R = 82,
         OS_WIN = 1,
         OS_LINUX = 0;
 
-    var os = ((navigator.appVersion.indexOf("Win") == -1) ? OS_LINUX : OS_WIN),
-        defaultBox1 = {
-            boxSizing: 'border-box',
-            position: 'absolute',
-            zIndex: 2147483647,
-            display: 'none'
-        },
-        defaultBox2 = Object.assign({
-            border: '1px solid #060',
-            backgroundColor: 'rgba(0,255,0,0.3)'
-        }, defaultBox1, {
-            zIndex: 2147483646
-        });
+    const os = ((navigator.appVersion.indexOf('Win') == -1) ? OS_LINUX : OS_WIN);
 
-    var keyCode = 0,
+    var box = null,
+        flagBox = false,
+        flagActive = false,
+        stopMenu = false,
+        keyPressed = 0,
+        mouseButton = -1,
+        countLabel = null,
+        scrollHandle = 0,
         links = [],
-        linkCount = 0,
-        dialog, flagActive, flagShow, flagLinks, flagStopMenu, box, counter, oldLabel, mouseX, mouseY,
-        startX, startY, boxX1, boxX2, boxY1, boxY2, autoScrollId, autoOpenElement, autoOpenCount,
-        values, numLinks;
+        linkCount, oldLabel, mouseX, mouseY, startX, startY, autoOpenElement, autoOpenCount, flagLinks;
 
     function addListeners(obj, args) {
         [].slice.call(arguments, 1).forEach(fn => obj.addEventListener(fn.name, fn, true));
@@ -47,99 +40,326 @@
     }
 
     function initialize() {
-        dialog = Dialog();
-        addListeners(window, mousedown, keydown, keyup, contextmenu);
+        addListeners(window, mousedown, keydown, keyup, blur, contextmenu);
         DAF.removeLater(() => {
             stop();
-            removeListeners(window, mousedown, keydown, keyup, contextmenu);
-            dialog.remove();
+            removeListeners(window, mousedown, keydown, keyup, blur, contextmenu);
         });
     }
 
-    function mousedown(event) {
-        if (flagActive) {
-            stop();
-            // chrome.runtime.sendMessage({
-            //     cmd: 'links-captured',
-            //     data: values
-            // });
-            flagStopMenu = true;
-        } else if (event.button == DAF.getValue('linkGrabButton') && keyCode == DAF.getValue('linkGrabKey')) {
-            flagActive = true;
-            if (os == OS_LINUX || (os == OS_WIN && DAF.getValue('linkGrabButton') == LEFT_BUTTON)) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
-            if (!box) {
-                box = createElement('span', {
-                    style: Object.assign({
-                        border: '1px solid #f00',
-                        backgroundColor: 'rgba(255,255,0,0.3)'
-                    }, defaultBox1)
-                }, document.body);
-                counter = createElement('span', {
-                    style: Object.assign({
-                        backgroundColor: '#600',
-                        color: '#fff',
-                        font: '10pt sans-serif',
-                        padding: '2px 4px',
-                        textAlign: 'left',
-                        whiteSpace: 'pre'
-                    }, defaultBox1)
-                }, document.body);
-            }
-            startX = event.pageX;
-            startY = event.pageY;
-            addListeners(window, mousemove, mouseup, mousewheel, mouseout);
+    function allowSelection() {
+        return mouseButton == DAF.getValue('linkGrabButton') && keyPressed == DAF.getValue('linkGrabKey');
+    }
+
+    function setPosition(el, x, y, width, height) {
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        if (width !== undefined) {
+            el.style.width = width + 'px';
+            el.style.height = height + 'px';
         }
     }
 
-    function mousemove(event) {
-        if (!flagShow) {
-            if (Math.abs(event.pageX - startX) < 5 && Math.abs(event.pageY - startY) < 5) return;
-            if (!autoScrollId) autoScrollId = setInterval(autoScroll, 100);
-        }
-        mouseX = event.clientX;
-        mouseY = event.clientY;
-        var el = document.elementsFromPoint(mouseX, mouseY).find(el => el !== box && el !== counter);
-        if (!el || !el.className.match(/\b(UFIPagerLink|fss|see_more_link_inner|UFIReplySocialSentenceLinkText)\b/)) el = null;
-        if (autoOpenElement !== el) {
-            if (autoOpenElement && autoOpenCount <= 0) {
-                flagLinks = true;
-                linkCount = 0;
-            }
-            autoOpenCount = 5;
-        }
-        autoOpenElement = el;
+    function mousedown(event) {
+        stop();
 
-        updateBox(mouseX, mouseY);
+        mouseButton = event.button
+
+        // turn on menu for windows
+        if (os === OS_WIN) stopMenu = false
+
+        if (!allowSelection()) return;
+
+        flagActive = true;
+
+        // don't prevent for windows right click as it breaks spell checker
+        // do prevent for left as otherwise the page becomes highlighted
+        if (os == OS_LINUX || (os == OS_WIN && mouseButton == LEFT_BUTTON)) preventEscalation(event)
+
+        // create the box
+        if (box == null) {
+            box = DAF.removeLater(createElement('span', {
+                style: {
+                    boxSizing: 'border-box',
+                    position: 'absolute',
+                    zIndex: Z_INDEX,
+                    border: '1px solid #f00',
+                    backgroundColor: 'rgba(255,255,0,0.3)',
+                    visibility: 'hidden'
+                }
+            }, document.body));
+
+            countLabel = DAF.removeLater(createElement('span', {
+                style: {
+                    boxSizing: 'border-box',
+                    position: 'absolute',
+                    zIndex: Z_INDEX,
+                    backgroundColor: '#600',
+                    color: '#fff',
+                    font: '10pt sans-serif',
+                    padding: '2px 4px',
+                    textAlign: 'left',
+                    whiteSpace: 'pre'
+                }
+            }, document.body));
+        }
+
+        // update position
+        startX = event.pageX, startY = event.pageY;
+        mouseX = event.clientX, mouseY = event.clientY;
+        updateBox();
+
+        // setup mouse move and mouse up
+        addListeners(window, mousemove, mouseup, mousewheel, mouseout);
+    }
+
+
+    function mousemove(event) {
+        preventEscalation(event)
+        if (flagBox || allowSelection()) {
+            mouseX = event.clientX, mouseY = event.clientY;
+
+            var el = document.elementsFromPoint(mouseX, mouseY).find(el => el !== box && el !== countLabel);
+            if (!el || !el.className.match(/\b(UFIPagerLink|fss|see_more_link_inner|UFIReplySocialSentenceLinkText)\b/)) el = null;
+            if (autoOpenElement !== el) {
+                if (autoOpenElement && autoOpenCount <= 0) {
+                    flagLinks = true;
+                    linkCount = 0;
+                }
+                autoOpenCount = 5;
+            }
+            autoOpenElement = el;
+
+            updateBox();
+            detect();
+        }
+    }
+
+    function updateBox() {
+        var x = mouseX + window.scrollX,
+            y = mouseY + window.scrollY,
+            width = Math.max(document.documentElement['clientWidth'], document.body['scrollWidth'], document.documentElement['scrollWidth'], document.body['offsetWidth'], document.documentElement['offsetWidth']),
+            height = Math.max(document.documentElement['clientHeight'], document.body['scrollHeight'], document.documentElement['scrollHeight'], document.body['offsetHeight'], document.documentElement['offsetHeight']);
+        x = Math.min(x, width - 7);
+        y = Math.min(y, height - 7);
+
+        box.x1 = Math.min(startX, x);
+        box.x2 = Math.max(startX, x);
+        box.y1 = Math.min(startY, y);
+        box.y2 = Math.max(startY, y);
+        setPosition(box, box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
+
+        var cx = x;
+        if (y <= startY) cx -= Math.floor(countLabel.offsetWidth / 2);
+        else if (x <= startX) cx -= countLabel.offsetWidth;
+        setPosition(countLabel, cx, y - countLabel.offsetHeight);
     }
 
     function mousewheel(event) {
-        mousemove(event);
-    }
-
-    function mouseup(event) {
-        if (!flagShow) stop();
+        if (flagBox || allowSelection()) {
+            mouseX = event.clientX, mouseY = event.clientY;
+            updateBox();
+            detect();
+        }
     }
 
     function mouseout(event) {
-        mousemove(event);
+        mousemove(event)
+    }
+
+    function preventEscalation(event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    function mouseup(event) {
+        preventEscalation(event)
+        if (!flagBox) stop();
+    }
+
+    /*
+    function getXY(element) {
+        var x = 0,
+            y = 0;
+        var parent = element;
+        do {
+            x += parent.offsetLeft;
+            y += parent.offsetTop;
+        } while (parent = parent.offsetParent);
+
+        parent = element;
+        while (parent && parent != document.body) {
+            if (parent.scrollleft) x -= parent.scrollLeft;
+            if (parent.scrollTop) y -= parent.scrollTop;
+            parent = parent.parentNode;
+        }
+
+        return {
+            x: x,
+            y: y
+        };
+    }
+    */
+
+    function start() {
+        flagLinks = false;
+
+        // stop user from selecting text/elements
+        document.body.style.userSelect = 'none';
+        // turn on the box
+        box.style.visibility = countLabel.style.visibility = 'visible';
+        flagBox = true
+
+        links = document.links;
+        linkCount = links.length;
+        var offsetLeft = window.scrollX,
+            offsetTop = window.scrollY;
+        links = Array.from(links).filter(a => {
+            if (a.href.indexOf('diggysadventure') < 0) return false;
+
+            /*
+            // attempt to ignore invisible links (can't ignore overflow)
+            var comp = window.getComputedStyle(a, null);
+            if (comp.visibility == 'hidden' || comp.display == 'none') return false;
+            var pos = getXY(a);
+            a.daf = {
+                x1: pos.x,
+                y1: pos.y,
+                x2: pos.x + a.offsetWidth,
+                y2: pos.y + a.offsetHeight,
+                box: a.daf && a.daf.box
+            };
+            return true;
+            */
+
+            var rect = a.getBoundingClientRect();
+            if (rect.height > 0) {
+                var left = offsetLeft + rect.left,
+                    top = offsetTop + rect.top;
+                a.daf = {
+                    x1: Math.floor(left),
+                    y1: Math.floor(top),
+                    x2: Math.floor(left + rect.width),
+                    y2: Math.floor(top + rect.height),
+                    box: a.daf && a.daf.box
+                };
+                return true;
+            }
+
+            return false;
+        });
+
+        // turn off menu for windows so mouse up doesn't trigger context menu
+        if (os == OS_WIN) stopMenu = true
+    }
+
+    function stop() {
+        if (flagActive) removeListeners(window, mousemove, mouseup, mousewheel, mouseout);
+        flagActive = false;
+
+        if (scrollHandle) clearInterval(scrollHandle);
+        scrollHandle = 0;
+
+        document.body.style.userSelect = '';
+        if (flagBox) box.style.visibility = countLabel.style.visibility = 'hidden';
+        flagBox = false;
+
+        // remove the link boxes
+        Array.from(document.links).forEach(a => {
+            if (a && a.daf) {
+                removeNode(a.daf.box);
+                delete a.daf;
+            }
+        });
+        links = [];
+
+        flagLinks = false;
+        mouseButton = -1;
+        keyPressed = 0;
+    }
+
+    function scrollPage(speed, direction) {
+        var value = (speed < 2 ? 60 : (speed < 10 ? 30 : 10)) * direction;
+        window.scrollBy(0, value);
+        //mouseY += value;
+        updateBox();
+        detect();
+    }
+
+    function scroll() {
+        var y = mouseY,
+            win_height = window.innerHeight;
+        if (y > win_height - 20) scrollPage(win_height - y, 1);
+        else if (window.scrollY > 0 && y < 20) scrollPage(y, -1);
+        else if (autoOpenElement && (autoOpenCount--) == 0) {
+            try {
+                autoOpenElement.click();
+                flagLinks = true;
+            } catch (e) {}
+        }
+    }
+
+    function detect() {
+        if (!flagBox) {
+            if (box.x2 - box.x1 < 5 && box.y2 - box.y1 < 5) return;
+            flagLinks = true;
+        }
+        if (flagLinks || linkCount != document.links.length) start();
+
+        if (!scrollHandle) scrollHandle = setInterval(scroll, 100);
+
+        var count = 0,
+            total = 0,
+            hash = {};
+        links.forEach(a => {
+            var daf = a.daf;
+            daf.selected = false;
+            if (daf.y1 <= box.y2 && daf.y2 >= box.y1 && daf.x1 <= box.x2 && daf.x2 >= box.x1) {
+                if (!('data' in daf)) daf.data = getLinkData(a.href);
+                if (daf.data) {
+                    daf.selected = true;
+                    if (daf.box == null) {
+                        daf.box = daf.box || createElement('span', {
+                            style: {
+                                boxSizing: 'border-box',
+                                position: 'absolute',
+                                zIndex: Z_INDEX - 1,
+                                border: '1px solid #060',
+                                backgroundColor: 'rgba(0,255,0,0.3)'
+                            }
+                        }, document.body);
+                        setPosition(daf.box, daf.x1, daf.y1 - 1, daf.x2 - daf.x1 + 2, daf.y2 - daf.y1 + 2);
+                    }
+                    daf.box.style.visibility = 'visible';
+                    total++;
+                    if (!(daf.data.wp_id in hash)) {
+                        hash[daf.data.wp_id] = true;
+                        count++;
+                    }
+                }
+            }
+            if (daf.box) daf.box.style.visibility = daf.selected ? 'visible' : 'hidden';
+        });
+
+        var text = guiString('linksSelected', [count, total]);
+        if (count > 0) text += '\n' + guiString('linksKey', ['C', guiString('linksFnCopy')]);
+        text += '\n' + guiString('linksKey', ['R', guiString('linksFnRefresh')]);
+        text += '\n' + guiString('linksKey', ['ESC', guiString('linksFnCancel')]);
+        if (text != oldLabel) countLabel.innerText = oldLabel = text;
     }
 
     function keydown(event) {
-        keyCode = event.keyCode;
-        if (keyCode == KEY_ESC && flagActive) stop();
-        if (keyCode == KEY_C && flagActive) {
+        keyPressed = event.keyCode;
+        if (os == OS_LINUX && keyPressed == DAF.getValue('linkGrabKey')) stopMenu = true;
+        if (!flagActive) return;
+        if (keyPressed == KEY_ESC) stop();
+        if (keyPressed == KEY_R) {
+            start();
+            detect();
+        }
+        if (keyPressed == KEY_C) {
+            var values = collectLinks();
             stop();
-            if (DAF.getValue('linkGrabPortal2FB')) {
-                values = values.map(href => {
-                    var converted = href.indexOf('portal.pixelfederation.com') >= 0 ? portal2FB(href) : null;
-                    return converted || href;
-                });
-            }
-            if (DAF.getValue('linkGrabSort')) values.sort();
-            if (DAF.getValue('linkGrabReverse')) values.reverse();
             var text = values.join('\n') + '\n';
             copyToClipboard(text);
             Dialog(Dialog.TOAST).show({
@@ -148,190 +368,85 @@
         }
     }
 
+    function blur(event) {
+        remove_key();
+    }
+
     function keyup(event) {
-        keyCode = 0;
+        remove_key();
+    }
+
+    function remove_key() {
+        // turn menu on for linux
+        if (os == OS_LINUX) stopMenu = false;
+        keyPressed = 0;
     }
 
     function contextmenu(event) {
-        if (flagShow || flagStopMenu) event.preventDefault();
-        flagStopMenu = false;
+        if (stopMenu) event.preventDefault();
+        stopMenu = false;
     }
 
-    function autoScroll() {
-        var height = window.innerHeight,
-            speed, direction;
-        if (mouseY > height - 20) speed = height - mouseY, direction = 1;
-        else if (window.scrollY > 0 && mouseY < 20) speed = mouseY, direction = -1;
-        else {
-            if (autoOpenElement && (autoOpenCount--) == 0) {
+    var reLink1 = /https?:\/\/l\.facebook\.com\/l.php\?u=([^&\s]+)(&|\s|$)/g;
+    var reLink2 = /https?:\/\/diggysadventure\.com\/miner\/wallpost_link.php\S+[\?&]url=([^&\s]+)(&|\s|$)/g;
+    var reFacebook = /https?:\/\/apps\.facebook\.com\/diggysadventure\/wallpost\.php\?wp_id=(\d+)&fb_type=(standard|portal)&wp_sig=([0-9a-z]+)/g;
+    var rePortal = /https?:\/\/portal\.pixelfederation\.com\/(([^\/]+\/)?gift|wallpost)\/diggysadventure\?params=(([0-9a-zA-Z\-_]|%2B|%2F)+(%3D){0,2})/g;
+
+    function getLinkData(href) {
+        href = href.replace(reLink1, (a, b) => ' ' + decodeURIComponent(b) + ' ');
+        href = href.replace(reLink2, (a, b) => ' ' + decodeURIComponent(b) + ' ');
+        if (href.indexOf('://apps.facebook.com/') > 0) {
+            reFacebook.lastIndex = 0;
+            var match = reFacebook.exec(href);
+            if (match) return {
+                wp_id: match[1],
+                fb_type: match[2],
+                wp_sig: match[3]
+            };
+        }
+        if (href.indexOf('://portal.pixelfederation.com/') > 0) {
+            rePortal.lastIndex = 0;
+            var match = rePortal.exec(href);
+            if (match) {
                 try {
-                    autoOpenElement.click();
-                    flagLinks = true;
+                    var params = decodeURIComponent(match[3]).replace(/\-/g, '+').replace(/_/g, '/'),
+                        payload = atob(params),
+                        json = JSON.parse(payload);
+                    if (json.action == 'wallpost' && json.wp_id) return {
+                        wp_id: json.wp_id,
+                        fb_type: json.fb_type,
+                        wp_sig: json.wp_sig
+                    };
                 } catch (e) {}
             }
-            return;
-        }
-        var value = (speed < 2 ? 60 : (speed < 10 ? 30 : 10)) * direction;
-        window.scrollBy(0, value);
-        updateBox(mouseX, mouseY);
-    }
-
-    function updateBox(x, y) {
-        x = Math.min(x, window.innerWidth - 7) + document.body.scrollLeft;
-        y = Math.min(y, window.innerHeight - 7) + document.body.scrollTop;
-
-        if (x > startX) boxX1 = startX, boxX2 = x;
-        else boxX1 = x, boxX2 = startX;
-        if (y > startY) boxY1 = startY, boxY2 = y;
-        else boxY1 = y, boxY2 = startY;
-        if (boxX1 < 0) boxX1 = 0;
-        if (boxY1 < 0) boxY1 = 0;
-
-        box.style.left = boxX1 + 'px';
-        box.style.width = (boxX2 - boxX1) + 'px';
-        box.style.top = boxY1 + 'px';
-        box.style.height = (boxY2 - boxY1) + 'px';
-        if (!flagShow || (flagLinks && linkCount != document.links.length)) start();
-
-        var hash = {};
-        values = [], numLinks = 0;
-        links.forEach(a => {
-            var daf = a.daf;
-            if (!daf) return;
-            if (daf.y1 >= boxY2 || daf.y2 <= boxY1 || daf.x1 >= boxX2 || daf.x2 <= boxX1) {
-                if (daf.box) daf.box.style.display = 'none';
-            } else {
-                numLinks++;
-                if (!(daf.url in hash)) {
-                    hash[daf.url] = true;
-                    values.push(daf.url);
-                }
-                if (!daf.boxSet) {
-                    daf.box = daf.box || createElement('span', {}, document.body);
-                    Object.assign(daf.box.style, {
-                        left: (daf.x1 - 1) + 'px',
-                        top: (daf.y1 - 1) + 'px',
-                        width: (daf.x2 - daf.x1 + 2) + 'px',
-                        height: (daf.y2 - daf.y1 + 2) + 'px'
-                    }, defaultBox2);
-                    daf.boxSet = true;
-                }
-                daf.box.style.display = 'block';
-            }
-        });
-        var text = guiString('linksSelected', [values.length, numLinks]);
-        if (values.length > 0) text += '\n' + guiString('linksCopy', ['C']);
-        if (text != oldLabel) counter.innerText = oldLabel = text;
-        var cx = mouseX + document.body.scrollLeft,
-            cy = mouseY + document.body.scrollTop - counter.offsetHeight;
-        if (y <= startY) cx -= Math.floor(counter.offsetWidth / 2);
-        else if (x <= startX) cx -= counter.offsetWidth;
-        counter.style.top = cy + 'px';
-        counter.style.left = cx + 'px';
-    }
-
-    var reL = /http(s?):\/\/l\.facebook\.com\/l.php\?u=([^&]+)\S+/g;
-    var re1 = /http(s?):\/\/apps\.facebook\.com\/diggysadventure\/wallpost\.php\?wp_id=\d+&fb_type=(standard|portal)&wp_sig=[0-9a-z]+/g;
-    var re2 = /http(s?):\/\/portal\.pixelfederation\.com\/(([^\/]+\/)?gift|wallpost)\/diggysadventure\?params=(([0-9a-zA-Z\-_]|%2B|%2F)+(%3D){0,2})/g;
-
-    function normalizeRewardLink(href) {
-        var url = null,
-            match;
-        if (href.indexOf('l.facebook') > 0) href = href.replace(reL, (a, b, c) => decodeURIComponent(c));
-        if ((match = href.match(re1))) {
-            url = match[0];
-            if (url.startsWith('http:')) url = 'https:' + url.substr(5);
-        } else if ((match = href.match(re2))) {
-            url = match[0];
-            url = 'https://portal.pixelfederation.com/wallpost/diggysadventure' + url.substr(url.indexOf('?'));
-        }
-        return url;
-    }
-
-    function portal2FB(href) {
-        try {
-            re2.lastIndex = 0; // will reset the RegExp object
-            var match = re2.exec(href);
-            console.log(match);
-            if (match) {
-                var params = decodeURIComponent(match[4]).replace(/\-/g, '+').replace(/_/g, '/'),
-                    payload = atob(params),
-                    json = JSON.parse(payload),
-                    result = 'https://apps.facebook.com/diggysadventure/wallpost.php',
-                    c = '?';
-                if (json.action == 'wallpost') {
-                    Object.keys(json).forEach(key => {
-                        if (key != 'action') {
-                            result += c + encodeURIComponent(key) + '=' + encodeURIComponent(json[key]);
-                            c = '&';
-                        }
-                    });
-                    return result;
-                }
-                return 'https://apps.facebook.com/diggysadventure/wallpost.php?wp_id=' + json.wp_id + '&fb_type=' + json.fb_type + '&wp_sig=' + json.wp_sig;
-            }
-
-        } catch (e) {
-            console.log(e);
         }
         return null;
     }
 
-    function start() {
-        flagShow = true;
-        flagLinks = false;
-        var left = document.body.scrollLeft,
-            top = document.body.scrollTop;
-        document.body.style.userSelect = 'none';
-        box.style.display = counter.style.display = 'block';
-        links = document.links;
-        linkCount = links.length;
-        links = Array.from(links).filter(a => {
-            var url = a.href;
-            if (url.indexOf('diggysadventure') > 0 && (url = normalizeRewardLink(a.href))) {
-                var rect = a.getBoundingClientRect();
-                if (rect.height > 0) {
-                    a.daf = {
-                        x1: Math.floor(left + rect.left),
-                        y1: Math.floor(top + rect.top),
-                        x2: Math.floor(left + rect.left + rect.width),
-                        y2: Math.floor(top + rect.top + rect.height),
-                        url: url,
-                        box: a.daf && a.daf.box
-                    };
-                    return true;
+    function collectLinks() {
+        var values = [],
+            hash = {},
+            convert = DAF.getValue('linkGrabPortal2FB');
+        links.forEach(a => {
+            var data = a.daf && a.daf.selected && a.daf.data;
+            if (data && !(data.wp_id in hash)) {
+                hash[data.wp_id] = true;
+                if (data.fb_type == 'portal' && !convert) {
+                    values.push('https://portal.pixelfederation.com/wallpost/diggysadventure?params=' + btoa(JSON.stringify(data)));
+                } else {
+                    var result = 'https://apps.facebook.com/diggysadventure/wallpost.php',
+                        c = '?';
+                    Object.keys(data).forEach(key => {
+                        result += c + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+                        c = '&';
+                    });
+                    values.push(result);
                 }
             }
         });
-    }
-
-    function stop() {
-        autoOpenElement = null;
-        if (flagActive) {
-            flagActive = false;
-            removeListeners(window, mousemove, mouseup, mousewheel, mouseout);
-        }
-        keyCode = 0;
-        if (flagShow) {
-            flagShow = false;
-            document.body.style.userSelect = '';
-            box.style.display = counter.style.display = 'none';
-        }
-        if (autoScrollId) {
-            clearInterval(autoScrollId);
-            autoScrollId = 0;
-        }
-        links.forEach(a => {
-            var daf = a.daf;
-            if (daf) {
-                if (daf.box) daf.box.parentNode.removeChild(daf.box);
-                daf.box = null;
-                a.daf = null;
-            }
-        });
-        links = [];
-        flagLinks = false;
-        document.getSelection().removeAllRanges();
+        if (DAF.getValue('linkGrabSort')) values.sort();
+        if (DAF.getValue('linkGrabReverse')) values.reverse();
+        return values;
     }
 
     function copyToClipboard(text) {
@@ -341,7 +456,6 @@
         document.execCommand("Copy", false, null);
         document.body.removeChild(ta);
     }
-
 })();
 /*
  ** END
