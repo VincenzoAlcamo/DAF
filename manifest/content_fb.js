@@ -235,14 +235,16 @@
             var rect = a.getBoundingClientRect();
             if (rect.height > 0) {
                 var left = offsetLeft + rect.left,
-                    top = offsetTop + rect.top;
-                a.daf = {
-                    x1: Math.floor(left),
-                    y1: Math.floor(top),
-                    x2: Math.floor(left + rect.width),
-                    y2: Math.floor(top + rect.height),
-                    box: a.daf && a.daf.box
-                };
+                    top = offsetTop + rect.top,
+                    daf = {
+                        x1: Math.floor(left),
+                        y1: Math.floor(top),
+                        x2: Math.floor(left + rect.width),
+                        y2: Math.floor(top + rect.height),
+                        box: a.daf && a.daf.box
+                    };
+                a.daf = daf;
+                if (daf.box) setPosition(daf.box, daf.x1, daf.y1 - 1, daf.x2 - daf.x1 + 2, daf.y2 - daf.y1 + 2);
                 return true;
             }
 
