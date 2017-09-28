@@ -637,7 +637,7 @@
         }
     },
     "fFilterM": {
-        "message": "Φίλοι και Γείτονες που ταιριάζουν: $NUM$",
+        "message": "Φίλοι και Γείτονες που ταίριαξαν: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -645,7 +645,7 @@
         }
     },
     "fFilterG": {
-        "message": "Φίλοι και Γείτονες που ταιριάζουν από εικόνα: $NUM$",
+        "message": "Φίλοι και Γείτονες που ταίριαξαν από εικόνα: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -653,7 +653,7 @@
         }
     },
     "fFilterH": {
-        "message": "Φίλοι και γείτονες που ταιριάξατε εσείς: $NUM$",
+        "message": "Φίλοι και Γείτονες που ταιριάξατε εσείς: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -832,13 +832,25 @@
             }
         }
     },
-    "linksCopy": {
-        "message": "$KEY$ = Αντιγραφή",
+    "linksKey": {
+        "message": "$KEY$ = $FUNC$",
         "placeholders": {
-            "KEY": {
+            "key": {
                 "content": "$1"
+            },
+            "func": {
+                "content": "$2"
             }
         }
+    },
+    "linksFnCopy": {
+        "message": "Αντιγραφή"
+    },
+    "linksFnCancel": {
+        "message": "Ακύρωση"
+    },
+    "linksFnRefresh": {
+        "message": "Επαναφόρτωση"
     },
     "linksSelected": {
         "message": "Σύνδεσμοι: $UNIQUE$ / $TOTAL$",
@@ -869,8 +881,17 @@
     "linkGrabReverseLabel": {
         "message": "Αντίστροφοι σύνδεσμοι"
     },
-    "linkGrabPortal2FBLabel": {
+    "linkGrabConvertLabel": {
         "message": "Μετατροπή συνδέσμων"
+    },
+    "linkGrabConvertNo": {
+        "message": "Όχι"
+    },
+    "linkGrabConvertFacebook": {
+        "message": "στο Facebook"
+    },
+    "linkGrabConvertPortal": {
+        "message": "στο Portal"
     },
     "linkGrabDisabled": {
         "message": "Απενεργοποιημένο"
