@@ -881,8 +881,17 @@
     "linkGrabReverseLabel": {
         "message": "Inverti i link"
     },
-    "linkGrabPortal2FBLabel": {
+    "linkGrabConvertLabel": {
         "message": "Converti i link"
+    },
+    "linkGrabConvertNo": {
+        "message": "No"
+    },
+    "linkGrabConvertFacebook": {
+        "message": "per Facebook"
+    },
+    "linkGrabConvertPortal": {
+        "message": "per Portale"
     },
     "linkGrabDisabled": {
         "message": "Disabilitato"

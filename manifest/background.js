@@ -30,7 +30,7 @@ var exPrefs = {
     linkGrabKey: 0,
     linkGrabSort: true,
     linkGrabReverse: false,
-    linkGrabPortal2FB: localStorage.installType == 'development',
+    linkGrabConvert: 0,
     tabIndex: 0,
     nFilter: '7',
     cFilter: 'ALL',
@@ -98,7 +98,7 @@ chrome.storage.sync.get(null, function(loaded) {
         console.error(chrome.runtime.lastError.message);
     } else {
         loaded = loaded || {};
-        var obsoleteKeys = ['DAfullwindow', 'gcTableStatus', 'bodyHeight', 'minerTop'],
+        var obsoleteKeys = ['DAfullwindow', 'gcTableStatus', 'bodyHeight', 'minerTop', 'linkGrabPortal2FB'],
             keysToRemove = [];
         // remove old obsolete keys
         Object.keys(loaded).forEach(key => {

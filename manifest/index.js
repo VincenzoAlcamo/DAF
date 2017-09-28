@@ -828,7 +828,13 @@ var guiTabs = (function() {
         p.value = selectedValue;
         return false; // Not Disabled
     };
-    handlers['__linkGrabPortal2FB_checkbox'] = __devOnly;
+    handlers['__linkGrabConvert_SELECT'] = function(p) {
+        var selectedValue = bgp.exPrefs.linkGrabConvert;
+        addOption(p, 0, guiString('linkGrabConvertNo'), selectedValue);
+        addOption(p, 1, guiString('linkGrabConvertFacebook'), selectedValue);
+        addOption(p, 2, guiString('linkGrabConvertPortal'), selectedValue);
+        return false; // Not Disabled
+    };
 
     handlers['__gameDebug_checkbox'] = __devOnly;
     handlers['__syncDebug_checkbox'] = __devOnly;

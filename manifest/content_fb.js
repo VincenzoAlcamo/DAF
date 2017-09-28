@@ -7,7 +7,7 @@
         linkGrabKey: 0,
         linkGrabSort: true,
         linkGrabReverse: false,
-        linkGrabPortal2FB: false
+        linkGrabConvert: 0
     }, initialize);
 
     const Z_INDEX = 2147483647,
@@ -428,12 +428,13 @@
     function collectLinks() {
         var values = [],
             hash = {},
-            convert = DAF.getValue('linkGrabPortal2FB');
+            convert = DAF.getValue('linkGrabConvert');
+        if(convert != 1 && convert != 2) convert = 0;
         links.forEach(a => {
             var data = a.daf && a.daf.selected && a.daf.data;
             if (data && !(data.wp_id in hash)) {
                 hash[data.wp_id] = true;
-                if (data.fb_type == 'portal' && !convert) {
+                if ((data.fb_type == 'portal' && convert == 0) || convert == 2) {
                     values.push('https://portal.pixelfederation.com/wallpost/diggysadventure?params=' + btoa(JSON.stringify(data)));
                 } else {
                     var result = 'https://apps.facebook.com/diggysadventure/wallpost.php',
