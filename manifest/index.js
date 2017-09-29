@@ -136,7 +136,7 @@ function guiInit() {
             });
             document.getElementById('topBtn').addEventListener('click', function(e) {
                 // When the user clicks on the Top Button, scroll to the top of the document
-                document.body.scrollTop = 0; // For Chrome, Safari and Opera 
+                window.scrollBy(0, -window.scrollY);
             });
             guiWikiLinks();
         });
