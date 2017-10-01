@@ -414,7 +414,7 @@
                     var params = decodeURIComponent(match[3]).replace(/\-/g, '+').replace(/_/g, '/'),
                         payload = atob(params),
                         json = JSON.parse(payload);
-                    if (json.action == 'wallpost' && json.wp_id) return {
+                    if (json.wp_id && json.fb_type && json.wp_sig) return {
                         wp_id: json.wp_id,
                         fb_type: json.fb_type,
                         wp_sig: json.wp_sig
@@ -429,7 +429,7 @@
         var values = [],
             hash = {},
             convert = DAF.getValue('linkGrabConvert');
-        if(convert != 1 && convert != 2) convert = 0;
+        if (convert != 1 && convert != 2) convert = 0;
         links.forEach(a => {
             var data = a.daf && a.daf.selected && a.daf.data;
             if (data && !(data.wp_id in hash)) {
@@ -437,13 +437,8 @@
                 if ((data.fb_type == 'portal' && convert == 0) || convert == 2) {
                     values.push('https://portal.pixelfederation.com/wallpost/diggysadventure?params=' + btoa(JSON.stringify(data)));
                 } else {
-                    var result = 'https://apps.facebook.com/diggysadventure/wallpost.php',
-                        c = '?';
-                    Object.keys(data).forEach(key => {
-                        result += c + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-                        c = '&';
-                    });
-                    values.push(result);
+                    var p = Object.keys(data).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+                    values.push('https://apps.facebook.com/diggysadventure/wallpost.php?' + p.join('&'));
                 }
             }
         });
