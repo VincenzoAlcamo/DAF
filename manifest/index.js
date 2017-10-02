@@ -590,14 +590,14 @@ var guiTabs = (function() {
             case 'ERROR':
                 guiStatus(guiString('gameError', [bgp.daGame.daUser.desc]), "Error", 'error');
                 self.lock(false);
-                if (active != 'Options' && active != 'Help')
+                if (active == 'Options' || active == 'Help')
                     break;
                 return false;
             default:
             case 'EMPTY':
                 guiStatus('noGameData', "Warning", 'warning');
                 self.lock(false);
-                if (active != 'Options' && active != 'Help')
+                if (active == 'Options' || active == 'Help')
                     break;
                 return false;
         }
