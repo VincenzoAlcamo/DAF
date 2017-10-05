@@ -1135,7 +1135,7 @@ th.DAF-sort-ascending {
   margin: 0;
   padding: 0;
   position: fixed;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .v-menu li {
