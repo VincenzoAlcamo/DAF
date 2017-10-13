@@ -99,7 +99,8 @@
                     font: '10pt sans-serif',
                     padding: '2px 4px',
                     textAlign: 'left',
-                    whiteSpace: 'pre'
+                    whiteSpace: 'pre',
+                    visibility: 'hidden'
                 }
             }, document.body));
         }
@@ -334,8 +335,8 @@
                     }
                     daf.box.style.visibility = 'visible';
                     total++;
-                    if (!(daf.data.wp_id in hash)) {
-                        hash[daf.data.wp_id] = true;
+                    if (!(daf.data.id in hash)) {
+                        hash[daf.data.id] = true;
                         count++;
                     }
                 }
@@ -395,16 +396,19 @@
     var rePortal = /https?:\/\/portal\.pixelfederation\.com\/(([^\/]+\/)?gift|wallpost)\/diggysadventure\?params=(([0-9a-zA-Z\-_]|%2B|%2F)+(%3D){0,2})/g;
 
     function getLinkData(href) {
+        function getObj(id, typ, sig) {
+            return {
+                id: id,
+                typ: typ,
+                sig: sig
+            };
+        }
         href = href.replace(reLink1, (a, b) => ' ' + decodeURIComponent(b) + ' ');
         href = href.replace(reLink2, (a, b) => ' ' + decodeURIComponent(b) + ' ');
         if (href.indexOf('://apps.facebook.com/') > 0) {
             reFacebook.lastIndex = 0;
             var match = reFacebook.exec(href);
-            if (match) return {
-                wp_id: match[1],
-                fb_type: match[2],
-                wp_sig: match[3]
-            };
+            if (match) return getObj(match[1], match[2], match[3]);
         }
         if (href.indexOf('://portal.pixelfederation.com/') > 0) {
             rePortal.lastIndex = 0;
@@ -414,15 +418,24 @@
                     var params = decodeURIComponent(match[3]).replace(/\-/g, '+').replace(/_/g, '/'),
                         payload = atob(params),
                         json = JSON.parse(payload);
-                    if (json.wp_id && json.fb_type && json.wp_sig) return {
-                        wp_id: json.wp_id,
-                        fb_type: json.fb_type,
-                        wp_sig: json.wp_sig
-                    };
+                    if (json.wp_id && json.fb_type && json.wp_sig) return getObj(json.wp_id, json.fb_type, json.wp_sig);
                 } catch (e) {}
             }
         }
         return null;
+    }
+
+    function getLink(data, convert = 0) {
+        if ((data.typ == 'portal' && convert == 0) || convert == 2) {
+            var json = JSON.stringify({
+                action: 'wallpost',
+                wp_id: data.id,
+                fb_type: data.typ,
+                wp_sig: data.sig
+            });
+            return 'https://portal.pixelfederation.com/wallpost/diggysadventure?params=' + encodeURIComponent(btoa(json));
+        }
+        return 'https://apps.facebook.com/diggysadventure/wallpost.php?wp_id=' + encodeURIComponent(data.id) + '&fb_type=' + encodeURIComponent(data.typ) + '&wp_sig=' + encodeURIComponent(data.sig);
     }
 
     function collectLinks() {
@@ -432,14 +445,9 @@
         if (convert != 1 && convert != 2) convert = 0;
         links.forEach(a => {
             var data = a.daf && a.daf.selected && a.daf.data;
-            if (data && !(data.wp_id in hash)) {
-                hash[data.wp_id] = true;
-                if ((data.fb_type == 'portal' && convert == 0) || convert == 2) {
-                    values.push('https://portal.pixelfederation.com/wallpost/diggysadventure?params=' + btoa(JSON.stringify(data)));
-                } else {
-                    var p = Object.keys(data).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
-                    values.push('https://apps.facebook.com/diggysadventure/wallpost.php?' + p.join('&'));
-                }
+            if (data && !(data.id in hash)) {
+                hash[data.id] = true;
+                values.push(getLink(data, convert));
             }
         });
         if (DAF.getValue('linkGrabSort')) values.sort();
