@@ -456,11 +456,19 @@
     }
 
     function copyToClipboard(text) {
-        var ta = document.body.appendChild(document.createElement('textarea'));
+        var ta = createElement('textarea', {
+            style: {
+                position: 'fixed',
+                top: 0,
+                left: 0
+            }
+        }, document.body);
         ta.value = text;
         ta.select();
         document.execCommand("Copy", false, null);
-        document.body.removeChild(ta);
+         setTimeout(() => {
+            document.body.removeChild(ta);
+        }, 100);
     }
 })();
 /*
