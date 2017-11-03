@@ -110,7 +110,6 @@ var guiTabs = (function(self) {
             html: msg('fCollectPreamble') + '<table style="margin-top:16px">' + buttons.join('') + '</table>',
             style: ['standard', 'alternate', 'match', Dialog.CANCEL]
         }, function(method) {
-            var text, fn;
             if (method == 'standard' || method == 'alternate' || method == 'match') {
                 var msgId = 'fCollect' + method.charAt(0).toUpperCase() + method.substr(1) + 'Info';
                 self.dialog.show({

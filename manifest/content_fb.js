@@ -178,30 +178,6 @@
         if (!flagBox) stop();
     }
 
-    /*
-    function getXY(element) {
-        var x = 0,
-            y = 0;
-        var parent = element;
-        do {
-            x += parent.offsetLeft;
-            y += parent.offsetTop;
-        } while (parent = parent.offsetParent);
-
-        parent = element;
-        while (parent && parent != document.body) {
-            if (parent.scrollleft) x -= parent.scrollLeft;
-            if (parent.scrollTop) y -= parent.scrollTop;
-            parent = parent.parentNode;
-        }
-
-        return {
-            x: x,
-            y: y
-        };
-    }
-    */
-
     function start() {
         flagLinks = false;
 
@@ -217,21 +193,6 @@
             offsetTop = window.scrollY;
         links = Array.from(links).filter(a => {
             if (a.href.indexOf('diggysadventure') < 0) return false;
-
-            /*
-            // attempt to ignore invisible links (can't ignore overflow)
-            var comp = window.getComputedStyle(a, null);
-            if (comp.visibility == 'hidden' || comp.display == 'none') return false;
-            var pos = getXY(a);
-            a.daf = {
-                x1: pos.x,
-                y1: pos.y,
-                x2: pos.x + a.offsetWidth,
-                y2: pos.y + a.offsetHeight,
-                box: a.daf && a.daf.box
-            };
-            return true;
-            */
 
             var rect = a.getBoundingClientRect();
             if (rect.height > 0) {
