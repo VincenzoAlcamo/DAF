@@ -361,12 +361,18 @@
             detect();
         }
         if (keyPressed == KEY_C) {
+            event.keyCode = 0;
+            preventEscalation(event);
             var values = collectLinks();
             stop();
             var text = values.join('\n') + '\n';
-            copyToClipboard(text);
-            Dialog(Dialog.TOAST).show({
-                text: guiString('linksCopied', [values.length])
+            chrome.runtime.sendMessage({
+                cmd: 'copyToClipboard',
+                text: text
+            }, function() {
+                Dialog(Dialog.TOAST).show({
+                    text: guiString('linksCopied', [values.length])
+                });
             });
         }
     }
@@ -453,22 +459,6 @@
         if (DAF.getValue('linkGrabSort')) values.sort();
         if (DAF.getValue('linkGrabReverse')) values.reverse();
         return values;
-    }
-
-    function copyToClipboard(text) {
-        var ta = createElement('textarea', {
-            style: {
-                position: 'fixed',
-                top: 0,
-                left: 0
-            }
-        }, document.body);
-        ta.value = text;
-        ta.select();
-        document.execCommand("Copy", false, null);
-         setTimeout(() => {
-            document.body.removeChild(ta);
-        }, 100);
     }
 })();
 /*
