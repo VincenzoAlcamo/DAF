@@ -35,6 +35,13 @@
         [].slice.call(arguments, 1).forEach(fn => obj.addEventListener(fn.name, fn, true));
     }
 
+    function addPassiveListeners(obj, args) {
+        [].slice.call(arguments, 1).forEach(fn => obj.addEventListener(fn.name, fn, {
+            passive: true,
+            capture: true
+        }));
+    }
+
     function removeListeners(obj, args) {
         [].slice.call(arguments, 1).forEach(fn => obj.removeEventListener(fn.name, fn, true));
     }
@@ -111,7 +118,8 @@
         updateBox();
 
         // setup mouse move and mouse up
-        addListeners(window, mousemove, mouseup, mousewheel, mouseout);
+        addListeners(window, mousemove, mouseup, mouseout);
+        addPassiveListeners(window, mousewheel);
     }
 
 
