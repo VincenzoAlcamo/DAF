@@ -110,9 +110,14 @@ Object.assign(Dialog.prototype, {
         this.setTitle(o.title);
         if (o.html) this.setHtml(o.html);
         else this.setText(o.text);
-        Array.from(this.element.getElementsByTagName('button')).forEach(button => {
-            if (button.value.toLowerCase() == o.defaultButton) setTimeout(() => button.focus(), 100);
+
+        var element = this.element,
+            elements = [];
+        ['BUTTON', 'INPUT', 'TEXTAREA'].forEach(tagName => {
+            elements = elements.concat(Array.from(element.getElementsByTagName(tagName)));
         });
+        element = elements.find(el => o.defaultButton == (el.tagName == 'BUTTON' ? el.value.toLowerCase() : el.name));
+        if (element) setTimeout(() => element.focus(), 100);
         if (this.mode === Dialog.TOAST) {
             this.delay = o.delay || this.delay;
             setTimeout(() => {
