@@ -86,7 +86,11 @@ var sorttable = (function() {
             }
             arr.sort((a, b) => {
                 var result = sort(a[0], b[0]);
-                return result || (a[1].rowIndex - b[1].rowIndex);
+                if (result == 0) {
+                    result = a[1].rowIndex - b[1].rowIndex;
+                    if (!flagAscending) result = -result;
+                }
+                return result;
             });
             if (!flagAscending) arr.reverse();
             arr.forEach(a => {
