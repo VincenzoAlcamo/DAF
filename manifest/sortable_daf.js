@@ -78,20 +78,13 @@ var sorttable = (function() {
                         if (cellIndex == sortCellIndex) value = SortTable.getInnerText(cellData);
                         cellIndex += cellData.colSpan;
                     });
-                    arr.push([convert(value), rows.slice(rowIndex, rowIndex + rowSpan)]);
+                    arr.push([convert(value), rows.slice(rowIndex, rowIndex + rowSpan), flagAscending ? rowIndex : -rowIndex]);
                     rowIndex += rowSpan;
                 }
             } else {
-                arr = rows.map(row => [convert(SortTable.getInnerText(row.cells[sortCellIndex])), row]);
+                arr = rows.map(row => [convert(SortTable.getInnerText(row.cells[sortCellIndex])), row, flagAscending ? row.rowIndex : -row.rowIndex]);
             }
-            arr.sort((a, b) => {
-                var result = sort(a[0], b[0]);
-                if (result == 0) {
-                    result = a[1].rowIndex - b[1].rowIndex;
-                    if (!flagAscending) result = -result;
-                }
-                return result;
-            });
+            arr.sort((a, b) => sort(a[0], b[0]) || (a[2] - b[2]));
             if (!flagAscending) arr.reverse();
             arr.forEach(a => {
                 if (a[1] instanceof Array) a[1].forEach(el => tbody.appendChild(el));
