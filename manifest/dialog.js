@@ -48,8 +48,7 @@ Object.assign(Dialog, {
     },
     onkeydown: function(event) {
         if (event.keyCode == 27 && this.cancelable) {
-            this.visible = false;
-            if (this.callback) this.callback(Dialog.CANCEL);
+            this.hide().runCallback(Dialog.CANCEL);
         }
     }
 });
@@ -82,13 +81,13 @@ Object.assign(Dialog.prototype, {
             this.element = document.createElement('div');
             this.element.className = 'DAF-dialog DAF-md-superscale ' + (this.mode === Dialog.TOAST ? 'DAF-toast' : 'DAF-modal') + (this.mode === Dialog.WAIT ? ' DAF-md-wait' : '');
             this.element.innerHTML = [
-                '<div class="DAF-md-box"><div class="DAF-md-content"><div class="DAF-md-title"></div><div class="DAF-md-body"></div><div class="DAF-md-footer">',
+                '<div class="DAF-md-box"><div class="DAF-md-content"><div class="DAF-md-title"></div><form action="#" method="get"><div class="DAF-md-body"></div><div class="DAF-md-footer">',
                 '<button value="ok">', Dialog.getMessage('Ok') + '</button>',
                 '<button value="confirm">', Dialog.getMessage('Confirm') + '</button>',
                 '<button value="yes">', Dialog.getMessage('Yes') + '</button>',
                 '<button value="no">', Dialog.getMessage('No') + '</button>',
                 '<button value="cancel">', Dialog.getMessage('Cancel') + '</button>',
-                '</div></div></div></div>'
+                '</div></form></div></div></div>'
             ].join('');
             document.body.appendChild(this.element);
         }
@@ -111,9 +110,14 @@ Object.assign(Dialog.prototype, {
         this.setTitle(o.title);
         if (o.html) this.setHtml(o.html);
         else this.setText(o.text);
-        Array.from(this.element.getElementsByTagName('button')).forEach(button => {
-            if (button.value.toLowerCase() == o.defaultButton) setTimeout(() => button.focus(), 100);
+
+        var element = this.element,
+            elements = [];
+        ['BUTTON', 'INPUT', 'TEXTAREA'].forEach(tagName => {
+            elements = elements.concat(Array.from(element.getElementsByTagName(tagName)));
         });
+        element = elements.find(el => o.defaultButton == (el.tagName == 'BUTTON' ? el.value.toLowerCase() : el.name));
+        if (element) setTimeout(() => element.focus(), 100);
         if (this.mode === Dialog.TOAST) {
             this.delay = o.delay || this.delay;
             setTimeout(() => {
@@ -122,6 +126,10 @@ Object.assign(Dialog.prototype, {
             }, this.delay);
         }
         return this;
+    },
+    runCallback: function(method) {
+        var dialog = this;
+        if (dialog.callback) setTimeout(() => dialog.callback(method, dialog.getParams(method)), 100);
     },
     hide: function() {
         this.visible = false;
@@ -160,13 +168,45 @@ Object.assign(Dialog.prototype, {
             button.style.display = style.indexOf(method) >= 0 ? '' : 'none';
             if (!button.getAttribute('hasListener')) {
                 button.setAttribute('hasListener', '1');
-                button.addEventListener('click', function() {
-                    dialog.visible = false;
-                    if (dialog.callback) setTimeout(() => dialog.callback(method), 100);
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    dialog.hide().runCallback(method);
                 });
             }
         });
         return this;
+    },
+    getParams: function(method) {
+        var params = {};
+        if (method) params.method = method;
+
+        function add(name, value) {
+            if (name in params) {
+                var prev = params[name];
+                if (Array.isArray(prev)) prev.push(value);
+                else params[name] = [prev, value];
+            } else params[name] = value;
+        }
+        var form = this.element && this.element.getElementsByTagName('form')[0];
+        if (form) {
+            Array.from(form.elements).forEach(e => {
+                var name = e.name,
+                    value = e.value
+                type = e.tagName == 'INPUT' ? e.type.toUpperCase() : e.tagName;
+                switch (type) {
+                    case 'TEXT':
+                    case 'TEXTAREA':
+                        add(name, value);
+                        break;
+                    case 'RADIO':
+                    case 'CHECKBOX':
+                        if (e.checked) add(name, value);
+                        break;
+                }
+            })
+        }
+        return params;
     }
 });
 /*

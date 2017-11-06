@@ -84,7 +84,14 @@ var sorttable = (function() {
             } else {
                 arr = rows.map(row => [convert(SortTable.getInnerText(row.cells[sortCellIndex])), row]);
             }
-            arr.sort((a, b) => sort(a[0], b[0]));
+            arr.sort((a, b) => {
+                var result = sort(a[0], b[0]);
+                if (result == 0) {
+                    result = a[1].rowIndex - b[1].rowIndex;
+                    if (!flagAscending) result = -result;
+                }
+                return result;
+            });
             if (!flagAscending) arr.reverse();
             arr.forEach(a => {
                 if (a[1] instanceof Array) a[1].forEach(el => tbody.appendChild(el));

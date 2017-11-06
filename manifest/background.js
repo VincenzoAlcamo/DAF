@@ -941,6 +941,9 @@ function onMessage(request, sender, sendResponse) {
             // delegate daGame to handle this
             daGame.friendsCaptured(request.mode, request.data);
             break;
+        case 'copyToClipboard':
+            copyToClipboard(request.text);
+            break;
         case 'sendValue':
             chrome.tabs.sendMessage(sender.tab.id, request);
             break;
@@ -957,6 +960,18 @@ function onMessage(request, sender, sendResponse) {
     });
 
     return false; // all synchronous responses
+}
+
+function copyToClipboard(text) {
+    var div = document.createElement('textarea');
+    div.contentEditable = true;
+    document.body.appendChild(div);
+    div.innerHTML = text;
+    div.unselectable = 'off';
+    div.focus();
+    document.execCommand('SelectAll');
+    document.execCommand('Copy', false, null);
+    document.body.removeChild(div);
 }
 
 /*

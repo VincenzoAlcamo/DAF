@@ -27,6 +27,12 @@
   height: 100%;
 }
 
+.DAF-dialog form {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .DAF-dialog.DAF-md-show {
   opacity: 1;
   visibility: visible;
@@ -64,6 +70,7 @@
 
 .DAF-md-content,
 .DAF-dialog button,
+.DAF-dialog form,
 .DAF-dialog td {
   color: #fff;
 }

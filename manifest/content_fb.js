@@ -35,6 +35,13 @@
         [].slice.call(arguments, 1).forEach(fn => obj.addEventListener(fn.name, fn, true));
     }
 
+    function addPassiveListeners(obj, args) {
+        [].slice.call(arguments, 1).forEach(fn => obj.addEventListener(fn.name, fn, {
+            passive: true,
+            capture: true
+        }));
+    }
+
     function removeListeners(obj, args) {
         [].slice.call(arguments, 1).forEach(fn => obj.removeEventListener(fn.name, fn, true));
     }
@@ -111,7 +118,8 @@
         updateBox();
 
         // setup mouse move and mouse up
-        addListeners(window, mousemove, mouseup, mousewheel, mouseout);
+        addListeners(window, mousemove, mouseup, mouseout);
+        addPassiveListeners(window, mousewheel);
     }
 
 
@@ -178,30 +186,6 @@
         if (!flagBox) stop();
     }
 
-    /*
-    function getXY(element) {
-        var x = 0,
-            y = 0;
-        var parent = element;
-        do {
-            x += parent.offsetLeft;
-            y += parent.offsetTop;
-        } while (parent = parent.offsetParent);
-
-        parent = element;
-        while (parent && parent != document.body) {
-            if (parent.scrollleft) x -= parent.scrollLeft;
-            if (parent.scrollTop) y -= parent.scrollTop;
-            parent = parent.parentNode;
-        }
-
-        return {
-            x: x,
-            y: y
-        };
-    }
-    */
-
     function start() {
         flagLinks = false;
 
@@ -217,21 +201,6 @@
             offsetTop = window.scrollY;
         links = Array.from(links).filter(a => {
             if (a.href.indexOf('diggysadventure') < 0) return false;
-
-            /*
-            // attempt to ignore invisible links (can't ignore overflow)
-            var comp = window.getComputedStyle(a, null);
-            if (comp.visibility == 'hidden' || comp.display == 'none') return false;
-            var pos = getXY(a);
-            a.daf = {
-                x1: pos.x,
-                y1: pos.y,
-                x2: pos.x + a.offsetWidth,
-                y2: pos.y + a.offsetHeight,
-                box: a.daf && a.daf.box
-            };
-            return true;
-            */
 
             var rect = a.getBoundingClientRect();
             if (rect.height > 0) {
@@ -361,12 +330,18 @@
             detect();
         }
         if (keyPressed == KEY_C) {
+            event.keyCode = 0;
+            preventEscalation(event);
             var values = collectLinks();
             stop();
             var text = values.join('\n') + '\n';
-            copyToClipboard(text);
-            Dialog(Dialog.TOAST).show({
-                text: guiString('linksCopied', [values.length])
+            chrome.runtime.sendMessage({
+                cmd: 'copyToClipboard',
+                text: text
+            }, function() {
+                Dialog(Dialog.TOAST).show({
+                    text: guiString('linksCopied', [values.length])
+                });
             });
         }
     }
@@ -453,22 +428,6 @@
         if (DAF.getValue('linkGrabSort')) values.sort();
         if (DAF.getValue('linkGrabReverse')) values.reverse();
         return values;
-    }
-
-    function copyToClipboard(text) {
-        var ta = createElement('textarea', {
-            style: {
-                position: 'fixed',
-                top: 0,
-                left: 0
-            }
-        }, document.body);
-        ta.value = text;
-        ta.select();
-        document.execCommand("Copy", false, null);
-         setTimeout(() => {
-            document.body.removeChild(ta);
-        }, 100);
     }
 })();
 /*
