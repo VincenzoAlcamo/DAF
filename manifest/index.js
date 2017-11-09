@@ -455,7 +455,7 @@ var guiTabs = (function() {
      ** @Public - Hide ALL Tab Content
      */
     self.hideContent = function(state) {
-        tabWrapper.style.display = (state ? 'none' : 'block');
+        if(tabWrapper) tabWrapper.style.display = (state ? 'none' : 'block');
     }
 
     /*
