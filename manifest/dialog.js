@@ -89,6 +89,7 @@ Object.assign(Dialog.prototype, {
                 '<button value="cancel">', Dialog.getMessage('Cancel') + '</button>',
                 '</div></form></div></div></div>'
             ].join('');
+            this.form = this.element.getElementsByTagName('form')[0];
             document.body.appendChild(this.element);
         }
         return this;
@@ -188,24 +189,21 @@ Object.assign(Dialog.prototype, {
                 else params[name] = [prev, value];
             } else params[name] = value;
         }
-        var form = this.element && this.element.getElementsByTagName('form')[0];
-        if (form) {
-            Array.from(form.elements).forEach(e => {
-                var name = e.name,
-                    value = e.value
-                type = e.tagName == 'INPUT' ? e.type.toUpperCase() : e.tagName;
-                switch (type) {
-                    case 'TEXT':
-                    case 'TEXTAREA':
-                        add(name, value);
-                        break;
-                    case 'RADIO':
-                    case 'CHECKBOX':
-                        if (e.checked) add(name, value);
-                        break;
-                }
-            })
-        }
+        Array.from(this.form.elements).forEach(e => {
+            var name = e.name,
+                value = e.value
+            type = e.tagName == 'INPUT' ? e.type.toUpperCase() : e.tagName;
+            switch (type) {
+                case 'TEXT':
+                case 'TEXTAREA':
+                    add(name, value);
+                    break;
+                case 'RADIO':
+                case 'CHECKBOX':
+                    if (e.checked) add(name, value);
+                    break;
+            }
+        });
         return params;
     }
 });
