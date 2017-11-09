@@ -45,26 +45,23 @@ var guiTabs = (function(self) {
             return true;
         });
 
-        if ((bgp.daGame) && bgp.daGame.hasOwnProperty('daUser')) {
-            if ((bgp.daGame.daUser.hasOwnProperty('player')) && bgp.daGame.daUser.player.hasOwnProperty('uid')) {
-                if (bgp.daGame.daUser.player.uid == 8700592) { // Eric testing functions
-                    addFilter('2', 'nFilter2', showOverDays(2));
-                    addFilter('RE', 'recent', showRecent);
-                    addFilter('ABE', 'about_to_expire', function(n, d) {
-                        var now = Math.round(Date.now() / 1000);
-                        if (d.maxGift <= 0) {
-                            return false;
-                        }
-                        var age = now - d.maxGift;
-                        if (age < 47.95 * 3600 || age >= 48 * 3600) {
-                            return false;
-                        }
-                        var expires = new Date((d.maxGift + 48 * 3600) * 1000);
-                        console.log('ERIC', n.name, n.surname, age, 'exat', expires.toString());
-                        return true;
-                    });
+        // Eric testing functions
+        if (bgp.daGame && bgp.daGame.daUser && bgp.daGame.daUser.player && bgp.daGame.daUser.player.uid == 8700592) {
+            addFilter('2', 'nFilter2', showOverDays(2));
+            addFilter('RE', 'recent', showRecent);
+            addFilter('ABE', 'about_to_expire', function(n, d) {
+                var now = Math.round(Date.now() / 1000);
+                if (d.maxGift <= 0) {
+                    return false;
                 }
-            }
+                var age = now - d.maxGift;
+                if (age < 47.95 * 3600 || age >= 48 * 3600) {
+                    return false;
+                }
+                var expires = new Date((d.maxGift + 48 * 3600) * 1000);
+                console.log('ERIC', n.name, n.surname, age, 'exat', expires.toString());
+                return true;
+            });
         }
 
         fbar.innerHTML = html.join('');
