@@ -838,6 +838,20 @@
             }
         }
     },
+    "linksAdded": {
+        "message": "Rewards links added: $NUM$ / $TOTAL$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "noLinksAdded": {
+        "message": "No reward links were added."
+    },
     "linksKey": {
         "message": "$KEY$ = $FUNC$",
         "placeholders": {
@@ -850,13 +864,16 @@
         }
     },
     "linksFnCopy": {
-        "message": "Copy"
+        "message": "Copy to clipboard"
+    },
+    "linksFnSend": {
+        "message": "Send to DAF"
     },
     "linksFnCancel": {
         "message": "Cancel"
     },
     "linksFnRefresh": {
-        "message": "Refresh"
+        "message": "Refresh links"
     },
     "linksSelected": {
         "message": "Links: $UNIQUE$ / $TOTAL$",
@@ -922,6 +939,111 @@
     },
     "modifierAlt": {
         "message": "Alt"
+    },
+    "rewardLinks": {
+        "message": "Reward Links"
+    },
+    "rlId": {
+        "message": "Reward Id"
+    },
+    "rlInsertDate": {
+        "message": "Insert date"
+    },
+    "rlCollectDate": {
+        "message": "Collect date"
+    },
+    "rlCollectMaterial": {
+        "message": "Reward found"
+    },
+    "rlOwner": {
+        "message": "Owner"
+    },
+    "rlExpired": {
+        "message": "EXPIRED LINK"
+    },
+    "rlCollected": {
+        "message": "ALREADY COLLECTED"
+    },
+    "rlMaxReached": {
+        "message": "DAILY MAX REACHED"
+    },
+    "rlNoSelf": {
+        "message": "NO SELF REWARD"
+    },
+    "rlBroken": {
+        "message": "BROKEN LINK"
+    },
+    "rlAddLinks": {
+        "message": "Add links"
+    },
+    "rlPasteAdd": {
+        "message": "Paste here the links to add, then press the CONFIRM button"
+    },
+    "rlLinksAdded": {
+        "message": "Rewards links added: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlLinksUpdated": {
+        "message": "Rewards links updated: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlStats": {
+        "message": "Reward links: $TOTAL$, To be collected: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "rlNextTime": {
+        "message": "All reward links collected.\nYou can start collecting again on $DATE$",
+        "placeholders": {
+            "date": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlCountRemaining": {
+        "message": "Remaining links to collect: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlCollectAnyway": {
+        "message": "Would you like to collect this link anyway?"
+    },
+    "rlInfoCollected": {
+        "message": "This link has already been collected."
+    },
+    "rlInfoExpired": {
+        "message": "This link has expired.\nLinks are only valid for $NUM$ days.",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlInfoNoSelf": {
+        "message": "This link is yours: self rewards are not allowed."
+    },
+    "rlInfoBroken": {
+        "message": "This link is broken or not working."
+    },
+    "rlInfoMaxReached": {
+        "message": "This link has been collected while the max daily limit was reached.\nLinks collected in this way are lost forever."
     },
     "Top": {
         "message": "Top"

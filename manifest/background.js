@@ -315,9 +315,23 @@ if (typeof chrome.webNavigation !== 'undefined') {
     chrome.webNavigation.onCompleted.addListener(function(event) {
         onNavigation(event, 'complete');
     }, pageFilters);
+    // Add Link Grabber script to Facebook pages
     chrome.webNavigation.onDOMContentLoaded.addListener(onFBNavigation, {
         url: [{
             hostEquals: 'www.facebook.com'
+        }]
+    });
+    // Add Reward Link script to Reward pages
+    chrome.webNavigation.onDOMContentLoaded.addListener(onRewardNavigation, {
+        url: [{
+            hostEquals: 'diggysadventure.com',
+            pathEquals: '/miner/wallpost.php'
+        }]
+    });
+    chrome.webNavigation.onDOMContentLoaded.addListener(onRewardNavigation, {
+        url: [{
+            hostEquals: 'portal.pixelfederation.com',
+            pathEquals: '/_da/miner/wallpost.php'
         }]
     });
 } else if (1) {
@@ -653,6 +667,15 @@ function onFBNavigation(info) {
     }
 }
 
+function onRewardNavigation(info) {
+    if (exPrefs.debug) console.log("injecting reward", info.url);
+    chromeMultiInject(info.tabId, {
+        file: '/manifest/content_reward.js',
+        allFrames: false,
+        frameId: info.frameId
+    });
+}
+
 /*
  ** Debugger Detatch
  */
@@ -946,6 +969,9 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'sendValue':
             chrome.tabs.sendMessage(sender.tab.id, request);
+            break;
+        case 'addRewardLinks':
+            result = daGame.addRewardLinks(request.values);
             break;
         default:
             status = 'error';

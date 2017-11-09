@@ -832,6 +832,20 @@
             }
         }
     },
+    "linksAdded": {
+        "message": "Link ricompensa aggiunti: $NUM$ / $TOTAL$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "noLinksAdded": {
+        "message": "Nessun link ricompensa aggiunto."
+    },
     "linksKey": {
         "message": "$KEY$ = $FUNC$",
         "placeholders": {
@@ -844,13 +858,16 @@
         }
     },
     "linksFnCopy": {
-        "message": "Copia"
+        "message": "Copia negli appunti"
+    },
+    "linksFnSend": {
+        "message": "Invia a DAF"
     },
     "linksFnCancel": {
         "message": "Annulla"
     },
     "linksFnRefresh": {
-        "message": "Aggiorna"
+        "message": "Aggiorna i link"
     },
     "linksSelected": {
         "message": "Link: $UNIQUE$ / $TOTAL$",
@@ -916,6 +933,111 @@
     },
     "modifierAlt": {
         "message": "Alt"
+    },
+    "rewardLinks": {
+        "message": "Link ricompensa"
+    },
+    "rlId": {
+        "message": "Id Ricompensa"
+    },
+    "rlInsertDate": {
+        "message": "Inserito il"
+    },
+    "rlCollectDate": {
+        "message": "Collezionato il"
+    },
+    "rlCollectMaterial": {
+        "message": "Ricompensa trovata"
+    },
+    "rlOwner": {
+        "message": "Proprietario"
+    },
+    "rlExpired": {
+        "message": "LINK SCADUTO"
+    },
+    "rlCollected": {
+        "message": "GIÀ RACCOLTO"
+    },
+    "rlMaxReached": {
+        "message": "LIMITE GIORNALIERO RAGGIUNTO"
+    },
+    "rlNoSelf": {
+        "message": "NESSUNA AUTO-RICOMPENSA"
+    },
+    "rlBroken": {
+        "message": "LINK NON VALIDO"
+    },
+    "rlAddLinks": {
+        "message": "Aggiungi link"
+    },
+    "rlPasteAdd": {
+        "message": "Incolla qui i link da aggiungere, quindi premi il pulsante CONFERMA"
+    },
+    "rlLinksAdded": {
+        "message": "Link ricompensa aggiunti: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlLinksUpdated": {
+        "message": "Link ricompensa aggiornati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlStats": {
+        "message": "Link ricompensa: $TOTAL$. Da raccogliere: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "rlNextTime": {
+        "message": "Tutti i link ricompensa sono stati raccolti.\nPuoi continuare a raccoglierli nuovamente il $DATE$",
+        "placeholders": {
+            "date": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlCountRemaining": {
+        "message": "Link rimasti da raccogliere: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlCollectAnyway": {
+        "message": "Vuoi raccogliere questo link comunque?"
+    },
+    "rlInfoCollected": {
+        "message": "Questo link è già stato raccolto."
+    },
+    "rlInfoExpired": {
+        "message": "Questo link è scaduto.\nI link sono validi solo per $NUM$ giorni.",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlInfoNoSelf": {
+        "message": "Questo è un tuo link: le auto-ricompense non sono permesse."
+    },
+    "rlInfoBroken": {
+        "message": "Questo link è non valido o non funzionante."
+    },
+    "rlInfoMaxReached": {
+        "message": "Questo link è stato raccolto quando il limite giornaliero è stato raggiunto.\nI link raccolti in questo modo sono persi per sempre."
     },
     "Top": {
         "message": "Inizio"

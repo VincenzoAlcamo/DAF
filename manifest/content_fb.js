@@ -15,6 +15,7 @@
         KEY_ESC = 27,
         KEY_C = 67,
         KEY_R = 82,
+        KEY_S = 83,
         OS_WIN = 1,
         OS_LINUX = 0;
 
@@ -250,17 +251,16 @@
         keyPressed = 0;
     }
 
-    function scrollPage(speed, direction) {
-        var value = (speed < 2 ? 60 : (speed < 10 ? 30 : 10)) * direction;
-        window.scrollBy(0, value);
-        //mouseY += value;
-        updateBox();
-        detect();
-    }
-
     function scroll() {
         var y = mouseY,
             win_height = window.innerHeight;
+
+        function scrollPage(speed, direction) {
+            var value = (speed < 2 ? 60 : (speed < 10 ? 30 : 10)) * direction;
+            window.scrollBy(0, value);
+            updateBox();
+            detect();
+        }
         if (y > win_height - 20) scrollPage(win_height - y, 1);
         else if (window.scrollY > 0 && y < 20) scrollPage(y, -1);
         else if (autoOpenElement && (autoOpenCount--) == 0) {
@@ -315,6 +315,7 @@
 
         var text = guiString('linksSelected', [count, total]);
         if (count > 0) text += '\n' + guiString('linksKey', ['C', guiString('linksFnCopy')]);
+        if (count > 0) text += '\n' + guiString('linksKey', ['S', guiString('linksFnSend')]);
         text += '\n' + guiString('linksKey', ['R', guiString('linksFnRefresh')]);
         text += '\n' + guiString('linksKey', ['ESC', guiString('linksFnCancel')]);
         if (text != oldLabel) countLabel.innerText = oldLabel = text;
@@ -342,6 +343,20 @@
                 Dialog(Dialog.TOAST).show({
                     text: guiString('linksCopied', [values.length])
                 });
+            });
+        }
+        if (keyPressed == KEY_S) {
+            var values = collectData(true);
+            stop();
+            chrome.runtime.sendMessage({
+                cmd: 'addRewardLinks',
+                values: values
+            }, (response) => {
+                if (response.status == 'ok') {
+                    Dialog(Dialog.TOAST).show({
+                        text: guiString(response.result ? 'linksAdded' : 'noLinksAdded', [response.result, values.length])
+                    });
+                }
             });
         }
     }
@@ -413,18 +428,41 @@
         return 'https://apps.facebook.com/diggysadventure/wallpost.php?wp_id=' + encodeURIComponent(data.id) + '&fb_type=' + encodeURIComponent(data.typ) + '&wp_sig=' + encodeURIComponent(data.sig);
     }
 
-    function collectLinks() {
+    function collectData(flagGetUserData) {
         var values = [],
             hash = {},
-            convert = DAF.getValue('linkGrabConvert');
-        if (convert != 1 && convert != 2) convert = 0;
+            reCid = /hovercard\.php\?id=(\d+)/;
         links.forEach(a => {
             var data = a.daf && a.daf.selected && a.daf.data;
             if (data && !(data.id in hash)) {
+                if (flagGetUserData) {
+                    var parent = a.parentNode;
+                    for (var depth = 10; parent && depth > 0; depth--) {
+                        if (parent.classList.contains('UFICommentActorAndBody')) {
+                            var actor = parent.getElementsByClassName('UFICommentActorName')[0],
+                                hovercard = actor && actor.getAttribute('data-hovercard'),
+                                match = hovercard && hovercard.match(reCid);
+                            if (match) {
+                                data.cid = match[1];
+                                data.cnm = actor.textContent.trim();
+                            }
+                            break;
+                        }
+                        parent = parent.parentNode;
+                    }
+                }
                 hash[data.id] = true;
-                values.push(getLink(data, convert));
+                values.push(data);
             }
         });
+        return values;
+    }
+
+    function collectLinks() {
+        var values = collectData(),
+            convert = DAF.getValue('linkGrabConvert');
+        if (convert != 1 && convert != 2) convert = 0;
+        values = values.map(data => getLink(data, convert));
         if (DAF.getValue('linkGrabSort')) values.sort();
         if (DAF.getValue('linkGrabReverse')) values.reverse();
         return values;
