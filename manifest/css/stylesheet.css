@@ -1278,7 +1278,7 @@ div.image-box h4 {
   color: darkgrey;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1366px) {
   .v-menu li a {
     width: 40px;
   }
