@@ -184,6 +184,7 @@ function initialize() {
         innerText: 'document.body.setAttribute("DAF-created", window.created || "")'
     }, document.head));
     var created = document.body.getAttribute('DAF-created') || '';
+    document.body.removeAttribute('DAF-created');
     if (created) DAF.setValue('gameDate', created);
 
     /********************************************************************
