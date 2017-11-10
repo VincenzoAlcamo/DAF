@@ -27,7 +27,7 @@
             REWARDLINKS_VALIDITY_DAYS: 7,
             REWARDLINKS_REFRESH_HOURS: 22,
             REWARDLINKS_REMOVE_DAYS: 10,
-            REWARDLINKS_HISTORY_SIZE: 500000,
+            REWARDLINKS_HISTORY_MAXBYTES: 500000,
             rewardLinksData: {},
             rewardLinksHistory: '',
             init: function(parent) {
@@ -329,10 +329,8 @@
                     rewardLinksData.next = rewardLinksData.next || 0;
                     rewardLinksData.count = rewardLinksData.count || 0;
                     __public.rewardLinksData = rewardLinksData;
-                    var rewardLinksHistory = data.rewardLinksHistory || '';
-                    if (rewardLinksHistory[0] != ',') rewardLinksHistory = ',' + rewardLinksHistory;
-                    if (rewardLinksHistory[rewardLinksHistory.length - 1] != ',') rewardLinksHistory += ',';
-                    __public.rewardLinksHistory = rewardLinksHistory;
+                    // ensure rewardLinksHistory starts and ends with a comma
+                    __public.rewardLinksHistory = ',' + (data.rewardLinksHistory || '').replace(/^,+|,+$/g,'') + ',';
 
                     let lang = (((data.daUser) && data.daUser.lang) ? data.daUser.lang : exPrefs.gameLang);
                     lang = 'daLang_' + lang.toUpperCase();
@@ -508,10 +506,11 @@
                     }
                 }
             });
-            if (rewardLinksHistory.length > __public.REWARDLINKS_HISTORY_SIZE) {
-                // keep the last HISTORY SIZE chars
-                rewardLinksHistory = rewardLinksHistory.substr(rewardLinksHistory.length - __public.REWARDLINKS_HISTORY_SIZE);
-                // remove starting characters up to the first comma
+            if (rewardLinksHistory.length > __public.REWARDLINKS_HISTORY_MAXBYTES) {
+                // keep the last HISTORY MAXBYTES - 1000 characters (so this will not trigger again in a short time)
+                // using a negative index for substr will start from the end of the string
+                rewardLinksHistory = rewardLinksHistory.substr(-__public.REWARDLINKS_HISTORY_MAXBYTES + 1000);
+                // remove starting characters up to the first comma (keeping the comma)
                 rewardLinksHistory = rewardLinksHistory.substr(rewardLinksHistory.indexOf(','));
                 flagRemoved = true;
             }
@@ -579,8 +578,8 @@
                     if (rewardLinksData.count == __public.REWARDLINKS_DAILY_LIMIT) {
                         rewardLinksData.count = 0;
                         rewardLinksData.next = rewardLinksData.first + __public.REWARDLINKS_REFRESH_HOURS * 3600;
-                        flagStoreData = true;
                     }
+                    flagStoreData = true;
                 }
             });
             var count = Object.keys(data).length;
