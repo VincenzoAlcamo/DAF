@@ -160,7 +160,8 @@ var DAF = (function() {
             }
 
             chrome.runtime.sendMessage({
-                cmd: 'getPrefs'
+                cmd: 'getPrefs',
+                keys: prefs && Object.keys(prefs)
             }, function(response) {
                 if (response.status == 'ok' && response.result) {
                     Object.keys(response.result).forEach(name => {

@@ -913,7 +913,8 @@ function badgeStatus() {
  */
 function onMessage(request, sender, sendResponse) {
     var status = 'ok',
-        result = null;
+        result = null,
+        async = false;
 
     if (exPrefs.debug) console.log(request, sender);
 
@@ -940,6 +941,19 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'getPrefs':
             result = exPrefs;
+            // sends only the required keys
+            if (request.hasOwnProperty('keys')) {
+                result = {}
+                var keys = request.keys;
+                if (!Array.isArray(keys)) {
+                    if (typeof keys == 'string') keys = keys.split(',');
+                    else keys = Object.keys(keys);
+                }
+                keys.forEach(key => {
+                    if (key in exPrefs) result[key] = exPrefs[key];
+                });
+            }
+            async = true;
             break;
         case 'show':
             showIndex();
@@ -980,12 +994,15 @@ function onMessage(request, sender, sendResponse) {
     }
     if (exPrefs.debug)
         console.log('Status', status, 'Result', result);
-    sendResponse({
+
+    var response = {
         status: status,
         result: result
-    });
+    };
+    if (async) setTimeout(() => sendResponse(response), 10);
+    else sendResponse(response);
 
-    return false; // all synchronous responses
+    return async; // must return true if asynchronous response
 }
 
 function copyToClipboard(text) {
