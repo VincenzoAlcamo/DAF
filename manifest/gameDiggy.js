@@ -563,8 +563,11 @@
                     };
                     if (reward.cdt) existingReward.cdt = reward.cdt;
                     if (reward.cmt) existingReward.cmt = reward.cmt;
-                    if (reward.cid || existingReward.cid) existingReward.cid = reward.cid || existingReward.cid;
-                    if (reward.cnm || existingReward.cnm) existingReward.cnm = reward.cnm || existingReward.cnm;
+                    if (reward.cid) {
+                        // overwrite existing if owner id is different or existing has no owner name
+                        if (reward.cnm && (existingReward.cid != reward.cid || !existingReward.cnm)) existingReward.cnm = reward.cnm;
+                        existingReward.cid = reward.cid;
+                    } else if (reward.cnm && !existingReward.cnm) existingReward.cnm = reward.cnm;
                     data[rewardGetId(existingReward)] = __public.rewards[existingReward.id] = existingReward;
                 }
                 // Daily max reached
