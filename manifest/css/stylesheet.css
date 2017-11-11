@@ -1357,6 +1357,8 @@ tr.rlClicked a.rlLink {
 tr.rlCollected a.rlLink {
   background-color: #338;
 }
+tr.rlClicked a.rlLink:hover,
+tr.rlCollected a.rlLink:hover,
 a.rlLink:hover {
   background-color: #F0F;
 }
