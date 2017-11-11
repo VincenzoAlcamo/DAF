@@ -28,6 +28,7 @@ var guiTabs = (function(self) {
      */
     function onInit(id, cel) {
         document.getElementById('rlAddLinks').addEventListener('click', onclickAddLinks);
+        document.getElementById('rlRemoveLinks').addEventListener('click', onclickRemoveLinks);
 
         rlTable = document.getElementById("rlTable");
         sorttable.makeSortable(rlTable);
@@ -97,7 +98,7 @@ var guiTabs = (function(self) {
     function onclickAddLinks() {
         self.dialog.show({
             title: guiString('rlAddLinks'),
-            html: Dialog.escapeHtmlBr(guiString('rlPasteAdd')) + '<br/><textarea name="links"></textarea>',
+            html: Dialog.escapeHtmlBr(guiString('rlPasteAdd')) + '<br/><textarea cols="60" rows="8" name="links"></textarea>',
             defaultButton: 'links',
             style: [Dialog.CONFIRM, Dialog.CANCEL]
         }, function(method, params) {
@@ -109,6 +110,50 @@ var guiTabs = (function(self) {
                     Dialog(Dialog.TOAST).show({
                         text: guiString('noLinksAdded')
                     });
+            }
+        });
+    }
+
+    function getRowId(reward) {
+        return 'rl-' + reward.id;
+    }
+
+    function onclickRemoveLinks() {
+        var html = [],
+            days = parseInt(bgp.exPrefs.rewardsRemoveDays) || 0;
+        if (days <= 0 || days > bgp.daGame.REWARDLINKS_REMOVE_DAYS - 1) days = bgp.daGame.REWARDLINKS_REMOVE_DAYS;
+        html.push('<select name="days">');
+        for (var i = 1; i <= bgp.daGame.REWARDLINKS_REMOVE_DAYS - 1; i++)
+            html.push('<option value="', i, '"', i == days ? ' selected' : '', '>', i, '</option>');
+        html.push('</select>');
+        html = Dialog.escapeHtmlBr(guiString('rlRemoveLinksDays', [bgp.daGame.REWARDLINKS_REMOVE_DAYS])).replace('#DAYS#', html.join(''));
+        self.dialog.show({
+            title: guiString('rlRemoveLinks'),
+            html: html,
+            style: [Dialog.CONFIRM, Dialog.CANCEL]
+        }, function(method, params) {
+            if (method != Dialog.CONFIRM) return;
+            var days = parseInt(params.days);
+            if (days > 0) {
+                self.setPref('rewardsRemoveDays', days);
+                var rewards = Object.values(bgp.daGame.getRewards()),
+                    now = getUnixTime(),
+                    expiryThreshold = now - bgp.daGame.REWARDLINKS_VALIDITY_DAYS * SECONDS_IN_A_DAY,
+                    checkThreshold = now - days * SECONDS_IN_A_DAY;
+                rewards = rewards.filter(reward => reward.adt <= checkThreshold && (reward.adt <= expiryThreshold || (reward.cmt || 0) != 0));
+                if (rewards.length == 0) self.dialog.show({
+                    title: guiString('rlRemoveLinks'),
+                    text: guiString('rlRemoveNone'),
+                    style: [Dialog.OK]
+                });
+                else self.dialog.show({
+                    title: guiString('rlRemoveLinks'),
+                    text: guiString('rlRemoveConfirm', [rewards.length]),
+                    style: [Dialog.CONFIRM, Dialog.CANCEL]
+                }, function(method) {
+                    if (method != Dialog.CONFIRM) return;
+                    bgp.daGame.removeReward(rewards, updateTable);
+                });
             }
         });
     }
@@ -156,7 +201,7 @@ var guiTabs = (function(self) {
         });
         Object.values(rewards).forEach(reward => {
             numTotal++;
-            var id = 'rl-' + reward.id,
+            var id = getRowId(reward),
                 materialId = reward.cmt || 0,
                 row = document.getElementById(id),
                 flagNew = false,

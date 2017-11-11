@@ -1017,7 +1017,7 @@
         }
     },
     "rlCollectAnyway": {
-        "message": "Vuoi raccogliere questo link comunque?"
+        "message": "Vuoi aprire questo link comunque?"
     },
     "rlInfoCollected": {
         "message": "Questo link è già stato raccolto."
@@ -1031,13 +1031,35 @@
         }
     },
     "rlInfoNoSelf": {
-        "message": "Questo è un tuo link: le auto-ricompense non sono permesse."
+        "message": "Questo è un tuo link: le auto-ricompense non sono valide."
     },
     "rlInfoBroken": {
         "message": "Questo link è non valido o non funzionante."
     },
     "rlInfoMaxReached": {
         "message": "Questo link è stato raccolto quando il limite giornaliero è stato raggiunto.\nI link raccolti in questo modo sono persi per sempre."
+    },
+    "rlRemoveLinks": {
+        "message": "Rimuovi i vecchi links"
+    },
+    "rlRemoveLinksDays": {
+        "message": "Rimuovi i link ricompensa non raccoglibili più vecchi di #DAYS# giorni.\\nQuesto include i link scaduti e i link già raccolti.\\nI link più vecchi di $NUM$ giorni vengono rimossi periodicamente.",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlRemoveNone": {
+        "message": "Nessun link da rimuovere!"
+    },
+    "rlRemoveConfirm": {
+        "message": "Link che verranno rimossi: $NUM$\n\nProcedere con la rimozione?",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
     },
     "Top": {
         "message": "Inizio"

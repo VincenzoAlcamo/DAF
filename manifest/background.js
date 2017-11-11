@@ -31,6 +31,7 @@ var exPrefs = {
     linkGrabSort: true,
     linkGrabReverse: false,
     linkGrabConvert: 0,
+    rewardsRemoveDays: null,
     tabIndex: 0,
     nFilter: '7',
     cFilter: 'ALL',

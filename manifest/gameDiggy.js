@@ -526,8 +526,8 @@
         __public.removeExpiredRewardLinks = function() {
             // remove old links
             var rewards = Object.values(__public.rewards),
-                expiryThreshold = getUnixTime() - __public.REWARDLINKS_REMOVE_DAYS * SECONDS_IN_A_DAY,
-                rewardsToRemove = rewards.filter(reward => reward.adt <= expiryThreshold);
+                removeThreshold = getUnixTime() - __public.REWARDLINKS_REMOVE_DAYS * SECONDS_IN_A_DAY,
+                rewardsToRemove = rewards.filter(reward => reward.adt <= removeThreshold);
             if (rewardsToRemove.length) __public.removeReward(rewardsToRemove);
         };
         __public.addRewardLinks = function(rewardsOrArray) {

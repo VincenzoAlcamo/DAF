@@ -1023,7 +1023,7 @@
         }
     },
     "rlCollectAnyway": {
-        "message": "Would you like to collect this link anyway?"
+        "message": "Would you like to open this link anyway?"
     },
     "rlInfoCollected": {
         "message": "This link has already been collected."
@@ -1037,13 +1037,35 @@
         }
     },
     "rlInfoNoSelf": {
-        "message": "This link is yours: self rewards are not allowed."
+        "message": "This link is yours: self rewards are not valid."
     },
     "rlInfoBroken": {
         "message": "This link is broken or not working."
     },
     "rlInfoMaxReached": {
         "message": "This link has been collected while the max daily limit was reached.\nLinks collected in this way are lost forever."
+    },
+    "rlRemoveLinks": {
+        "message": "Remove old links"
+    },
+    "rlRemoveLinksDays": {
+        "message": "Remove non-collectable reward links older than #DAYS# days.\nThis includes expired links and links already collected.\nLinks older than $NUM$ days are removed periodically.",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlRemoveNone": {
+        "message": "No links to remove!"
+    },
+    "rlRemoveConfirm": {
+        "message": "Links that will be removed: $NUM$\n\nProceed with the removal?",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
     },
     "Top": {
         "message": "Top"
