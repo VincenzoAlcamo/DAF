@@ -71,6 +71,7 @@ if (data) {
 
     chrome.runtime.sendMessage({
         cmd: 'addRewardLinks',
+        isReward: true,
         values: data
     });
 }

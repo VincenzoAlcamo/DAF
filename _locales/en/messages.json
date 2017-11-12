@@ -1067,6 +1067,15 @@
             }
         }
     },
+    "rewardsCloseLabel": {
+        "message": "Auto-close any reward page, except for:"
+    },
+    "rewardsCloseGemsLabel": {
+        "message": "Gems"
+    },
+    "rewardsCloseErrorsLabel": {
+        "message": "Errors"
+    },
     "Top": {
         "message": "Top"
     },

@@ -32,6 +32,9 @@ var exPrefs = {
     linkGrabReverse: false,
     linkGrabConvert: 0,
     rewardsRemoveDays: null,
+    rewardsClose: false,
+    rewardsCloseGems: true,
+    rewardsCloseErrors: true,
     tabIndex: 0,
     nFilter: '7',
     cFilter: 'ALL',
@@ -415,7 +418,7 @@ function setDataListeners(upgrade = false) {
     if (localStorage.installType == 'development') {
         upgrade = true;
     }
-    
+
     if (upgrade)
         daGame.guiReload = true;
 
@@ -944,17 +947,17 @@ function onMessage(request, sender, sendResponse) {
             result = exPrefs;
             // sends only the required keys
             if (request.hasOwnProperty('keys')) {
-                result = {}
+                result = {};
                 var keys = request.keys;
                 if (!Array.isArray(keys)) {
                     if (typeof keys == 'string') keys = keys.split(',');
-                    else keys = Object.keys(keys);
+                    else keys = keys ? Object.keys(keys) : [];
                 }
                 keys.forEach(key => {
                     if (key in exPrefs) result[key] = exPrefs[key];
                 });
             }
-            async = true;
+            //async = true;
             break;
         case 'show':
             showIndex();
@@ -987,6 +990,16 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'addRewardLinks':
             result = daGame.addRewardLinks(request.values);
+            // if we are getting one reward from a reward page
+            var rewards = Array.isArray(request.values) ? request.values : [request.values],
+                reward = rewards[0],
+                flagClose = exPrefs.rewardsClose && request.isReward && rewards.length == 1 && reward && reward.cdt > 0;
+            if (reward && reward.cmt == 2 && exPrefs.rewardsCloseGems) flagClose = false;
+            if (reward && reward.cmt < 0 && exPrefs.rewardsCloseErrors) flagClose = false;
+            if (flagClose) {
+                chrome.tabs.remove(sender.tab.id);
+                return;
+            }
             break;
         default:
             status = 'error';
@@ -1000,10 +1013,13 @@ function onMessage(request, sender, sendResponse) {
         status: status,
         result: result
     };
-    if (async) setTimeout(() => sendResponse(response), 10);
-    else sendResponse(response);
-
-    return async; // must return true if asynchronous response
+    if (async) {
+        if (exPrefs.debug) console.log('Sending asynchronously');
+        setTimeout(() => sendResponse(response), 10);
+        return true; // asynchronous response
+    }
+    sendResponse(response);
+    return false; // synchronous response
 }
 
 function copyToClipboard(text) {
