@@ -581,6 +581,7 @@
                     if (rewardLinksData.count == __public.REWARDLINKS_DAILY_LIMIT) {
                         rewardLinksData.count = 0;
                         rewardLinksData.next = rewardLinksData.first + __public.REWARDLINKS_REFRESH_HOURS * 3600;
+                        rewardLinksData.first = 0;
                     }
                     flagStoreData = true;
                 }
