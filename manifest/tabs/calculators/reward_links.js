@@ -90,6 +90,8 @@ var guiTabs = (function(self) {
                     return false;
                 }
                 row.classList.add('rlClicked');
+                row.removeAttribute('rldate');
+                row.classList.remove('rlNewLink', 'rlUpdatedLink');
             }
         }
         return true;
@@ -251,6 +253,7 @@ var guiTabs = (function(self) {
             if (!flagFirst && (flagNew || flagUpdated)) {
                 row.classList.toggle('rlNewLink', flagNew);
                 row.classList.toggle('rlUpdatedLink', !flagNew);
+                row.classList.remove('rlClicked');
                 row.setAttribute('rldate', now);
                 if (flagNew) countAdded++;
                 else countUpdated++;
