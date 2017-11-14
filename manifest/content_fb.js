@@ -444,7 +444,8 @@
                                 match = hovercard && hovercard.match(reCid);
                             if (match) {
                                 data.cid = match[1];
-                                data.cnm = actor.textContent.trim();
+                                var name = actor.firstChild && actor.firstChild.textContent;
+                                if(name && (name = name.trim())) data.cnm = name;
                             }
                             break;
                         }
