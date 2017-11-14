@@ -1345,7 +1345,7 @@ a.rlUser, a.rlUser:visited {
   color: #00e;
 }
 a.rlLink {
-  padding: 2px 6px;
+  padding: 4px 8px;
   border-radius: 10px;
   text-decoration: none;
   color: #fff;
@@ -1366,4 +1366,6 @@ tr.rlCollected a.rlLink:hover,
 a.rlLink:hover {
   background-color: #F0F;
 }
-
+#rlTable tbody tr {
+  height: 33px;
+}
