@@ -330,7 +330,7 @@
                     rewardLinksData.count = rewardLinksData.count || 0;
                     __public.rewardLinksData = rewardLinksData;
                     // ensure rewardLinksHistory starts and ends with a comma
-                    __public.rewardLinksHistory = ',' + (data.rewardLinksHistory || '').replace(/^,+|,+$/g,'') + ',';
+                    __public.rewardLinksHistory = ',' + (data.rewardLinksHistory || '').replace(/^,+|,+$/g, '') + ',';
 
                     let lang = (((data.daUser) && data.daUser.lang) ? data.daUser.lang : exPrefs.gameLang);
                     lang = 'daLang_' + lang.toUpperCase();
@@ -570,19 +570,22 @@
                     } else if (reward.cnm && !existingReward.cnm) existingReward.cnm = reward.cnm;
                     data[rewardGetId(existingReward)] = __public.rewards[existingReward.id] = existingReward;
                 }
-                // Daily max reached
+                // Daily max reached?
+                var next = 0;
                 if (reward.cmt == -3) {
-                    rewardLinksData.count = 0;
-                    // round to the next minute
-                    rewardLinksData.next = reward.next + (reward.next % 60 ? 60 - reward.next % 60 : 0);
-                    flagStoreData = true;
+                    next = reward.next;
                 } else if (reward.cmt > 0) {
                     rewardLinksData.count = rewardLinksData.count + 1;
-                    if (rewardLinksData.count == __public.REWARDLINKS_DAILY_LIMIT) {
-                        rewardLinksData.count = 0;
-                        rewardLinksData.next = rewardLinksData.first + __public.REWARDLINKS_REFRESH_HOURS * 3600;
-                        rewardLinksData.first = 0;
-                    }
+                    flagStoreData = true;
+                    if (rewardLinksData.count == __public.REWARDLINKS_DAILY_LIMIT)
+                        next = rewardLinksData.first + __public.REWARDLINKS_REFRESH_HOURS * 3600;
+                }
+                if (next) {
+                    // round to the next minute
+                    next = next + (next % 60 ? 60 - next % 60 : 0);
+                    rewardLinksData.count = 0;
+                    rewardLinksData.next = next;
+                    rewardLinksData.first = 0;
                     flagStoreData = true;
                 }
             });
