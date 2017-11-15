@@ -832,6 +832,20 @@
             }
         }
     },
+    "linksAdded": {
+        "message": "Σύνδεσμοι που προστέθηκαν: $NUM$ / $TOTAL$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "noLinksAdded": {
+        "message": "Δεν προστέθηκαν σύνδεσμοι."
+    },
     "linksKey": {
         "message": "$KEY$ = $FUNC$",
         "placeholders": {
@@ -846,11 +860,14 @@
     "linksFnCopy": {
         "message": "Αντιγραφή"
     },
+    "linksFnSend": {
+        "message": "Αποστολή στο DAF"
+    },
     "linksFnCancel": {
         "message": "Ακύρωση"
     },
     "linksFnRefresh": {
-        "message": "Επαναφόρτωση"
+        "message": "Επαναφόρτωση Συνδέσμων"
     },
     "linksSelected": {
         "message": "Σύνδεσμοι: $UNIQUE$ / $TOTAL$",
@@ -876,13 +893,13 @@
         "message": "+ προαιρετικό πλήκτρο"
     },
     "linkGrabSortLabel": {
-        "message": "Συμπιεσμένοι σύνδεσμοι"
+        "message": "Ταξινόμηση Συνδέσμων"
     },
     "linkGrabReverseLabel": {
-        "message": "Αντίστροφοι σύνδεσμοι"
+        "message": "Αντίστροφοι Σύνδεσμοι"
     },
     "linkGrabConvertLabel": {
-        "message": "Μετατροπή συνδέσμων"
+        "message": "Μετατροπή Συνδέσμων"
     },
     "linkGrabConvertNo": {
         "message": "Όχι"
@@ -916,6 +933,142 @@
     },
     "modifierAlt": {
         "message": "Alt"
+    },
+    "rewardLinks": {
+        "message": "Σύνδεσμοι Δώρων"
+    },
+    "rlId": {
+        "message": "Id Δώρου"
+    },
+    "rlInsertDate": {
+        "message": "Εισάγετε Ημερομηνία"
+    },
+    "rlCollectDate": {
+        "message": "Συλλογή ημερομηνίας"
+    },
+    "rlCollectMaterial": {
+        "message": "Βρέθηκε Δώρο"
+    },
+    "rlOwner": {
+        "message": "Ιδιοκτήτης"
+    },
+    "rlExpired": {
+        "message": "ΕΧΕΙ ΛΗΞΕΙ"
+    },
+    "rlCollected": {
+        "message": "ΕΧΕΙ ΗΔΗ ΣΥΛΛΕΧΤΕΙ"
+    },
+    "rlMaxReached": {
+        "message": "ΦΤΑΣΑΤΕ ΤΟ ΚΑΘΗΜΕΡΙΝΟ ΟΡΙΟ"
+    },
+    "rlNoSelf": {
+        "message": "ΔΙΚΟΣ ΣΑΣ ΣΥΝΔΕΣΜΟΣ"
+    },
+    "rlBroken": {
+        "message": "ΛΑΘΟΣ ΣΥΝΔΕΣΜΟΣ"
+    },
+    "rlAddLinks": {
+        "message": "Πρόσθεση συνδέσμων"
+    },
+    "rlPasteAdd": {
+        "message": "Επικολήστε εδώ τους συνδέσμους και πατήστε ΑΠΟΔΟΧΗ"
+    },
+    "rlLinksAdded": {
+        "message": "Σύνδεσμοι δώρων που προστέθηκαν: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlLinksUpdated": {
+        "message": "Σύνδεσμοι δώρων που ανανεώθηκαν: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlStats": {
+        "message": "Σύνδεσμοι δώρων: $TOTAL$, Προς συλλογή: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "rlNextTime": {
+        "message": "Όλοι οι σύνδεσμοι δώρων συλλέχτηκαν.\nΜπορείτε να συλλέξετε ξανά στις: $DATE$",
+        "placeholders": {
+            "date": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlCountRemaining": {
+        "message": "Υπόλοιποι σύνδεσμοι προς συλλογή: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlCollectAnyway": {
+        "message": "Θέλετε να ανοίξετε τον σύνδεσμο ούτως ή άλλως;"
+    },
+    "rlInfoCollected": {
+        "message": "Ο σύνδεσμος έχει συλλεχτεί ήδη."
+    },
+    "rlInfoExpired": {
+        "message": "Ο σύνδεσμος έληξε.\r\nΟι σύνδεσμοι ισχύουν μόνο για $NUM$ μέρες.",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlInfoNoSelf": {
+        "message": "Αυτός ο σύνδεσμος είναι δικό σας, άρα δε συλλέγεται."
+    },
+    "rlInfoBroken": {
+        "message": "Ο σύνδεσμος δεν είναι σωστός ή δε δουλεύει."
+    },
+    "rlInfoMaxReached": {
+        "message": "Αυτός ο σύνδεσμος συλλέχτηκε μετά το ανώτατο καθημερινό όριο.\nΣύνδεσμοι που συλλέγονται έτσι χάνονται για πάντα."
+    },
+    "rlRemoveLinks": {
+        "message": "Αφαίρεση παλιών συνδέσμων"
+    },
+    "rlRemoveLinksDays": {
+        "message": "Αφαίρεση μη συλλεγόμενων συνδέσμων πιο παλιών των #DAYS# ημερών.\nΑυτό περιλαμβάνει σύνδεσμους που έχουν συλλεχτεί η λήξει.\nΣύνδεσμοι πιο παλιοί των $NUM$ ημερών διαγράφονται περιοδικά.",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlRemoveNone": {
+        "message": "Δεν υπάρχουν σύνδεσμοι να διαγραφούν!"
+    },
+    "rlRemoveConfirm": {
+        "message": "Σύνδεσμοι προς αφαίρεση: $NUM$\n\nΝα συνεχίσει η διαγραφή;",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rewardsCloseLabel": {
+        "message": "Αυτόματο κλείσιμο σελιδών δώρων, εκτός από:"
+    },
+    "rewardsCloseGemsLabel": {
+        "message": "Πετράδια"
+    },
+    "rewardsCloseErrorsLabel": {
+        "message": "Σφάλματα"
     },
     "Top": {
         "message": "Κορυφή"
@@ -1169,7 +1322,7 @@
         "message": "Εμπειρία (XP)"
     },
     "Goal": {
-        "message": "Σκοπός"
+        "message": "Στόχος"
     },
     "Group": {
         "message": "Ομάδα"
