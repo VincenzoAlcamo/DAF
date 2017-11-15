@@ -971,7 +971,12 @@
         "message": "Aggiungi link"
     },
     "rlPasteAdd": {
-        "message": "Incolla qui i link da aggiungere, quindi premi il pulsante CONFERMA"
+        "message": "Incolla qui i link da aggiungere, quindi premi il pulsante \"$CONFIRM$\"",
+        "placeholders": {
+            "confirm": {
+                "content": "$1"
+            }
+        }
     },
     "rlLinksAdded": {
         "message": "Link ricompensa aggiunti: $NUM$",

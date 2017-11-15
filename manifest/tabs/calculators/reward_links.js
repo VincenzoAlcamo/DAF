@@ -100,7 +100,7 @@ var guiTabs = (function(self) {
     function onclickAddLinks() {
         self.dialog.show({
             title: guiString('rlAddLinks'),
-            html: Dialog.escapeHtmlBr(guiString('rlPasteAdd')) + '<br/><textarea cols="60" rows="8" name="links"></textarea>',
+            html: Dialog.escapeHtmlBr(guiString('rlPasteAdd', [guiString('Confirm')])) + '<br/><textarea cols="60" rows="8" name="links"></textarea>',
             defaultButton: 'links',
             style: [Dialog.CONFIRM, Dialog.CANCEL]
         }, function(method, params) {

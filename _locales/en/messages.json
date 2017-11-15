@@ -977,7 +977,12 @@
         "message": "Add links"
     },
     "rlPasteAdd": {
-        "message": "Paste here the links to add, then press the CONFIRM button"
+        "message": "Paste here the links to add, then press the \"$CONFIRM$\" button",
+        "placeholders": {
+            "confirm": {
+                "content": "$1"
+            }
+        }
     },
     "rlLinksAdded": {
         "message": "Rewards links added: $NUM$",
