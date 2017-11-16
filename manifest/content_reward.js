@@ -47,7 +47,7 @@ if (data) {
     if (el) data.cnm = el.textContent;
 
 
-    div = document.getElementsByClassName("da-receiving-text")[0];
+    div = document.getElementsByClassName('da-receiving-text')[0];
     if (div) {
         var text = div.textContent;
         if ((match = reWait.exec(text))) {
@@ -73,5 +73,19 @@ if (data) {
         cmd: 'addRewardLinks',
         isReward: true,
         values: data
+    }, (response) => {
+        div = document.getElementsByClassName('playerIdInfo')[0]
+        if (response.status == 'ok' && response.result && response.result.html) {
+            var p = document.createElement('p');
+            Object.assign(p.style, {
+                textAlign: 'center',
+                backgroundColor: 'lime',
+                color: 'black',
+                fontFamily: 'sans-serif',
+                fontSize: '14pt'
+            });
+            p.innerHTML = response.result.html;
+            div.parentNode.insertBefore(p, div);
+        }
     });
 }

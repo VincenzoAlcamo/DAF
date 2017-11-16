@@ -1078,6 +1078,14 @@
             }
         }
     },
+    "rlRewardInfo": {
+        "message": "This reward was added on $DATE$",
+        "placeholders": {
+            "date": {
+                "content": "$1"
+            }
+        }
+    },
     "rewardsCloseLabel": {
         "message": "Auto-close any reward page, except for:"
     },

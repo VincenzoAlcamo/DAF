@@ -990,16 +990,27 @@ function onMessage(request, sender, sendResponse) {
             chrome.tabs.sendMessage(sender.tab.id, request);
             break;
         case 'addRewardLinks':
-            result = daGame.addRewardLinks(request.values);
             // if we are getting one reward from a reward page
             var rewards = Array.isArray(request.values) ? request.values : [request.values],
                 reward = rewards[0],
-                flagClose = exPrefs.rewardsClose && request.isReward && rewards.length == 1 && reward && reward.cdt > 0;
-            if (reward && reward.cmt == 2 && exPrefs.rewardsCloseGems) flagClose = false;
-            if (reward && reward.cmt < 0 && exPrefs.rewardsCloseErrors) flagClose = false;
-            if (flagClose) {
-                chrome.tabs.remove(sender.tab.id);
-                return;
+                flagClose = exPrefs.rewardsClose;
+            if (request.isReward && rewards.length == 1 && reward && reward.cdt > 0) {
+                if (reward.cmt == 2 && exPrefs.rewardsCloseGems) flagClose = false;
+                if (reward.cmt < 0 && exPrefs.rewardsCloseErrors) flagClose = false;
+                var existingReward = daGame.getReward(reward.id);
+                if (existingReward) {
+                    var html = chrome.i18n.getMessage('rlRewardInfo', [unixDate(existingReward.adt, true)]);
+                    if (existingReward.cid) html += '<br/><a target="_blank" href="https://www.facebook.com/' + existingReward.cid + '"><img src="https://graph.facebook.com/v2.8/' + existingReward.cid + '/picture"/><br/>' + existingReward.cnm + '</a>';
+                    result = {};
+                    result.html = html;
+                }
+                daGame.addRewardLinks(request.values);
+                if (flagClose) {
+                    chrome.tabs.remove(sender.tab.id);
+                    return;
+                }
+            } else {
+                result = daGame.addRewardLinks(request.values);
             }
             break;
         default:

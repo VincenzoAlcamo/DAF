@@ -1072,6 +1072,14 @@
             }
         }
     },
+    "rlRewardInfo": {
+        "message": "Questa ricompensa è stata inserita il $DATE$",
+        "placeholders": {
+            "date": {
+                "content": "$1"
+            }
+        }
+    },
     "rewardsCloseLabel": {
         "message": "Chiudi automaticamente la pagina ricompensa, eccetto per:"
     },
