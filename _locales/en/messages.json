@@ -800,6 +800,12 @@
     "gcTableFlippedLabel": {
         "message": "Show scrollbar at the top"
     },
+    "gcTableCounterLabel": {
+        "message": "Show counter"
+    },
+    "btn_gcTableCounter": {
+        "message": "Counter"
+    },
     "gameToolsAbout": {
         "message": "In-Game Toolbar and options"
     },

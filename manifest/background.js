@@ -25,6 +25,7 @@ var exPrefs = {
     gcTable: false,
     gcTableSize: 'large',
     gcTableFlipped: true,
+    gcTableCounter: true,
     facebookMenu: localStorage.installType == 'development',
     linkGrabButton: 2,
     linkGrabKey: 0,

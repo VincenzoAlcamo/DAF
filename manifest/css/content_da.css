@@ -42,6 +42,37 @@ div.DAF-gc-player {
   font-size: 0%;
 }
 
+div.DAF-gc-counter {
+  display: inline-block;
+  background-color: #113;
+  width: 40px;
+  height: 45px;
+  color: #88D;
+  font-size: 22px;
+  padding: 12px 3px 12px 3px;
+  position: sticky;
+  left: 0px;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-weight: bold;
+  z-index: 999;
+  line-height: 13px;
+  border: 0px;
+  overflow: hidden;
+  cursor: default;
+}
+
+div.DAF-gc-counter div:nth-child(1) {
+  text-align: left;
+}
+
+div.DAF-gc-counter div:nth-child(2) {
+  text-align: center;
+}
+
+div.DAF-gc-counter div:nth-child(3) {
+  text-align: right;
+}
+
 div.DAF-gc-level {
   position: relative;
   font-family: sans-serif;
@@ -104,6 +135,10 @@ div.DAF-gc-level {
   font-size: 12pt;
 }
 
+.DAF-gc-large div.DAF-gc-counter {
+  height: 63;
+}
+
 
 /* x-large settings */
 
@@ -120,6 +155,7 @@ div.DAF-gc-level {
 /* Scrollbars on top */
 
 #DAF-gc.DAF-flipped,
-#DAF-gc.DAF-flipped div.DAF-gc-player {
+#DAF-gc.DAF-flipped div.DAF-gc-player,
+#DAF-gc.DAF-flipped div.DAF-gc-counter {
   transform: rotateX(180deg);
 }

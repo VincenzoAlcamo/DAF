@@ -9,7 +9,8 @@ DAF.initialize({
     autoPortal: false,
     fullWindow: false,
     fullWindowHeader: false,
-    gcTable: false
+    gcTable: false,
+    gcTableCounter: true
 }, initialize);
 
 /*
@@ -399,6 +400,10 @@ function initialize() {
     var a = createButton('gcTable', {
         type: 'toggle',
         icon: true
+    });
+    createButton('gcTableCounter', {
+        type: 'toggle',
+        parent: a
     });
     var gcTableStatus = createElement('span', {
         id: 'DAF-gc-status',
