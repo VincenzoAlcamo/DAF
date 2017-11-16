@@ -80,7 +80,7 @@ var guiTabs = (function(self) {
                         title: title,
                         text: text + '\n\n' + guiString('rlCollectAnyway'),
                         defaultButton: Dialog.CANCEL,
-                        style: [Dialog.CONFIRM, Dialog.CANCEL]
+                        style: [Dialog.CRITICAL, Dialog.CONFIRM, Dialog.CANCEL]
                     }, function(method, params) {
                         if (method == Dialog.CONFIRM) {
                             event.target.setAttribute('clickanyway', '1');
