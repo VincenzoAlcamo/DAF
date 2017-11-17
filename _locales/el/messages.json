@@ -794,6 +794,12 @@
     "gcTableFlippedLabel": {
         "message": "Εμφάνιση γραμμής κύλισης στην κορυφή"
     },
+    "gcTableCounterLabel": {
+        "message": "Εμφάνιση μετρητή"
+    },
+    "btn_gcTableCounter": {
+        "message": "Μετρητής"
+    },
     "gameToolsAbout": {
         "message": "Γραμμή Εργαλείων και επιλογές Παιχνιδιού"
     },
@@ -1062,6 +1068,14 @@
         "message": "Σύνδεσμοι προς αφαίρεση: $NUM$\n\nΝα συνεχίσει η διαγραφή;",
         "placeholders": {
             "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "rlRewardInfo": {
+        "message": "Αυτό το δώρο προστέθηκε στις $DATE$",
+        "placeholders": {
+            "date": {
                 "content": "$1"
             }
         }
