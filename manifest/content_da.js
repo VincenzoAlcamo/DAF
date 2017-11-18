@@ -7,6 +7,7 @@ DAF.initialize({
     gcTable: false,
     gcTableSize: '',
     gcTableFlipped: true,
+    gcTableCounter: true,
     gameSync: false,
     gameLang: null,
     gameNews: ''
@@ -18,11 +19,17 @@ DAF.initialize({
  */
 var gcTable_div = null;
 
+function gcTable_isEmpty() {
+    return gcTable_div.childNodes.length <= 1;
+}
+
 function gcTable_remove(div) {
     if (!gcTable_div) return;
+    var heightBefore = gcTable_div.offsetHeight;
     if (div) {
-        var heightBefore = gcTable_div.offsetHeight;
         removeNode(div);
+        div = gcTable_div.getElementsByClassName('DAF-gc-counter')[0];
+        if (div) div.firstChild.textContent = pad2(gcTable_div.childNodes.length - 1);
         var heightAfter = gcTable_div.offsetHeight;
         // scrollbar was hidden and we are in full window?
         if (heightBefore > heightAfter && DAF.getValue('fullWindow')) {
@@ -32,7 +39,7 @@ function gcTable_remove(div) {
         }
     }
     // handle case where the table is empty
-    if (gcTable_div.firstChild == null) {
+    if (gcTable_isEmpty()) {
         DAF.setValue('@gcTableStatus', 'collected');
         if (gcTable_div.style.display != 'none') {
             gcTable_div.style.display = 'none';
@@ -49,21 +56,27 @@ function setgcTableOptions() {
     gcTable_div.classList.toggle('DAF-gc-small', value == 'small');
     gcTable_div.classList.toggle('DAF-gc-large', value == 'large');
     gcTable_div.classList.toggle('DAF-flipped', !!DAF.getValue('gcTableFlipped'));
+    var heightBefore = gcTable_div.offsetHeight,
+        div = gcTable_div.getElementsByClassName('DAF-gc-counter')[0];
+    if (div) div.style.display = DAF.getValue('gcTableCounter') ? '' : 'none';
+    var heightAfter = gcTable_div.offsetHeight;
+    if (DAF.getValue('fullWindow')) {
+        if (heightBefore > heightAfter) gcTable_div.style.overflowX = 'scroll';
+        else if (heightBefore < heightAfter) forceResizeLater();
+    }
 }
 
-function gcTable(forceRefresh = false) {
+function pad2(n) {
+    return (String(n)).padStart(2, '0');
+}
+
+function gcTable(forceRefresh = false, simulate = 0) {
     DAF.log("gcTable forceRefresh=" + forceRefresh);
 
     var show = DAF.getValue('gcTable');
-    // Set document.body.DAF_gc to the number of GC to simulate
-    var simulate = parseInt(document.body.getAttribute('DAF_gc')) || 0;
-    if (simulate > 0 && show) {
-        document.body.removeAttribute('DAF_gc');
-        forceRefresh = true;
-    }
 
     // If table is present, we just show/hide it
-    if (gcTable_div && gcTable_div.firstChild == null && !forceRefresh) {
+    if (gcTable_div && gcTable_isEmpty() && !forceRefresh) {
         // handle case where the table is empty
         gcTable_remove(null);
     } else if (gcTable_div && !forceRefresh) {
@@ -87,7 +100,8 @@ function gcTable(forceRefresh = false) {
         }
 
         var neighbours = result.result,
-            gcNeighbours = Object.keys(neighbours).map(key => neighbours[key]);
+            gcNeighbours = Object.keys(neighbours).map(key => neighbours[key]),
+            maxGC = Math.floor(Math.sqrt(gcNeighbours.length)) + 4;
         if (simulate > 0) {
             gcNeighbours = gcNeighbours.slice(0, simulate);
         } else {
@@ -126,7 +140,21 @@ function gcTable(forceRefresh = false) {
             });
         }
 
+        var counter = createElement('div', {
+            className: 'DAF-gc-counter'
+        }, gcTable_div);
+        createElement('div', {
+            textContent: pad2(gcNeighbours.length)
+        }, counter);
+        createElement('div', {
+            textContent: '/'
+        }, counter);
+        createElement('div', {
+            textContent: pad2(maxGC)
+        }, counter);
+
         setgcTableOptions();
+
         gcNeighbours.forEach(item => {
             var div = createElement('div', {
                 id: 'DAF-gc-' + item.uid,
@@ -147,7 +175,7 @@ function gcTable(forceRefresh = false) {
             }, div);
         });
 
-        if (gcTable_div.firstChild == null) {
+        if (gcTable_isEmpty()) {
             // handle case where the table is empty
             gcTable_remove(null);
         } else {
@@ -219,6 +247,7 @@ function initialize() {
     DAF.setPreferenceHandler('gcTable', () => gcTable());
     DAF.setPreferenceHandler('gcTableSize', setgcTableOptions);
     DAF.setPreferenceHandler('gcTableFlipped', setgcTableOptions);
+    DAF.setPreferenceHandler('gcTableCounter', setgcTableOptions);
 
 
     /********************************************************************

@@ -70,6 +70,7 @@ function guiInit() {
                     guiTabs.action(request.action, request.data);
                     break;
                 case 'friends-analyze':
+                case 'rewards-update':
                     guiTabs.action(request.cmd);
                     break;
                 case 'gameLoading':

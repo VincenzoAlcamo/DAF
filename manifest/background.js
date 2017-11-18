@@ -25,12 +25,17 @@ var exPrefs = {
     gcTable: false,
     gcTableSize: 'large',
     gcTableFlipped: true,
+    gcTableCounter: true,
     facebookMenu: localStorage.installType == 'development',
     linkGrabButton: 2,
     linkGrabKey: 0,
     linkGrabSort: true,
     linkGrabReverse: false,
     linkGrabConvert: 0,
+    rewardsRemoveDays: null,
+    rewardsClose: false,
+    rewardsCloseGems: true,
+    rewardsCloseErrors: true,
     tabIndex: 0,
     nFilter: '7',
     cFilter: 'ALL',
@@ -315,9 +320,23 @@ if (typeof chrome.webNavigation !== 'undefined') {
     chrome.webNavigation.onCompleted.addListener(function(event) {
         onNavigation(event, 'complete');
     }, pageFilters);
+    // Add Link Grabber script to Facebook pages
     chrome.webNavigation.onDOMContentLoaded.addListener(onFBNavigation, {
         url: [{
             hostEquals: 'www.facebook.com'
+        }]
+    });
+    // Add Reward Link script to Reward pages
+    chrome.webNavigation.onDOMContentLoaded.addListener(onRewardNavigation, {
+        url: [{
+            hostEquals: 'diggysadventure.com',
+            pathEquals: '/miner/wallpost.php'
+        }]
+    });
+    chrome.webNavigation.onDOMContentLoaded.addListener(onRewardNavigation, {
+        url: [{
+            hostEquals: 'portal.pixelfederation.com',
+            pathEquals: '/_da/miner/wallpost.php'
         }]
     });
 } else if (1) {
@@ -400,7 +419,7 @@ function setDataListeners(upgrade = false) {
     if (localStorage.installType == 'development') {
         upgrade = true;
     }
-    
+
     if (upgrade)
         daGame.guiReload = true;
 
@@ -653,6 +672,15 @@ function onFBNavigation(info) {
     }
 }
 
+function onRewardNavigation(info) {
+    if (exPrefs.debug) console.log("injecting reward", info.url);
+    chromeMultiInject(info.tabId, {
+        file: '/manifest/content_reward.js',
+        allFrames: false,
+        frameId: info.frameId
+    });
+}
+
 /*
  ** Debugger Detatch
  */
@@ -890,7 +918,8 @@ function badgeStatus() {
  */
 function onMessage(request, sender, sendResponse) {
     var status = 'ok',
-        result = null;
+        result = null,
+        async = false;
 
     if (exPrefs.debug) console.log(request, sender);
 
@@ -917,6 +946,19 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'getPrefs':
             result = exPrefs;
+            // sends only the required keys
+            if (request.hasOwnProperty('keys')) {
+                result = {};
+                var keys = request.keys;
+                if (!Array.isArray(keys)) {
+                    if (typeof keys == 'string') keys = keys.split(',');
+                    else keys = keys ? Object.keys(keys) : [];
+                }
+                keys.forEach(key => {
+                    if (key in exPrefs) result[key] = exPrefs[key];
+                });
+            }
+            //async = true;
             break;
         case 'show':
             showIndex();
@@ -947,6 +989,30 @@ function onMessage(request, sender, sendResponse) {
         case 'sendValue':
             chrome.tabs.sendMessage(sender.tab.id, request);
             break;
+        case 'addRewardLinks':
+            // if we are getting one reward from a reward page
+            var rewards = Array.isArray(request.values) ? request.values : [request.values],
+                reward = rewards[0],
+                flagClose = exPrefs.rewardsClose;
+            if (request.isReward && rewards.length == 1 && reward && reward.cdt > 0) {
+                if (reward.cmt == 2 && exPrefs.rewardsCloseGems) flagClose = false;
+                if (reward.cmt < 0 && exPrefs.rewardsCloseErrors) flagClose = false;
+                var existingReward = daGame.getReward(reward.id);
+                if (existingReward) {
+                    var html = chrome.i18n.getMessage('rlRewardInfo', [unixDate(existingReward.adt, true)]);
+                    if (existingReward.cid) html += '<br/><a target="_blank" href="https://www.facebook.com/' + existingReward.cid + '"><img src="https://graph.facebook.com/v2.8/' + existingReward.cid + '/picture"/><br/>' + existingReward.cnm + '</a>';
+                    result = {};
+                    result.html = html;
+                }
+                daGame.addRewardLinks(request.values);
+                if (flagClose) {
+                    chrome.tabs.remove(sender.tab.id);
+                    return;
+                }
+            } else {
+                result = daGame.addRewardLinks(request.values);
+            }
+            break;
         default:
             status = 'error';
             result = 'Invalid command: ' + request.cmd;
@@ -954,12 +1020,18 @@ function onMessage(request, sender, sendResponse) {
     }
     if (exPrefs.debug)
         console.log('Status', status, 'Result', result);
-    sendResponse({
+
+    var response = {
         status: status,
         result: result
-    });
-
-    return false; // all synchronous responses
+    };
+    if (async) {
+        if (exPrefs.debug) console.log('Sending asynchronously');
+        setTimeout(() => sendResponse(response), 10);
+        return true; // asynchronous response
+    }
+    sendResponse(response);
+    return false; // synchronous response
 }
 
 function copyToClipboard(text) {

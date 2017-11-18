@@ -4,6 +4,8 @@
 (function() {
     'use strict';
 
+    const SECONDS_IN_A_DAY = 86400;
+
     /*
      ** Initialization Method
      */
@@ -21,6 +23,13 @@
             guiReload: false,
             player_id: 0,
             site: null,
+            REWARDLINKS_DAILY_LIMIT: 100,
+            REWARDLINKS_VALIDITY_DAYS: 7,
+            REWARDLINKS_REFRESH_HOURS: 22,
+            REWARDLINKS_REMOVE_DAYS: 10,
+            REWARDLINKS_HISTORY_MAXBYTES: 500000,
+            rewardLinksData: {},
+            rewardLinksHistory: '',
             init: function(parent) {
                 parent.__public = this;
                 // Uncomment this to force user to reload game everytime we update
@@ -270,6 +279,19 @@
                 callback.call(this, 'dataDone');
         }
 
+        // Id accessors
+        function friendGetId(friend) {
+            return 'fb-' + friend.fb_id;
+        }
+
+        function rewardGetId(reward) {
+            return 'rl-' + reward.id;
+        }
+
+        function toArray(objOrArray) {
+            return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
+        }
+
         /*********************************************************************
          ** @Public - Get Cached Game User Data
          */
@@ -284,20 +306,31 @@
 
                     // pack data
                     var keysToRemove = [],
+                        prefixes = {},
                         dataToSet = {};
 
                     // friends
                     __public.friendsCollectDate = data.friendsCollectDate || null;
-                    __public.friends = {};
+                    __public.friends = prefixes.fb = {};
                     // old friends array
-                    if (data.friends instanceof Array) {
+                    if (Array.isArray(data.friends)) {
                         keysToRemove.push('friends');
                         data.friends.forEach(friend => {
                             friend.name = friend.realFBname;
                             delete friend.realFBname;
-                            __public.friends[friend.fb_id] = dataToSet['fb-' + friend.fb_id] = friend;
+                            __public.friends[friend.fb_id] = dataToSet[friendGetId(friend)] = friend;
                         });
                     }
+
+                    // reward links
+                    __public.rewards = prefixes.rl = {};
+                    var rewardLinksData = data.rewardLinksData || {};
+                    rewardLinksData.first = rewardLinksData.first || 0;
+                    rewardLinksData.next = rewardLinksData.next || 0;
+                    rewardLinksData.count = rewardLinksData.count || 0;
+                    __public.rewardLinksData = rewardLinksData;
+                    // ensure rewardLinksHistory starts and ends with a comma
+                    __public.rewardLinksHistory = ',' + (data.rewardLinksHistory || '').replace(/^,+|,+$/g, '') + ',';
 
                     let lang = (((data.daUser) && data.daUser.lang) ? data.daUser.lang : exPrefs.gameLang);
                     lang = 'daLang_' + lang.toUpperCase();
@@ -308,11 +341,7 @@
                             var type = key.substr(0, i),
                                 id = key.substr(i + 1),
                                 value = data[key];
-                            switch (type) {
-                                case 'fb':
-                                    __public.friends[id] = value;
-                                    break;
-                            }
+                            if (type in prefixes) prefixes[type][id] = value;
                         } else if ((key != 'daUser') && key.startsWith('da')) {
                             if (reloadFiles || ((key != lang && key != 'daFiles') && !gameFiles.hasOwnProperty(key))) {
                                 //if (exPrefs.debug) console.log('Remove Redundant Cached Data:', key, reloadFiles);
@@ -321,6 +350,7 @@
                             }
                         }
                     });
+                    __public.removeExpiredRewardLinks();
                     // // filter ex friends
                     // if (!__public.isExFriendsEnabled) {
                     //     Object.keys(__public.friends).forEach(fb_id => {
@@ -393,10 +423,11 @@
             return __public.friends[id];
         };
         __public.setFriend = function(friendsOrArray, callback) {
-            var arr = friendsOrArray instanceof Array ? friendsOrArray : [friendsOrArray];
-            var data = {};
+            var arr = toArray(friendsOrArray),
+                data = {};
             arr.forEach(friend => {
-                data['fb-' + friend.fb_id] = friend;
+                data[friendGetId(friend)] = friend;
+                __public.friends[friend.fb_id] = friend;
             });
             chrome.storage.local.set(data, callback);
         };
@@ -404,15 +435,15 @@
             __public.setFriend(Object.values(__public.friends), callback);
         };
         __public.removeFriend = function(friendsOrArray, callback) {
-            var arr = friendsOrArray instanceof Array ? friendsOrArray : [friendsOrArray];
+            var arr = toArray(friendsOrArray);
             arr.forEach(friend => {
                 delete __public.friends[friend.fb_id];
             });
-            var keys = arr.map(friend => 'fb-' + friend.fb_id);
+            var keys = arr.map(friendGetId);
             chrome.storage.local.remove(keys, callback);
         };
         __public.friendsCaptured = function(mode, data) {
-            var newFriends = data instanceof Array ? data : [];
+            var newFriends = Array.isArray(data) ? data : [];
             if (exPrefs.debug) console.log("Friends captured", newFriends.length);
             if (newFriends.length == 0) return;
             var oldFriends = Object.assign({}, __public.getFriends());
@@ -428,10 +459,7 @@
                 friends[friend.fb_id] = friend;
             })
             // We remove all old friends
-            var keysToRemove = [];
-            Object.keys(oldFriends).forEach(fb_id => {
-                keysToRemove.push('fb-' + fb_id);
-            });
+            var keysToRemove = Object.values(oldFriends).map(friendGetId);
             if (keysToRemove.length) chrome.storage.local.remove(keysToRemove);
             __public.friendsCollectDate = getUnixTime();
             chrome.storage.local.set({
@@ -445,6 +473,136 @@
                 });
             });
         }
+
+        /*********************************************************************
+         ** Reward links accessors & methods
+         */
+        __public.getRewards = function() {
+            return __public.rewards;
+        };
+        __public.getReward = function(id) {
+            return __public.rewards[id];
+        };
+        __public.setReward = function(rewardsOrArray, callback) {
+            var arr = toArray(rewardsOrArray),
+                data = {};
+            arr.forEach(reward => {
+                data[rewardGetId(reward)] = reward;
+                __public.rewards[reward.id] = reward;
+            });
+            chrome.storage.local.set(data, callback);
+        };
+        __public.removeReward = function(rewardsOrArray, callback) {
+            var arr = toArray(rewardsOrArray),
+                rewards = __public.rewards,
+                rewardLinksHistory = __public.rewardLinksHistory,
+                flagRemoved = false;
+            arr.forEach(reward => {
+                if (reward.id in rewards) {
+                    delete rewards[reward.id];
+                    if (rewardLinksHistory.indexOf(',' + reward.id + ',') < 0) {
+                        flagRemoved = true;
+                        rewardLinksHistory += reward.id + ',';
+                    }
+                }
+            });
+            if (rewardLinksHistory.length > __public.REWARDLINKS_HISTORY_MAXBYTES) {
+                // keep the last HISTORY MAXBYTES - 1000 characters (so this will not trigger again in a short time)
+                // using a negative index for substr will start from the end of the string
+                rewardLinksHistory = rewardLinksHistory.substr(-__public.REWARDLINKS_HISTORY_MAXBYTES + 1000);
+                // remove starting characters up to the first comma (keeping the comma)
+                rewardLinksHistory = rewardLinksHistory.substr(rewardLinksHistory.indexOf(','));
+                flagRemoved = true;
+            }
+            if (flagRemoved) {
+                __public.rewardLinksHistory = rewardLinksHistory;
+                chrome.storage.local.set({
+                    rewardLinksHistory: rewardLinksHistory
+                });
+            }
+            var keys = arr.map(rewardGetId);
+            chrome.storage.local.remove(keys, callback);
+        };
+        __public.removeExpiredRewardLinks = function() {
+            // remove old links
+            var rewards = Object.values(__public.rewards),
+                removeThreshold = getUnixTime() - __public.REWARDLINKS_REMOVE_DAYS * SECONDS_IN_A_DAY,
+                rewardsToRemove = rewards.filter(reward => reward.adt <= removeThreshold);
+            if (rewardsToRemove.length) __public.removeReward(rewardsToRemove);
+        };
+        __public.addRewardLinks = function(rewardsOrArray) {
+            var arr = toArray(rewardsOrArray),
+                now = getUnixTime(),
+                rewardLinksData = __public.rewardLinksData,
+                rewardLinksHistory = __public.rewardLinksHistory,
+                data = {},
+                flagStoreData = false;
+            arr.forEach(reward => {
+                if (!reward || !reward.id) return;
+                // do not add old links
+                if (rewardLinksHistory.indexOf(',' + reward.id + ',') >= 0) return;
+                var existingReward = __public.getReward(reward.id);
+                // store initial time of collection
+                if (reward.cdt && !rewardLinksData.first) {
+                    rewardLinksData.first = reward.cdt;
+                    flagStoreData = true;
+                }
+                // We will add the reward if any one of these conditions is true:
+                // - reward has a material, meaning it has been correctly collected
+                // - existing reward does not exist
+                // - reward has some info that is missing in then existing reward (collect date, user id)
+                if (!existingReward || reward.cmt > 0 ||
+                    (reward.cmt && !existingReward.cmt) ||
+                    (reward.cdt && !existingReward.cdt) ||
+                    (reward.cid && !existingReward.cid)) {
+                    existingReward = existingReward || {
+                        id: reward.id,
+                        typ: reward.typ,
+                        sig: reward.sig,
+                        adt: reward.cdt || now
+                    };
+                    if (reward.cdt) existingReward.cdt = reward.cdt;
+                    if (reward.cmt) existingReward.cmt = reward.cmt;
+                    if (reward.cid) {
+                        // overwrite existing if owner id is different or existing has no owner name
+                        if (reward.cnm && (existingReward.cid != reward.cid || !existingReward.cnm)) existingReward.cnm = reward.cnm;
+                        existingReward.cid = reward.cid;
+                    } else if (reward.cnm && !existingReward.cnm) existingReward.cnm = reward.cnm;
+                    data[rewardGetId(existingReward)] = __public.rewards[existingReward.id] = existingReward;
+                }
+                // Daily max reached?
+                var next = 0;
+                if (reward.cmt == -3) {
+                    next = reward.next;
+                } else if (reward.cmt > 0) {
+                    rewardLinksData.count = rewardLinksData.count + 1;
+                    flagStoreData = true;
+                    if (rewardLinksData.count == __public.REWARDLINKS_DAILY_LIMIT)
+                        next = rewardLinksData.first + __public.REWARDLINKS_REFRESH_HOURS * 3600;
+                }
+                if (next) {
+                    // round to the next minute
+                    next = next + (next % 60 ? 60 - next % 60 : 0);
+                    rewardLinksData.count = 0;
+                    rewardLinksData.next = next;
+                    rewardLinksData.first = 0;
+                    flagStoreData = true;
+                }
+            });
+            var count = Object.keys(data).length;
+            if (flagStoreData || count > 0) {
+                if (flagStoreData) data.rewardLinksData = rewardLinksData;
+                chrome.storage.local.set(data, () => {
+                    if (count > 0) {
+                        if (exPrefs.debug) console.log("Send rewards update");
+                        chrome.runtime.sendMessage({
+                            cmd: 'rewards-update'
+                        });
+                    }
+                });
+            }
+            return count;
+        };
 
         /*********************************************************************
          ** @Public - getNeighbours

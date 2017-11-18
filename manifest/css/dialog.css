@@ -68,6 +68,19 @@
   border: 2px solid #333;
 }
 
+.DAF-md-content form select,
+.DAF-md-content form input,
+.DAF-md-content form textarea {
+  display: initial;
+  width: initial;
+  height: initial;
+  border: initial;
+  font-size: inherit;
+  line-height: initial;
+  padding: initial;
+  outline: initial;
+}
+
 .DAF-md-content,
 .DAF-dialog button,
 .DAF-dialog form,

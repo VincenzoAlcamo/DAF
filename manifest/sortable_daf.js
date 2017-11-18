@@ -42,8 +42,7 @@ var sorttable = (function() {
         },
         applySort: function(table) {
             var cell = Array.from(table.tHead.rows[0].cells).find(cell => cell.classList.contains('DAF-sort-ascending') || cell.classList.contains('DAF-sort-descending'));
-            if (!cell) cell = table.tHead.rows[0].cells[0];
-            SortTable.sortTable(cell, !cell.classList.contains('DAF-sort-descending'))
+            if (cell) SortTable.sortTable(cell, !cell.classList.contains('DAF-sort-descending'))
         },
         sortTable: function(cell, flagAscending = true) {
             var row = cell.parentElement,

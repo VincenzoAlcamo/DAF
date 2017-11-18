@@ -202,6 +202,11 @@ Object.assign(Dialog.prototype, {
                 case 'CHECKBOX':
                     if (e.checked) add(name, value);
                     break;
+                case 'SELECT':
+                    value = Array.from(e.selectedOptions).map(item => item.value);
+                    if (value.length == 1) add(name, value[0]);
+                    else if (value.length > 1) add(name, value);
+                    break;
             }
         });
         return params;

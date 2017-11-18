@@ -12,6 +12,7 @@ var guiTabs = (function(self) {
         g_ring: true,
         events: true,
         r_ring: true,
+        reward_links: true,
 
         // Do NOT release, developers only
         god_children: null
