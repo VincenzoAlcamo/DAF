@@ -69,7 +69,10 @@
     }
 
     function mousedown(event) {
+        var key = keyPressed;
+        // stop will reset keyPressed
         stop();
+        keyPressed = key;
 
         mouseButton = event.button
 
