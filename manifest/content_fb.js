@@ -431,24 +431,28 @@
     function collectData(flagGetUserData) {
         var values = [],
             hash = {},
-            reCid = /hovercard\.php\?id=(\d+)/;
+            reCid = /hovercard(\/user)?\.php\?id=(\d+)/;
+
+        function findActor(parent, className, data) {
+            var actor = parent.getElementsByClassName(className)[0];
+            if (!actor) return false;
+            var hovercard = actor.getAttribute('data-hovercard');
+            if (!hovercard) return false;
+            var match = hovercard.match(reCid);
+            if (!match) return false;
+            data.cid = match[2];
+            var name = actor.firstChild && actor.firstChild.textContent;
+            if (name && (name = name.trim())) data.cnm = name;
+            return true;
+        }
         links.forEach(a => {
             var data = a.daf && a.daf.selected && a.daf.data;
             if (data && !(data.id in hash)) {
                 if (flagGetUserData) {
                     var parent = a.parentNode;
-                    for (var depth = 10; parent && depth > 0; depth--) {
-                        if (parent.classList.contains('UFICommentActorAndBody')) {
-                            var actor = parent.getElementsByClassName('UFICommentActorName')[0],
-                                hovercard = actor && actor.getAttribute('data-hovercard'),
-                                match = hovercard && hovercard.match(reCid);
-                            if (match) {
-                                data.cid = match[1];
-                                var name = actor.firstChild && actor.firstChild.textContent;
-                                if(name && (name = name.trim())) data.cnm = name;
-                            }
-                            break;
-                        }
+                    for (var depth = 12; parent && depth > 0; depth--) {
+                        if (parent.classList.contains('UFICommentActorAndBody') && findActor(parent, 'UFICommentActorName', data)) break;
+                        if (parent.classList.contains('userContentWrapper') && findActor(parent, 'profileLink', data)) break;
                         parent = parent.parentNode;
                     }
                 }

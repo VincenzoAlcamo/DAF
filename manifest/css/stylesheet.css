@@ -1368,4 +1368,5 @@ a.rlLink:hover {
 }
 #rlTable tbody tr {
   height: 33px;
+  transition: all 1s;
 }
