@@ -76,14 +76,7 @@ if (data) {
     }, (response) => {
         div = document.getElementsByClassName('playerIdInfo')[0]
         if (response.status == 'ok' && response.result && response.result.html) {
-            var p = document.createElement('p');
-            Object.assign(p.style, {
-                textAlign: 'center',
-                backgroundColor: 'lime',
-                color: 'black',
-                fontFamily: 'sans-serif',
-                fontSize: '14pt'
-            });
+            var p = document.createElement('div');
             p.innerHTML = response.result.html;
             div.parentNode.insertBefore(p, div);
         }
