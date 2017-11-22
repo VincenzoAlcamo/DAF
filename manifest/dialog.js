@@ -121,9 +121,13 @@ Object.assign(Dialog.prototype, {
         if (element) setTimeout(() => element.focus(), 100);
         if (this.mode === Dialog.TOAST) {
             this.delay = o.delay || this.delay;
-            setTimeout(() => {
+            if (this.removeTimer) clearTimeout(this.removeTimer);
+            this.removeTimer = setTimeout(() => {
                 this.visible = false;
-                setTimeout(() => this.remove(), 500);
+                this.removeTimer = setTimeout(() => {
+                    delete this.removeTimer;
+                    this.remove()
+                }, 500);
             }, this.delay);
         }
         return this;
