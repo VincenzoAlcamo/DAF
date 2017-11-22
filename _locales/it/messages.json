@@ -875,6 +875,9 @@
     "linksFnRefresh": {
         "message": "Aggiorna i link"
     },
+    "linksFnShowId": {
+        "message": "Mostra/Nascondi Id Ricompensa"
+    },
     "linksSelected": {
         "message": "Link: $UNIQUE$ / $TOTAL$",
         "placeholders": {
