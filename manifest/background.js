@@ -1010,8 +1010,9 @@ function onMessage(request, sender, sendResponse) {
                     html += '</tr><tr style="background-color:#e7e7e7;color:black;">';
                     html += '<td>' + existingReward.id + '</td>';
                     html += '<td>' + unixDate(existingReward.adt, true) + '</td>';
-                    html += '<td>' + unixDate(existingReward.cdt, true) + '</td>';
-                    if (existingReward.cid) html += '<td><a target="_blank" href="https://www.facebook.com/' + existingReward.cid + '"><img src="https://graph.facebook.com/v2.8/' + existingReward.cid + '/picture" valign="middle" style="margin-right:8px"/>' + existingReward.cnm + '</a></td>';
+                    html += '<td>' + unixDate(existingReward.cdt || reward.cdt, true) + '</td>';
+                    var cid = existingReward.cid || reward.cid;
+                    if (cid) html += '<td><a target="_blank" href="https://www.facebook.com/' + cid + '"><img src="https://graph.facebook.com/v2.8/' + cid + '/picture" valign="middle" style="margin-right:8px"/>' + (existingReward.cnm || reward.cnm) + '</a></td>';
                     html += '</tr></tbody><table>';
                     result = {};
                     result.html = html;
