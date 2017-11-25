@@ -10,10 +10,10 @@
         linkGrabConvert: 0
     }, initialize);
 
-    const Z_INDEX = 2147483647,
-        LEFT_BUTTON = 0,
+    const LEFT_BUTTON = 0,
         KEY_ESC = 27,
         KEY_C = 67,
+        KEY_I = 73,
         KEY_R = 82,
         KEY_S = 83,
         OS_WIN = 1,
@@ -29,6 +29,7 @@
         mouseButton = -1,
         countLabel = null,
         scrollHandle = 0,
+        injectCSS = true,
         links = [],
         linkCount, oldLabel, mouseX, mouseY, startX, startY, autoOpenElement, autoOpenCount, flagLinks;
 
@@ -90,27 +91,15 @@
         // create the box
         if (box == null) {
             box = DAF.removeLater(createElement('span', {
+                className: 'DAF-selector',
                 style: {
-                    boxSizing: 'border-box',
-                    position: 'absolute',
-                    zIndex: Z_INDEX,
-                    border: '1px solid #f00',
-                    backgroundColor: 'rgba(255,255,0,0.3)',
                     visibility: 'hidden'
                 }
             }, document.body));
 
             countLabel = DAF.removeLater(createElement('span', {
+                className: 'DAF-counter',
                 style: {
-                    boxSizing: 'border-box',
-                    position: 'absolute',
-                    zIndex: Z_INDEX,
-                    backgroundColor: '#600',
-                    color: '#fff',
-                    font: '10pt sans-serif',
-                    padding: '2px 4px',
-                    textAlign: 'left',
-                    whiteSpace: 'pre',
                     visibility: 'hidden'
                 }
             }, document.body));
@@ -124,6 +113,11 @@
         // setup mouse move and mouse up
         addListeners(window, mousemove, mouseup, mouseout);
         addPassiveListeners(window, mousewheel);
+
+        if (injectCSS) {
+            injectCSS = false;
+            DAF.injectStyle(chrome.extension.getURL('manifest/css/content_fb.css'));
+        }
     }
 
 
@@ -295,13 +289,8 @@
                     daf.selected = true;
                     if (daf.box == null) {
                         daf.box = daf.box || createElement('span', {
-                            style: {
-                                boxSizing: 'border-box',
-                                position: 'absolute',
-                                zIndex: Z_INDEX - 1,
-                                border: '1px solid #060',
-                                backgroundColor: 'rgba(0,255,0,0.3)'
-                            }
+                            textContent: daf.data.id,
+                            className: 'DAF-box'
                         }, document.body);
                         setPosition(daf.box, daf.x1, daf.y1 - 1, daf.x2 - daf.x1 + 2, daf.y2 - daf.y1 + 2);
                     }
@@ -316,51 +305,66 @@
             if (daf.box) daf.box.style.visibility = daf.selected ? 'visible' : 'hidden';
         });
 
+        function addFn(keyCode, messageId) {
+            return '\n' + guiString('linksKey', [keyCode == KEY_ESC ? 'ESC' : String.fromCharCode(keyCode), guiString(messageId)]);
+        }
+
         var text = guiString('linksSelected', [count, total]);
-        if (count > 0) text += '\n' + guiString('linksKey', ['C', guiString('linksFnCopy')]);
-        if (count > 0) text += '\n' + guiString('linksKey', ['S', guiString('linksFnSend')]);
-        text += '\n' + guiString('linksKey', ['R', guiString('linksFnRefresh')]);
-        text += '\n' + guiString('linksKey', ['ESC', guiString('linksFnCancel')]);
+        if (count > 0) text += addFn(KEY_C, 'linksFnCopy');
+        if (count > 0) text += addFn(KEY_S, 'linksFnSend');
+        text += addFn(KEY_I, 'linksFnShowId');
+        text += addFn(KEY_R, 'linksFnRefresh');
+        text += addFn(KEY_ESC, 'linksFnCancel');
         if (text != oldLabel) countLabel.innerText = oldLabel = text;
     }
+
+    var fnHandlers = {};
+    fnHandlers[KEY_ESC] = (event) => {
+        stop();
+    };
+    fnHandlers[KEY_R] = (event) => {
+        start();
+        detect();
+    };
+    fnHandlers[KEY_I] = (event) => {
+        document.body.classList.toggle('DAF-show-id');
+    };
+    fnHandlers[KEY_C] = (event) => {
+        var values = collectLinks();
+        stop();
+        var text = values.join('\n') + '\n';
+        chrome.runtime.sendMessage({
+            cmd: 'copyToClipboard',
+            text: text
+        }, function() {
+            Dialog(Dialog.TOAST).show({
+                text: guiString('linksCopied', [values.length])
+            });
+        });
+    };
+    fnHandlers[KEY_S] = (event) => {
+        var values = collectData(true);
+        stop();
+        chrome.runtime.sendMessage({
+            cmd: 'addRewardLinks',
+            values: values
+        }, (response) => {
+            if (response.status == 'ok') {
+                Dialog(Dialog.TOAST).show({
+                    text: guiString(response.result ? 'linksAdded' : 'noLinksAdded', [response.result, values.length])
+                });
+            }
+        });
+    };
 
     function keydown(event) {
         keyPressed = event.keyCode;
         if (os == OS_LINUX && keyPressed == DAF.getValue('linkGrabKey')) stopMenu = true;
         if (!flagActive) return;
-        if (keyPressed == KEY_ESC) stop();
-        if (keyPressed == KEY_R) {
-            start();
-            detect();
-        }
-        if (keyPressed == KEY_C) {
+        if (keyPressed in fnHandlers) {
             event.keyCode = 0;
             preventEscalation(event);
-            var values = collectLinks();
-            stop();
-            var text = values.join('\n') + '\n';
-            chrome.runtime.sendMessage({
-                cmd: 'copyToClipboard',
-                text: text
-            }, function() {
-                Dialog(Dialog.TOAST).show({
-                    text: guiString('linksCopied', [values.length])
-                });
-            });
-        }
-        if (keyPressed == KEY_S) {
-            var values = collectData(true);
-            stop();
-            chrome.runtime.sendMessage({
-                cmd: 'addRewardLinks',
-                values: values
-            }, (response) => {
-                if (response.status == 'ok') {
-                    Dialog(Dialog.TOAST).show({
-                        text: guiString(response.result ? 'linksAdded' : 'noLinksAdded', [response.result, values.length])
-                    });
-                }
-            });
+            fnHandlers[keyPressed](event);
         }
     }
 

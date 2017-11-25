@@ -881,6 +881,9 @@
     "linksFnRefresh": {
         "message": "Refresh links"
     },
+    "linksFnShowId": {
+        "message": "Show/Hide Reward Id"
+    },
     "linksSelected": {
         "message": "Links: $UNIQUE$ / $TOTAL$",
         "placeholders": {

@@ -2,10 +2,10 @@ var reFacebook = /https?:\/\/diggysadventure\.com\/miner\/wallpost.php\?wp_id=(\
     rePortal = /https?:\/\/portal\.pixelfederation\.com\/_da\/miner\/wallpost.php\?.+&wp_id=(\d+)&fb_type=(standard|portal)&wp_sig=([0-9a-z]+)/g,
     reMaterial = /material_([0-9]+)\.png/,
     reFriend = /https?:\/\/graph\.facebook\.com(\/v[^\/]+)?\/(\d+)\/picture/,
-    reExpired = /expired/,
-    reAuto = /auto-ricompensa/,
-    reBroken = /something went wrong/,
-    reWait = /\s(\d?\d)h\s(\d?\d)m/,
+    reExpired = /\W(expired|изтече|vypršel|abgelaufen|udløbet|expirado|vanhentunut|expiré|λήξει|lejárt|scaduto|verlopen|expirou|expirat|ute|vypršal|doldu|nieaktualny)\W/i,
+    reAuto = /\W(your own|вашия пост|vlastní příspěvek|deinem Beitrag|eget opslag|propio muro|omaa julkaisuasi|auto-récompense|δικά σου δώρα|üzenetedre|auto-ricompensa|eigen bericht|własne posty|própria mensagem|postare îţi aparţine|eget inlägg|vlastný príspevok|yayınınıza)\W/i,
+    reBroken = /Error!|Грешка!|Chyba!|Fehler!|Fejl!|Virhe!|Erreur!|Σφάλμα!|Hiba!|Errore!|Foutje!|Błąd!|Erro!|Eroare!|Fel!|Hata!/i,
+    reWait = /\s(\d?\d)h\s(\d?\d)m/i,
     data = null,
     match, div, el;
 
@@ -20,13 +20,13 @@ function getObj(id, typ, sig) {
 // Facebook reward link
 if (!data) {
     match = reFacebook.exec(location.href);
-    data = match ? getObj(match[1], match[2], match[3]) : null;
+    if (match) data = getObj(match[1], match[2], match[3]);
 }
 
 // Portal reward link
 if (!data) {
     match = rePortal.exec(location.href);
-    data = match ? getObj(match[1], match[2], match[3]) : null;
+    if (match) data = getObj(match[1], match[2], match[3]);
 }
 
 if (data) {
@@ -76,14 +76,7 @@ if (data) {
     }, (response) => {
         div = document.getElementsByClassName('playerIdInfo')[0]
         if (response.status == 'ok' && response.result && response.result.html) {
-            var p = document.createElement('p');
-            Object.assign(p.style, {
-                textAlign: 'center',
-                backgroundColor: 'lime',
-                color: 'black',
-                fontFamily: 'sans-serif',
-                fontSize: '14pt'
-            });
+            var p = document.createElement('div');
             p.innerHTML = response.result.html;
             div.parentNode.insertBefore(p, div);
         }

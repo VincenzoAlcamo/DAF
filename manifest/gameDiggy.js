@@ -543,7 +543,7 @@
                 if (rewardLinksHistory.indexOf(',' + reward.id + ',') >= 0) return;
                 var existingReward = __public.getReward(reward.id);
                 // store initial time of collection
-                if (reward.cdt && !rewardLinksData.first) {
+                if (reward.cdt && reward.cmt > 0 && !rewardLinksData.first) {
                     rewardLinksData.first = reward.cdt;
                     flagStoreData = true;
                 }

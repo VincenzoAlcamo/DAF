@@ -5,7 +5,6 @@ var guiTabs = (function(self) {
     const SECONDS_IN_A_DAY = 86400;
 
     var rlTable = null,
-        toast = null,
         numTotal = 0,
         numToCollect = 0,
         checkTimeHandler = 0,
@@ -34,8 +33,6 @@ var guiTabs = (function(self) {
         rlTable = document.getElementById("rlTable");
         sorttable.makeSortable(rlTable);
         rlTable.addEventListener('click', onclickTable, true)
-
-        toast = Dialog(Dialog.TOAST);
     }
 
     /*
@@ -112,7 +109,7 @@ var guiTabs = (function(self) {
                     numTotal = arr.length,
                     numAdded = numTotal && bgp.daGame.addRewardLinks(arr);
                 if (numAdded == 0)
-                    toast.show({
+                    self.toast.show({
                         text: guiString('noLinksAdded')
                     });
             }
@@ -273,7 +270,7 @@ var guiTabs = (function(self) {
         if (countUpdated) text.push(guiString('rlLinksUpdated', [countUpdated]));
         if (text.length) {
             clearRowIndicator();
-            toast.show({
+            self.toast.show({
                 text: text.join('\n')
             });
         }
