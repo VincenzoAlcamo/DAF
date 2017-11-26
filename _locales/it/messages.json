@@ -1014,8 +1014,11 @@
             }
         }
     },
+    "rlAllCollected": {
+        "message": "Tutti i link ricompensa sono stati raccolti."
+    },
     "rlNextTime": {
-        "message": "Tutti i link ricompensa sono stati raccolti.\nPuoi continuare a raccoglierli nuovamente il $DATE$",
+        "message": "La prossima raccolta ricomincerà il $DATE$",
         "placeholders": {
             "date": {
                 "content": "$1"
@@ -1052,6 +1055,9 @@
     },
     "rlInfoMaxReached": {
         "message": "Questo link è stato raccolto quando il limite giornaliero è stato raggiunto.\nI link raccolti in questo modo sono persi per sempre."
+    },
+    "rlInfoMayExceedLimit": {
+        "message": "Ci sono altre ricompense in attesa di raccolta e con questa potresti aver superato il limite giornaliero."
     },
     "rlRemoveLinks": {
         "message": "Rimuovi i vecchi links"
