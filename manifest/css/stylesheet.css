@@ -1306,16 +1306,13 @@ td.rlAlert {
   color: #f00;
   font-weight: bold;
 }
-tr.rlClicked,
-tbody tr.rlClicked:nth-child(even) {
+#rlTable tr[status="1"] {
   background-color: #DAA;
 }
-tr.rlNewLink,
-tbody tr.rlNewLink:nth-child(even) {
+#rlTable tr[status="2"] {
   background-color: #0F0;
 }
-tr.rlUpdatedLink,
-tbody tr.rlUpdatedLink:nth-child(even) {
+#rlTable tr[status="3"] {
   background-color: #FD0;
 }
 textarea[name='links'] {
@@ -1324,17 +1321,14 @@ textarea[name='links'] {
   height: 200px;
   margin-top: 4px;
 }
-#rlStatus.wait,
-#rlStatus.count {
+#rlStatus {
   font-weight: bold;
   font-size: larger;
   text-shadow: -1px -1px black, -1px 0px black, -1px 1px black, 0px -1px black, 0px 1px black, 1px -1px black, 1px 0 black, 1px 1px black;
+  color: #6F6;
 }
 #rlStatus.wait {
   color: #FF3;
-}
-#rlStatus.count {
-  color: #6F6;
 }
 img.rlUser {
   width: 28px;

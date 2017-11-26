@@ -1020,8 +1020,11 @@
             }
         }
     },
+    "rlAllCollected": {
+        "message": "All reward links collected."
+    },
     "rlNextTime": {
-        "message": "All reward links collected.\nYou can start collecting again on $DATE$",
+        "message": "Next collection starts on $DATE$",
         "placeholders": {
             "date": {
                 "content": "$1"
@@ -1058,6 +1061,9 @@
     },
     "rlInfoMaxReached": {
         "message": "This link has been collected while the max daily limit was reached.\nLinks collected in this way are lost forever."
+    },
+    "rlInfoMayExceedLimit": {
+        "message": "There are other rewards whose collection is pending.\nThis may exceed your daily limit."
     },
     "rlRemoveLinks": {
         "message": "Remove old links"
