@@ -112,14 +112,15 @@ var guiTabs = (function(self) {
             }
 
             if (did != 0 && o.typ == 'recipe' && o.hde == 0 && show /*&& o.eid == 0*/ ) {
-                var name = bgp.daGame.string(o.nid);
-                var lock = bgp.daGame.daUser.pot_recipes.indexOf(did) == -1;
-                var rspan = o.req.length;
-                var potTime = 0,
+                var name = bgp.daGame.string(o.nid),
+                    lock = bgp.daGame.daUser.pot_recipes.indexOf(did) == -1,
+                    rspan = o.req.length,
+                    potTime = 0,
                     energy = 0,
-                    gold = 0;
-                var potImg = '';
-                var html = [];
+                    gold = 0,
+                    energyHour = 0,
+                    potImg = '',
+                    html = [];
 
                 //console.log(did, name, rspan, lock, o);
 
@@ -140,16 +141,12 @@ var guiTabs = (function(self) {
 
                 if (bgp.daGame.daUsables.hasOwnProperty(o.cgo.oid)) {
                     var u = bgp.daGame.daUsables[o.cgo.oid];
-                    energy = (u.act == 'add_stamina' ? u.val : 0);
+                    energy = u.act == 'add_stamina' ? u.val : 0;
                     gold = u.gld;
-                    html.push('<td rowspan="', rspan, '">', numberWithCommas(energy), '</td>');
-                    //html.push('<td rowspan="', rspan, '">', numberWithCommas(gold), '</td>');
-                } else {
-                    html.push('<td rowspan="', rspan, '">', '</td>');
-                    html.push('<td rowspan="', rspan, '">', '</td>');
                 }
-
-                var energyHour = o.drn ? (energy / (o.drn / 60) * 60) : 0;
+                energyHour = o.drn ? (energy / (o.drn / 60) * 60) : 0;
+                html.push('<td rowspan="', rspan, '">', numberWithCommas(energy), '</td>');
+                //html.push('<td rowspan="', rspan, '">', numberWithCommas(gold), '</td>');
                 html.push('<td rowspan="', rspan, '">', numberWithCommas(Math.round(energyHour)), '</td>');
 
                 if (rspan > 0) {
