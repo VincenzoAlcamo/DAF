@@ -202,7 +202,7 @@ var guiTabs = (function(self) {
         // Process each mine
         Object.keys(map.mines).sort(mineOrder(map.mines)).forEach(function(idx) {
             let mine = map.mines[idx];
-            let good = !isBool(map.tst);
+            let good = typeof mine == 'object' && !isBool(map.tst);
             let mtitle = (self.isDev ? mine.lid : mine.name);
 
             // Only show users tutorial mines
