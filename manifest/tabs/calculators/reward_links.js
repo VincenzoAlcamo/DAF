@@ -75,7 +75,7 @@ var guiTabs = (function(self) {
                     text = guiString('rlInfoBroken');
                 } else if (bgp.daGame.rewardLinksData.next > now) {
                     title = guiString('rlMaxReached');
-                    text = guiString('rlAllColected') + '\n' + guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]);
+                    text = guiString('rlAllCollected') + '\n' + guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]);
                 } else if ((countClicked = Object.keys(me.clicked).length) > 0 && countClicked + bgp.daGame.rewardLinksData.count >= bgp.daGame.REWARDLINKS_DAILY_LIMIT) {
                     title = guiString('rlMaxReached');
                     text = guiString('rlInfoMayExceedLimit');
