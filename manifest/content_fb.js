@@ -441,7 +441,7 @@
             reCid = /hovercard(\/user)?\.php\?id=(\d+)/;
 
         function findActor(parent, className, data) {
-            var actor = parent.getElementsByClassName(className)[0];
+            var actor = parent.getElementsByClassName(className)[0] || Array.from(parent.querySelectorAll('[data-hovercard]')).filter(el => el.textContent != '')[0];
             if (!actor) return false;
             var hovercard = actor.getAttribute('data-hovercard');
             if (!hovercard) return false;
