@@ -5,7 +5,6 @@ var guiTabs = (function(self) {
     const SECONDS_IN_A_DAY = 86400;
 
     var rlTable = null,
-        toast = null,
         numTotal = 0,
         numToCollect = 0,
         checkTimeHandler = 0,
@@ -15,10 +14,11 @@ var guiTabs = (function(self) {
     /*
      ** Define this Menu Item details
      */
-    self.tabs.Calculators.menu.reward_links = {
+    var me = self.tabs.Calculators.menu.reward_links = {
         title: 'rewardLinks',
         image: 'materials/gems.png',
         html: true,
+        clicked: {},
         onInit: onInit,
         onUpdate: onUpdate,
         onAction: onAction
@@ -34,8 +34,6 @@ var guiTabs = (function(self) {
         rlTable = document.getElementById("rlTable");
         sorttable.makeSortable(rlTable);
         rlTable.addEventListener('click', onclickTable, true)
-
-        toast = Dialog(Dialog.TOAST);
     }
 
     /*
@@ -54,13 +52,15 @@ var guiTabs = (function(self) {
                 rewardId = row.id.substr(3),
                 reward = bgp.daGame.getReward(rewardId),
                 title = '',
-                text = '';
+                text = '',
+                now = getUnixTime(),
+                countClicked;
             if (reward) {
                 if (event.target.getAttribute('clickanyway') == '1') {
                     event.target.removeAttribute('clickanyway');
                 } else if (reward.cmt == -2 || reward.cmt > 0) {
                     title = guiString('rlCollected');
-                    text = guiString('rlInfoCollected')
+                    text = guiString('rlInfoCollected');
                 } else if (reward.cmt == -3) {
                     title = guiString('rlMaxReached');
                     text = guiString('rlInfoMaxReached', [bgp.daGame.REWARDLINKS_DAILY_LIMIT])
@@ -69,13 +69,16 @@ var guiTabs = (function(self) {
                     text = guiString('rlInfoExpired', [bgp.daGame.REWARDLINKS_VALIDITY_DAYS])
                 } else if (reward.cmt == -4) {
                     title = guiString('rlNoSelf');
-                    text = guiString('rlInfoNoSelf')
+                    text = guiString('rlInfoNoSelf');
                 } else if (reward.cmt == -5) {
                     title = guiString('rlBroken');
-                    text = guiString('rlInfoBroken')
-                } else if (bgp.daGame.rewardLinksData.next > getUnixTime()) {
+                    text = guiString('rlInfoBroken');
+                } else if (bgp.daGame.rewardLinksData.next > now) {
                     title = guiString('rlMaxReached');
-                    text = guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]);
+                    text = guiString('rlAllCollected') + '\n' + guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]);
+                } else if ((countClicked = Object.keys(me.clicked).length) > 0 && countClicked + bgp.daGame.rewardLinksData.count >= bgp.daGame.REWARDLINKS_DAILY_LIMIT) {
+                    title = guiString('rlMaxReached');
+                    text = guiString('rlInfoMayExceedLimit');
                 }
                 if (title) {
                     event.preventDefault();
@@ -92,9 +95,9 @@ var guiTabs = (function(self) {
                     });
                     return false;
                 }
-                row.classList.add('rlClicked');
+                row.setAttribute('status', '1');
                 row.removeAttribute('rldate');
-                row.classList.remove('rlNewLink', 'rlUpdatedLink');
+                me.clicked[reward.id] = now;
             }
         }
         return true;
@@ -112,7 +115,7 @@ var guiTabs = (function(self) {
                     numTotal = arr.length,
                     numAdded = numTotal && bgp.daGame.addRewardLinks(arr);
                 if (numAdded == 0)
-                    toast.show({
+                    self.toast.show({
                         text: guiString('noLinksAdded')
                     });
             }
@@ -197,7 +200,8 @@ var guiTabs = (function(self) {
             newLinkThreshold = now - 2,
             dataToSet = [],
             countAdded = 0,
-            countUpdated = 0;
+            countUpdated = 0,
+            rewardLinksRecent = bgp.daGame.rewardLinksRecent;
 
         numTotal = numToCollect = 0;
         rows.forEach(row => {
@@ -210,8 +214,12 @@ var guiTabs = (function(self) {
                 materialId = reward.cmt || 0,
                 row = document.getElementById(id),
                 flagNew = false,
-                flagUpdated = false,
+                flagUpdated = reward.id in rewardLinksRecent,
                 cell;
+            if (reward.id in rewardLinksRecent) {
+                delete me.clicked[reward.id];
+                delete rewardLinksRecent[reward.id];
+            }
             if (materialId == 0 && reward.adt <= expiryThreshold) {
                 reward.cmt = materialId = -1;
                 dataToSet.push(reward);
@@ -254,9 +262,7 @@ var guiTabs = (function(self) {
             }
             if (!materialId && !reward.cdt) numToCollect++;
             if (!flagFirst && (flagNew || flagUpdated)) {
-                row.classList.toggle('rlNewLink', flagNew);
-                row.classList.toggle('rlUpdatedLink', !flagNew);
-                row.classList.remove('rlClicked');
+                row.setAttribute('status', flagNew ? '2' : '3');
                 row.setAttribute('rldate', now);
                 if (flagNew) countAdded++;
                 else countUpdated++;
@@ -273,7 +279,7 @@ var guiTabs = (function(self) {
         if (countUpdated) text.push(guiString('rlLinksUpdated', [countUpdated]));
         if (text.length) {
             clearRowIndicator();
-            toast.show({
+            self.toast.show({
                 text: text.join('\n')
             });
         }
@@ -286,7 +292,7 @@ var guiTabs = (function(self) {
             others = rows.filter(row => {
                 if (parseInt(row.getAttribute('rldate')) > threshold) return true;
                 row.removeAttribute('rldate');
-                row.classList.remove('rlNewLink', 'rlUpdatedLink', 'rlClicked');
+                row.removeAttribute('status');
             });
         if (clearRowHandler) {
             clearTimeout(clearRowHandler);
@@ -297,11 +303,21 @@ var guiTabs = (function(self) {
 
     function showStats() {
         var element = document.getElementById('rlStatus'),
-            flagNext = bgp.daGame.rewardLinksData.next > getUnixTime();
-        element.textContent = flagNext ? guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]) : guiString('rlCountRemaining', [100 - bgp.daGame.rewardLinksData.count]);
+            now = getUnixTime(),
+            next = bgp.daGame.rewardLinksData.next,
+            flagNext = next > now,
+            textNext, text;
+        if (flagNext) {
+            text = guiString('rlAllCollected') + ' ';
+        } else {
+            text = guiString('rlCountRemaining', [100 - bgp.daGame.rewardLinksData.count]);
+            next = bgp.daGame.rewardLinksData.first;
+            if (next) next += bgp.daGame.REWARDLINKS_REFRESH_HOURS * 3600;
+        }
+        textNext = next > now ? guiString('rlNextTime', [unixDate(next, true)]) + '\n' : '';
+        element.textContent = text + (flagNext ? textNext : '');
         element.classList.toggle('wait', flagNext);
-        element.classList.toggle('count', !flagNext);
-        document.getElementById('rlStats').textContent = guiString('rlStats', [numToCollect, numTotal]);
+        document.getElementById('rlStats').innerHTML = Dialog.escapeHtmlBr((flagNext ? '' : textNext) + guiString('rlStats', [numToCollect, numTotal]));
     }
 
     /*

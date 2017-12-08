@@ -999,8 +999,21 @@ function onMessage(request, sender, sendResponse) {
                 if (reward.cmt < 0 && exPrefs.rewardsCloseErrors) flagClose = false;
                 var existingReward = daGame.getReward(reward.id);
                 if (existingReward) {
-                    var html = chrome.i18n.getMessage('rlRewardInfo', [unixDate(existingReward.adt, true)]);
-                    if (existingReward.cid) html += '<br/><a target="_blank" href="https://www.facebook.com/' + existingReward.cid + '"><img src="https://graph.facebook.com/v2.8/' + existingReward.cid + '/picture"/><br/>' + existingReward.cnm + '</a>';
+                    var html = '';
+                    html += '<center style="font-family:sans-serif;font-size:12pt;margin:4px 0px;">';
+                    html += '<table border="0" cellpadding="4" style="border:2px solid #36648b;"><tbody>';
+                    html += '<tr bgcolor="#3e8cc6" style="color:white">';
+                    html += '<th>' + chrome.i18n.getMessage('rlId') + '</th>';
+                    html += '<th>' + chrome.i18n.getMessage('rlInsertDate') + '</th>';
+                    html += '<th>' + chrome.i18n.getMessage('rlCollectDate') + '</th>';
+                    if (existingReward.cid) html += '<th>' + chrome.i18n.getMessage('rlOwner') + '</th>';
+                    html += '</tr><tr style="background-color:#e7e7e7;color:black;">';
+                    html += '<td>' + existingReward.id + '</td>';
+                    html += '<td>' + unixDate(existingReward.adt, true) + '</td>';
+                    html += '<td>' + unixDate(existingReward.cdt || reward.cdt, true) + '</td>';
+                    var cid = existingReward.cid || reward.cid;
+                    if (cid) html += '<td><a target="_blank" href="https://www.facebook.com/' + cid + '"><img src="https://graph.facebook.com/v2.8/' + cid + '/picture" valign="middle" style="margin-right:8px"/>' + (existingReward.cnm || reward.cnm) + '</a></td>';
+                    html += '</tr></tbody><table>';
                     result = {};
                     result.html = html;
                 }

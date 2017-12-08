@@ -29,7 +29,7 @@ function gcTable_remove(div) {
     if (div) {
         removeNode(div);
         div = gcTable_div.getElementsByClassName('DAF-gc-counter')[0];
-        if (div) div.firstChild.textContent = pad2(gcTable_div.childNodes.length - 1);
+        if (div) div.firstChild.textContent = gcTable_div.childNodes.length - 1;
         var heightAfter = gcTable_div.offsetHeight;
         // scrollbar was hidden and we are in full window?
         if (heightBefore > heightAfter && DAF.getValue('fullWindow')) {
@@ -64,10 +64,6 @@ function setgcTableOptions() {
         if (heightBefore > heightAfter) gcTable_div.style.overflowX = 'scroll';
         else if (heightBefore < heightAfter) forceResizeLater();
     }
-}
-
-function pad2(n) {
-    return (String(n)).padStart(2, '0');
 }
 
 function gcTable(forceRefresh = false, simulate = 0) {
@@ -144,13 +140,13 @@ function gcTable(forceRefresh = false, simulate = 0) {
             className: 'DAF-gc-counter'
         }, gcTable_div);
         createElement('div', {
-            textContent: pad2(gcNeighbours.length)
+            textContent: gcNeighbours.length
         }, counter);
         createElement('div', {
             textContent: '/'
         }, counter);
         createElement('div', {
-            textContent: pad2(maxGC)
+            textContent: maxGC
         }, counter);
 
         setgcTableOptions();

@@ -30,6 +30,7 @@
             REWARDLINKS_HISTORY_MAXBYTES: 500000,
             rewardLinksData: {},
             rewardLinksHistory: '',
+            rewardLinksRecent: {},
             init: function(parent) {
                 parent.__public = this;
                 // Uncomment this to force user to reload game everytime we update
@@ -535,15 +536,24 @@
                 now = getUnixTime(),
                 rewardLinksData = __public.rewardLinksData,
                 rewardLinksHistory = __public.rewardLinksHistory,
+                rewardLinksRecent = __public.rewardLinksRecent,
+                removeThreshold = now - 3600,
                 data = {},
-                flagStoreData = false;
+                flagStoreData = false,
+                flagRefresh = false;
+            // remove old "Recent" rewards older than one hour
+            Object.keys(rewardLinksRecent).forEach(id => {
+                if (rewardLinksRecent[id] < removeThreshold) delete rewardLinksRecent[id];
+            });
             arr.forEach(reward => {
                 if (!reward || !reward.id) return;
                 // do not add old links
                 if (rewardLinksHistory.indexOf(',' + reward.id + ',') >= 0) return;
+                rewardLinksRecent[reward.id] = now;
+                flagRefresh = true;
                 var existingReward = __public.getReward(reward.id);
                 // store initial time of collection
-                if (reward.cdt && !rewardLinksData.first) {
+                if (reward.cdt && reward.cmt > 0 && !rewardLinksData.first) {
                     rewardLinksData.first = reward.cdt;
                     flagStoreData = true;
                 }
@@ -592,13 +602,12 @@
             var count = Object.keys(data).length;
             if (flagStoreData || count > 0) {
                 if (flagStoreData) data.rewardLinksData = rewardLinksData;
-                chrome.storage.local.set(data, () => {
-                    if (count > 0) {
-                        if (exPrefs.debug) console.log("Send rewards update");
-                        chrome.runtime.sendMessage({
-                            cmd: 'rewards-update'
-                        });
-                    }
+                chrome.storage.local.set(data);
+            }
+            if (flagRefresh) {
+                if (exPrefs.debug) console.log("Send rewards update");
+                chrome.runtime.sendMessage({
+                    cmd: 'rewards-update'
                 });
             }
             return count;

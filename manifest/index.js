@@ -249,6 +249,7 @@ var guiTabs = (function() {
 
             self.dialog = Dialog();
             self.wait = Dialog(Dialog.WAIT);
+            self.toast = Dialog(Dialog.TOAST);
 
             // Sort what we loaded, so we display in a prefered order
             tabOrder = loaded.reduce(function(keep, tab, idx) {

@@ -46,7 +46,6 @@ div.DAF-gc-counter {
   display: inline-block;
   background-color: #113;
   width: 40px;
-  height: 45px;
   color: #88D;
   font-size: 22px;
   padding: 12px 3px 12px 3px;
@@ -62,7 +61,8 @@ div.DAF-gc-counter {
 }
 
 div.DAF-gc-counter div:nth-child(1) {
-  text-align: left;
+  text-align: right;
+  padding-right: 22px;
 }
 
 div.DAF-gc-counter div:nth-child(2) {
@@ -70,7 +70,8 @@ div.DAF-gc-counter div:nth-child(2) {
 }
 
 div.DAF-gc-counter div:nth-child(3) {
-  text-align: right;
+  text-align: left;
+  padding-left: 22px;
 }
 
 div.DAF-gc-level {
@@ -121,6 +122,11 @@ div.DAF-gc-level {
 
 .DAF-gc-small div.DAF-gc-name {
   font-size: 10pt;
+  height: 19px;
+}
+
+div.DAF-gc-counter {
+  height: 46px;
 }
 
 
@@ -133,10 +139,11 @@ div.DAF-gc-level {
 
 .DAF-gc-large div.DAF-gc-name {
   font-size: 12pt;
+  height: 22px;
 }
 
 .DAF-gc-large div.DAF-gc-counter {
-  height: 63;
+  height: 64px;
 }
 
 
