@@ -574,8 +574,10 @@ var guiTabs = (function(self) {
             Object.keys(bgp.daGame.daUser.achievs).forEach(function(id) {
                 let user = bgp.daGame.daUser.achievs[id];
                 let goal = bgp.daGame.daAchievs[user.def_id];
-                if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
-                    score.val = score.val + parseInt(user.confirmed_level);
+                if (goal) {
+                    if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
+                        score.val = score.val + parseInt(user.confirmed_level);
+                    }
                 }
             });
         }
