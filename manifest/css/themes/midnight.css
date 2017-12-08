@@ -1,0 +1,291 @@
+body {
+  font-family: Verdana;
+  color: #fafafa;
+  background: black;
+}
+
+.header {
+  color: #404094;
+}
+
+.footer {
+  color: #1a1a1a;
+}
+
+.c-tabs-nav__link {
+  color: #404094;
+  background-color: #000024;
+}
+
+.c-tabs-nav__link:hover {
+  color: #6d6d6d;
+}
+
+.c-tabs-nav__link.is-active {
+  color: #909090;
+  background-color: #101010;
+}
+
+.c-tab,
+.c-alert {
+  background-color: #101010;
+}
+
+.card>h1:first-child {
+  color: #404094;
+  background-color: #000024;
+  background-image: -webkit-linear-gradient(top, #000024, #000);
+}
+
+.card>div:nth-child(2) {
+  color: #909090;
+  background-color: #000024;
+  background-image: -webkit-linear-gradient(bottom, #000024, #000);
+}
+
+#newsFlash {
+  color: #404094;
+}
+
+.rounded {
+  color: #606060;
+  background: #404094;
+  background-image: -webkit-linear-gradient(top, #000024, #404094);
+}
+
+div.rounded hr {
+  background: #404094;
+}
+
+div.rounded span {
+  color: #909090;
+}
+
+button {
+  font-family: Arial;
+  color: #909090;
+  background: #404094;
+  background-image: -webkit-linear-gradient(top, #404094, #202074);
+}
+
+button:hover {
+  color: whitesmoke;
+  background: #202074;
+  background-image: -webkit-linear-gradient(top, #202074, #404094);
+}
+
+input[type='radio']:after {
+  background-color: #d1d3d1;
+  border: 2px solid white;
+}
+
+input[type='radio']:checked:after {
+  background-color: Gold;
+  border: 2px solid white;
+}
+
+table {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: normal;
+  border-color: #202074;
+  color: Black;
+}
+
+th,
+td {
+  font-family: Arial, sans-serif;
+  border-color: #202074;
+}
+
+.sub-break tr,
+thead {
+  color: #909090;
+  background: #404094;
+  background-image: -webkit-linear-gradient(top, #404094, #202074);
+}
+
+.sub-footer tr,
+tr.group-footer th,
+td.wiki-hover {
+  color: #2980b9;
+  background: #202074;
+  background-image: -webkit-linear-gradient(top, #202074, #404094, #202074);
+}
+
+tfoot,
+tr.group-header th,
+.crowns tfoot tr:nth-child(1),
+#evTable thead tr:nth-child(2) {
+  color: #909090;
+  background: #202074;
+  background-image: -webkit-linear-gradient(top, #202074, #404094);
+}
+
+tfoot tr th:last-child {
+  font-family: monospace;
+}
+
+tbody tr {
+  color: #909090;  
+  background: black;
+}
+
+tbody.no-row-coloring tr,
+tbody tr:nth-child(even) {
+  color: #909090;  
+  background: #101010;
+}
+
+tr.bad-gift td:nth-child(5),
+tr.bad-gift td:nth-child(6) {
+  background-color: #ffcccc;
+}
+
+tr.high-level td {
+  color: LightGray;
+  border-color: #404094;
+}
+
+.crowns input {
+  color: #909090;
+  background: #202074;
+  border-color: #404094;
+}
+
+.crowns tbody tr td,
+.recipes tbody tr td {
+  color: #909090;  
+  background: black;
+}
+
+.crowns tfoot {
+  background: black;
+  color: #404094;
+}
+
+tr.selectable:hover {
+  background-color: purple;
+  color: black;
+}
+
+progress::-webkit-progress-bar {
+  background: #202074;
+}
+
+tfoot tr td progress::-webkit-progress-bar {
+  background: #404094;
+}
+
+input[type=range] {
+  background: #404094;
+}
+
+form {
+  color: #404094;
+}
+
+form li {
+  color: #909090;
+  background: #404094;
+  border: 1px solid #101064;
+}
+
+form li>label {
+  color: #909090;
+  background: #404094;
+}
+
+form li>section {
+  color: #909090;
+  background: #202074;
+  background-image: -webkit-linear-gradient(top, #202074, #404094);
+}
+
+form li>span {
+  color: #909090;
+  background: #404094;
+  background-image: -webkit-linear-gradient(top, #404094, #101064);
+  border-top: 1px solid #101064;
+}
+
+form input[type="text"],
+form input[type="date"],
+form input[type="datetime"],
+form input[type="email"],
+form input[type="number"],
+form input[type="search"],
+form input[type="time"],
+form input[type="url"],
+form input[type="password"],
+form textarea,
+form select {
+  color: #909090;  
+  background: #202074;
+}
+
+/*
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form input[type="datetime"]:focus,
+form input[type="email"]:focus,
+form input[type="number"]:focus,
+form input[type="search"]:focus,
+form input[type="time"]:focus,
+form input[type="url"]:focus,
+form input[type="password"]:focus,
+form textarea:focus,
+form select:focus {}
+*/
+
+.__cdt-Warn1 {
+  background-color: yellow;
+}
+
+.__cdt-Warn2 {
+  background-color: orange;
+}
+
+.__cdt-Ended {
+  background-color: red;
+}
+
+.__cdt-Ready {
+  background-color: green;
+}
+
+.info,
+.success,
+.error,
+.warning,
+.tip,
+.secure,
+.message,
+.download,
+.busy,
+.print {
+  -webkit-box-shadow: 7px 7px #dfe1d8;
+}
+
+div.gallery-inner {
+  border: 2px solid #404094;
+}
+
+/** Vertical Menus **/
+.v-menu ul {
+  background-color: #0A0A0A;
+}
+
+.v-menu li a {
+  color: #404094;
+  border-bottom: 1px solid #000020;
+}
+
+.v-menu li a.active {
+  background-color: #101010;
+  color: #909090;
+}
+
+.v-menu li a:hover:not(.active) {
+  background-color: #101010;
+  color: white;
+}

@@ -12,7 +12,8 @@ var eventDASync = new Event('daSync');
 var pageThemes = {
     'default': 'cssDefault',
     'minty': 'cssMinty',
-    'rose': 'cssRose'
+    'rose': 'cssRose',
+    'midnight': 'cssMidnight'
 };
 
 /** Not used yet
