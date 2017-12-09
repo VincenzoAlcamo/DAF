@@ -409,20 +409,18 @@ var guiTabs = (function(self) {
     }
 
     function showStats() {
-        if (numToAnalyze == numAnalyzed || numToAnalyze == 0) {
-            self.wait.hide();
-        } else {
-            var num = Math.min(numAnalyzed > 0 ? numAnalyzed + 1 : 0, numToAnalyze);
-            self.wait.setText(guiString('AnalyzingMatches', [Math.floor(num / numToAnalyze * 100), num, numToAnalyze]));
-        }
         var html = [];
         if (bgp.daGame.friendsCollectDate > 0) {
             html.push(guiString('FriendUpdateInfo', [numberWithCommas(numFriends), numberWithCommas(numNeighbours), unixDate(bgp.daGame.friendsCollectDate, 'full')]));
         }
-        if (numToAnalyze != numAnalyzed) {
-            if (bgp.daGame.friendsCollectDate > 0)
-                html.push('<br>');
-            html.push(guiString('AnalyzingMatches', [Math.floor(numAnalyzed / numToAnalyze * 100)]));
+        if (numToAnalyze == numAnalyzed || numToAnalyze == 0) {
+            self.wait.hide();
+        } else {
+            var num = Math.min(numAnalyzed > 0 ? numAnalyzed + 1 : 0, numToAnalyze),
+                analyzingText = guiString('AnalyzingMatches', [Math.floor(num / numToAnalyze * 100), num, numToAnalyze]);
+            self.wait.setText(analyzingText);
+            if (html.length) html.push('<br>');
+            html.push(analyzingText);
         }
         document.getElementById('ifStats').innerHTML = html.join('');
 
