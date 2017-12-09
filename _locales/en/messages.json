@@ -1071,6 +1071,9 @@
     "rlRemoveLinks": {
         "message": "Remove old links"
     },
+    "rlRemoveSelected": {
+        "message": "Remove selected"
+    },
     "rlRemoveLinksDays": {
         "message": "Remove non-collectable reward links older than #DAYS# days.\nThis includes expired links and links already collected.\nLinks older than $NUM$ days are removed periodically.",
         "placeholders": {
@@ -1083,7 +1086,7 @@
         "message": "No links to remove!"
     },
     "rlRemoveConfirm": {
-        "message": "Links that will be removed: $NUM$\n\nProceed with the removal?",
+        "message": "Links that will be removed: $NUM$\nRemoved links can no longer be added.\n\nProceed with the removal?",
         "placeholders": {
             "num": {
                 "content": "$1"

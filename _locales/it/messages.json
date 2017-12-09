@@ -596,7 +596,7 @@
         "message": "Lettura lista degli amici in corso ..."
     },
     "GhostFriendRemoving": {
-        "message": "Rimozione in corso ($NUM$ / $TOTAL$)",
+        "message": "Rimozione amici \"fantasmi\" in corso ($NUM$ / $TOTAL$)",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -1062,6 +1062,9 @@
     "rlRemoveLinks": {
         "message": "Rimuovi i vecchi links"
     },
+    "rlRemoveSelected": {
+        "message": "Rimuovi selezionati"
+    },
     "rlRemoveLinksDays": {
         "message": "Rimuovi i link ricompensa non raccoglibili più vecchi di #DAYS# giorni.\nQuesto include i link scaduti e i link già raccolti.\nI link più vecchi di $NUM$ giorni vengono rimossi periodicamente.",
         "placeholders": {
@@ -1074,7 +1077,7 @@
         "message": "Nessun link da rimuovere!"
     },
     "rlRemoveConfirm": {
-        "message": "Link che verranno rimossi: $NUM$\n\nProcedere con la rimozione?",
+        "message": "Link che verranno rimossi: $NUM$\nI link rimossi non potranno più essere aggiunti.\n\nProcedere con la rimozione?",
         "placeholders": {
             "num": {
                 "content": "$1"

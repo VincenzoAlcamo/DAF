@@ -30,6 +30,7 @@ var guiTabs = (function(self) {
     function onInit(id, cel) {
         document.getElementById('rlAddLinks').addEventListener('click', onclickAddLinks);
         document.getElementById('rlRemoveLinks').addEventListener('click', onclickRemoveLinks);
+        document.getElementById('rlRemoveSelected').addEventListener('click', onclickRemoveSelected);
 
         rlTable = document.getElementById("rlTable");
         sorttable.makeSortable(rlTable);
@@ -47,8 +48,12 @@ var guiTabs = (function(self) {
     }
 
     function onclickTable(event) {
-        if (event.target && event.target.classList.contains('rlLink')) {
-            var row = event.target.parentNode.parentNode,
+        var target = event.target;
+        if (!target) return true;
+        if (target.tagName == 'INPUT') {
+            target.parentNode.parentNode.classList.toggle('selected', target.checked);
+        } else if (target.classList.contains('rlLink')) {
+            var row = target.parentNode.parentNode,
                 rewardId = row.id.substr(3),
                 reward = bgp.daGame.getReward(rewardId),
                 title = '',
@@ -128,7 +133,8 @@ var guiTabs = (function(self) {
 
     function onclickRemoveLinks() {
         var html = [],
-            days = parseInt(bgp.exPrefs.rewardsRemoveDays) || 0;
+            days = parseInt(bgp.exPrefs.rewardsRemoveDays) || 0,
+            title = guiString('rlRemoveLinks');
         if (days <= 0 || days > bgp.daGame.REWARDLINKS_REMOVE_DAYS - 1) days = bgp.daGame.REWARDLINKS_REMOVE_DAYS;
         html.push('<select name="days">');
         for (var i = 1; i <= bgp.daGame.REWARDLINKS_REMOVE_DAYS - 1; i++)
@@ -136,7 +142,7 @@ var guiTabs = (function(self) {
         html.push('</select>');
         html = Dialog.escapeHtmlBr(guiString('rlRemoveLinksDays', [bgp.daGame.REWARDLINKS_REMOVE_DAYS])).replace('#DAYS#', html.join(''));
         self.dialog.show({
-            title: guiString('rlRemoveLinks'),
+            title: title,
             html: html,
             style: [Dialog.CONFIRM, Dialog.CANCEL]
         }, function(method, params) {
@@ -149,21 +155,39 @@ var guiTabs = (function(self) {
                     expiryThreshold = now - bgp.daGame.REWARDLINKS_VALIDITY_DAYS * SECONDS_IN_A_DAY,
                     checkThreshold = now - days * SECONDS_IN_A_DAY;
                 rewards = rewards.filter(reward => reward.adt <= checkThreshold && (reward.adt <= expiryThreshold || (reward.cmt || 0) != 0));
-                if (rewards.length == 0) self.dialog.show({
-                    title: guiString('rlRemoveLinks'),
-                    text: guiString('rlRemoveNone'),
-                    style: [Dialog.OK]
-                });
-                else self.dialog.show({
-                    title: guiString('rlRemoveLinks'),
-                    text: guiString('rlRemoveConfirm', [rewards.length]),
-                    style: [Dialog.CONFIRM, Dialog.CANCEL]
-                }, function(method) {
-                    if (method != Dialog.CONFIRM) return;
-                    bgp.daGame.removeReward(rewards, updateTable);
-                });
+                removeLinks(title, rewards);
             }
         });
+    }
+
+    function onclickRemoveSelected() {
+        var rewards = Object.values(bgp.daGame.getRewards());
+        rewards = rewards.filter(reward => {
+            var row = document.getElementById(getRowId(reward)),
+                cell = row && row.cells[0],
+                input = cell && cell.firstChild;
+            return input && input.checked ? true : false;
+        });
+        removeLinks(guiString('rlRemoveSelected'), rewards);
+    }
+
+    function removeLinks(title, rewards) {
+        if (rewards.length == 0) {
+            self.dialog.show({
+                title: title,
+                text: guiString('rlRemoveNone'),
+                style: [Dialog.OK]
+            });
+        } else {
+            self.dialog.show({
+                title: title,
+                text: guiString('rlRemoveConfirm', [rewards.length]),
+                style: [Dialog.CONFIRM, Dialog.CANCEL]
+            }, function(method) {
+                if (method != Dialog.CONFIRM) return;
+                bgp.daGame.removeReward(rewards, updateTable);
+            });
+        }
     }
 
     function getFBFriendAvatarUrl(fb_id) {
@@ -232,20 +256,23 @@ var guiTabs = (function(self) {
                 row.insertCell();
                 row.insertCell();
                 row.insertCell();
+                row.insertCell();
                 cell = row.cells[0];
-                cell.innerHTML = '<a class="rlLink" target="_blank" href="' + getLink(reward, bgp.exPrefs.linkGrabConvert) + '">' + reward.id + '</a>';
+                cell.innerHTML = '<input type="checkbox">';
                 cell = row.cells[1];
+                cell.innerHTML = '<a class="rlLink" target="_blank" href="' + getLink(reward, bgp.exPrefs.linkGrabConvert) + '">' + reward.id + '</a>';
+                cell = row.cells[2];
                 cell.textContent = unixDate(reward.adt, true);
                 cell.setAttribute('sorttable_customkey', reward.adt);
                 flagNew = true;
             }
-            cell = row.cells[2];
+            cell = row.cells[3];
             if (reward.cdt && cell.getAttribute('sorttable_customkey') != reward.cdt) {
                 cell.setAttribute('sorttable_customkey', reward.cdt);
                 cell.textContent = unixDate(reward.cdt, true);
                 flagUpdated = true;
             }
-            cell = row.cells[3];
+            cell = row.cells[4];
             if (materialId && cell.getAttribute('materialid') != materialId) {
                 cell.setAttribute('materialid', materialId);
                 cell.classList.toggle('rlAlert', materialId < 0);
@@ -254,7 +281,7 @@ var guiTabs = (function(self) {
                 else cell.removeAttribute('sorttable_customkey');
                 flagUpdated = true;
             }
-            cell = row.cells[4];
+            cell = row.cells[5];
             if (reward.cid && cell.getAttribute('cid') != reward.cid) {
                 cell.setAttribute('cid', reward.cid);
                 cell.innerHTML = '<a class="rlUser" target="_blank" href="https://www.facebook.com/' + reward.cid + '"><img class="rlUser" src="' + getFBFriendAvatarUrl(reward.cid) + '"/>' + reward.cnm + '</a>';
