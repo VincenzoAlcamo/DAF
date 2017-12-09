@@ -77,11 +77,11 @@ var sorttable = (function() {
                         if (cellIndex == sortCellIndex) value = SortTable.getInnerText(cellData);
                         cellIndex += cellData.colSpan;
                     });
-                    arr.push([convert(value), rows.slice(rowIndex, rowIndex + rowSpan), flagAscending ? rowIndex : -rowIndex]);
+                    arr.push([convert(value), rows.slice(rowIndex, rowIndex + rowSpan), rowIndex]);
                     rowIndex += rowSpan;
                 }
             } else {
-                arr = rows.map(row => [convert(SortTable.getInnerText(row.cells[sortCellIndex])), row, flagAscending ? row.rowIndex : -row.rowIndex]);
+                arr = rows.map(row => [convert(SortTable.getInnerText(row.cells[sortCellIndex])), row, row.rowIndex]);
             }
             arr.sort((a, b) => sort(a[0], b[0]) || (a[2] - b[2]));
             if (!flagAscending) arr.reverse();
@@ -117,11 +117,23 @@ var sorttable = (function() {
                 var text = [];
                 for (var node = node.firstChild; node; node = node.nextSibling) {
                     if (node.nodeType == 1) {
-                        text.push(node.nodeName == 'INPUT' ? node.value.trim() : getText(node));
+                        var value;
+                        if (node.nodeName == 'INPUT') {
+                            value = node.value;
+                            if ((node.type == 'checkbox' || node.type == 'radio') && !node.checked) value = '';
+                            if (typeof value != 'string') {
+                                value = value === null || value === undefined ? '' : String(value);
+                            }
+                            value = value.trim();
+                        } else {
+                            value = getText(node);
+                        }
+                        text.push(value);
                     } else if (node.nodeType == 3) {
                         text.push(node.nodeValue.trim());
                     }
                 }
+                return text.join(' ');
             }
         }
     };
