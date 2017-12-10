@@ -329,6 +329,7 @@
                     rewardLinksData.first = rewardLinksData.first || 0;
                     rewardLinksData.next = rewardLinksData.next || 0;
                     rewardLinksData.count = rewardLinksData.count || 0;
+                    rewardLinksData.expired = rewardLinksData.expired || '';
                     __public.rewardLinksData = rewardLinksData;
                     // ensure rewardLinksHistory starts and ends with a comma
                     __public.rewardLinksHistory = ',' + (data.rewardLinksHistory || '').replace(/^,+|,+$/g, '') + ',';
@@ -525,10 +526,24 @@
             chrome.storage.local.remove(keys, callback);
         };
         __public.removeExpiredRewardLinks = function() {
-            // remove old links
             var rewards = Object.values(__public.rewards),
-                removeThreshold = getUnixTime() - __public.REWARDLINKS_REMOVE_DAYS * SECONDS_IN_A_DAY,
-                rewardsToRemove = rewards.filter(reward => reward.adt <= removeThreshold);
+                threshold;
+            // check expired
+            var maxExpired = '';
+            threshold = getUnixTime() - __public.REWARDLINKS_VALIDITY_DAYS * SECONDS_IN_A_DAY;
+            rewards.forEach(reward => {
+                if (reward.adt <= threshold && __public.compareRewardId(reward.id, maxExpired) > 0) maxExpired = reward.id;
+            });
+            if (__public.compareRewardId(maxExpired, __public.rewardLinksData.expired) > 0) {
+                // this reward is expired and its id is greater than the last recorded one -> store it
+                __public.rewardLinksData.expired = maxExpired;
+                chrome.storage.local.set({
+                    rewardLinksData: __public.rewardLinksData
+                });
+            }
+            // remove old links
+            threshold = getUnixTime() - __public.REWARDLINKS_REMOVE_DAYS * SECONDS_IN_A_DAY;
+            var rewardsToRemove = rewards.filter(reward => reward.adt <= threshold);
             if (rewardsToRemove.length) __public.removeReward(rewardsToRemove);
         };
         __public.addRewardLinks = function(rewardsOrArray) {
@@ -547,38 +562,39 @@
             });
             arr.forEach(reward => {
                 if (!reward || !reward.id) return;
-                // do not add old links
-                if (rewardLinksHistory.indexOf(',' + reward.id + ',') >= 0) return;
-                rewardLinksRecent[reward.id] = now;
-                flagRefresh = true;
-                var existingReward = __public.getReward(reward.id);
-                // store initial time of collection
-                if (reward.cdt && reward.cmt > 0 && !rewardLinksData.first) {
-                    rewardLinksData.first = reward.cdt;
-                    flagStoreData = true;
-                }
-                // We will add the reward if any one of these conditions is true:
-                // - reward has a material, meaning it has been correctly collected
-                // - existing reward does not exist
-                // - reward has some info that is missing in then existing reward (collect date, user id)
-                if (!existingReward || reward.cmt > 0 ||
-                    (reward.cmt && !existingReward.cmt) ||
-                    (reward.cdt && !existingReward.cdt) ||
-                    (reward.cid && !existingReward.cid)) {
-                    existingReward = existingReward || {
-                        id: reward.id,
-                        typ: reward.typ,
-                        sig: reward.sig,
-                        adt: reward.cdt || now
-                    };
-                    if (reward.cdt) existingReward.cdt = reward.cdt;
-                    if (reward.cmt) existingReward.cmt = reward.cmt;
-                    if (reward.cid) {
-                        // overwrite existing if owner id is different or existing has no owner name
-                        if (reward.cnm && (existingReward.cid != reward.cid || !existingReward.cnm)) existingReward.cnm = reward.cnm;
-                        existingReward.cid = reward.cid;
-                    } else if (reward.cnm && !existingReward.cnm) existingReward.cnm = reward.cnm;
-                    data[rewardGetId(existingReward)] = __public.rewards[existingReward.id] = existingReward;
+                // do not process old links, except when collection was successful
+                if (rewardLinksHistory.indexOf(',' + reward.id + ',') < 0 || reward.cmt > 0) {
+                    rewardLinksRecent[reward.id] = now;
+                    flagRefresh = true;
+                    var existingReward = __public.getReward(reward.id);
+                    // store initial time of collection
+                    if (reward.cdt && reward.cmt > 0 && !rewardLinksData.first) {
+                        rewardLinksData.first = reward.cdt;
+                        flagStoreData = true;
+                    }
+                    // We will add the reward if any one of these conditions is true:
+                    // - reward has a material, meaning it has been correctly collected
+                    // - existing reward does not exist
+                    // - reward has some info that is missing in then existing reward (collect date, user id)
+                    if (!existingReward || reward.cmt > 0 ||
+                        (reward.cmt && !existingReward.cmt) ||
+                        (reward.cdt && !existingReward.cdt) ||
+                        (reward.cid && !existingReward.cid)) {
+                        existingReward = existingReward || {
+                            id: reward.id,
+                            typ: reward.typ,
+                            sig: reward.sig,
+                            adt: reward.cdt || now
+                        };
+                        if (reward.cdt) existingReward.cdt = reward.cdt;
+                        if (reward.cmt) existingReward.cmt = reward.cmt;
+                        if (reward.cid) {
+                            // overwrite existing if owner id is different or existing has no owner name
+                            if (reward.cnm && (existingReward.cid != reward.cid || !existingReward.cnm)) existingReward.cnm = reward.cnm;
+                            existingReward.cid = reward.cid;
+                        } else if (reward.cnm && !existingReward.cnm) existingReward.cnm = reward.cnm;
+                        data[rewardGetId(existingReward)] = __public.rewards[existingReward.id] = existingReward;
+                    }
                 }
                 // Daily max reached?
                 var next = 0;
@@ -589,6 +605,10 @@
                     flagStoreData = true;
                     if (rewardLinksData.count == __public.REWARDLINKS_DAILY_LIMIT)
                         next = rewardLinksData.first + __public.REWARDLINKS_REFRESH_HOURS * 3600;
+                } else if (reward.cmt == -1 && __public.compareRewardId(reward.id, rewardLinksData.expired) > 0) {
+                    // this reward is expired and its id is greater than the last recorded one -> store it
+                    rewardLinksData.expired = reward.id;
+                    flagStoreData = true;
                 }
                 if (next) {
                     // round to the next minute
@@ -611,6 +631,9 @@
                 });
             }
             return count;
+        };
+        __public.compareRewardId = function(id1, id2) {
+            return id1.length - id2.length || id1.localeCompare(id2);
         };
 
         /*********************************************************************

@@ -976,6 +976,9 @@
     "rlBroken": {
         "message": "LINK NON VALIDO"
     },
+    "rlProbablyExpired": {
+        "message": "LINK PROBABILMENTE SCADUTO"
+    },
     "rlAddLinks": {
         "message": "Aggiungi link"
     },
@@ -1058,6 +1061,9 @@
     },
     "rlInfoMayExceedLimit": {
         "message": "Ci sono altre ricompense in attesa di raccolta e con questa potresti aver superato il limite giornaliero."
+    },
+    "rlInfoProbablyExpired": {
+        "message": "Questo link è probabilmente scaduto.\nGli id dei link sono generati in sequenza e l'id di questa ricompensa è inferiore a quello di una ricompensa già scaduta."
     },
     "rlRemoveLinks": {
         "message": "Rimuovi i vecchi links"

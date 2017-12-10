@@ -50,55 +50,70 @@ var guiTabs = (function(self) {
     function onclickTable(event) {
         var target = event.target;
         if (!target) return true;
+
+        var reasons = [];
+
+        function pushReason(title, text) {
+            reasons.push({
+                title: title,
+                text: text
+            });
+        }
+
+        function showNextReason() {
+            var reason = reasons.shift();
+            if (!reason) {
+                target.setAttribute('clickanyway', '1');
+                target.click();
+                return;
+            }
+            self.dialog.show({
+                title: reason.title,
+                text: reason.text + '\n\n' + guiString('rlCollectAnyway'),
+                defaultButton: Dialog.CANCEL,
+                style: [Dialog.CRITICAL, Dialog.CONFIRM, Dialog.CANCEL]
+            }, function(method, params) {
+                if (method == Dialog.CONFIRM) showNextReason();
+            });
+        }
+
         if (target.tagName == 'INPUT') {
             target.parentNode.parentNode.classList.toggle('selected', target.checked);
         } else if (target.classList.contains('rlLink')) {
             var row = target.parentNode.parentNode,
                 rewardId = row.id.substr(3),
                 reward = bgp.daGame.getReward(rewardId),
-                title = '',
-                text = '',
                 now = getUnixTime(),
                 countClicked;
             if (reward) {
                 if (event.target.getAttribute('clickanyway') == '1') {
                     event.target.removeAttribute('clickanyway');
-                } else if (reward.cmt == -2 || reward.cmt > 0) {
-                    title = guiString('rlCollected');
-                    text = guiString('rlInfoCollected');
-                } else if (reward.cmt == -3) {
-                    title = guiString('rlMaxReached');
-                    text = guiString('rlInfoMaxReached', [bgp.daGame.REWARDLINKS_DAILY_LIMIT])
-                } else if (reward.cmt == -1) {
-                    title = guiString('rlExpired');
-                    text = guiString('rlInfoExpired', [bgp.daGame.REWARDLINKS_VALIDITY_DAYS])
-                } else if (reward.cmt == -4) {
-                    title = guiString('rlNoSelf');
-                    text = guiString('rlInfoNoSelf');
-                } else if (reward.cmt == -5) {
-                    title = guiString('rlBroken');
-                    text = guiString('rlInfoBroken');
-                } else if (bgp.daGame.rewardLinksData.next > now) {
-                    title = guiString('rlMaxReached');
-                    text = guiString('rlAllCollected') + '\n' + guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]);
-                } else if ((countClicked = Object.keys(me.clicked).length) > 0 && countClicked + bgp.daGame.rewardLinksData.count >= bgp.daGame.REWARDLINKS_DAILY_LIMIT) {
-                    title = guiString('rlMaxReached');
-                    text = guiString('rlInfoMayExceedLimit');
-                }
-                if (title) {
-                    event.preventDefault();
-                    self.dialog.show({
-                        title: title,
-                        text: text + '\n\n' + guiString('rlCollectAnyway'),
-                        defaultButton: Dialog.CANCEL,
-                        style: [Dialog.CRITICAL, Dialog.CONFIRM, Dialog.CANCEL]
-                    }, function(method, params) {
-                        if (method == Dialog.CONFIRM) {
-                            event.target.setAttribute('clickanyway', '1');
-                            event.target.click();
-                        }
-                    });
-                    return false;
+                } else {
+                    if (reward.cmt == -2 || reward.cmt > 0) {
+                        pushReason(guiString('rlCollected'), guiString('rlInfoCollected'));
+                    } else if (reward.cmt == -3) {
+                        pushReason(guiString('rlMaxReached'), guiString('rlInfoMaxReached', [bgp.daGame.REWARDLINKS_DAILY_LIMIT]));
+                    } else if (reward.cmt == -1) {
+                        pushReason(guiString('rlExpired'), guiString('rlInfoExpired', [bgp.daGame.REWARDLINKS_VALIDITY_DAYS]));
+                    } else if (reward.cmt == -4) {
+                        pushReason(guiString('rlNoSelf'), guiString('rlInfoNoSelf'));
+                    } else if (reward.cmt == -5) {
+                        pushReason(guiString('rlBroken'), guiString('rlInfoBroken'));
+                    }
+                    if (bgp.daGame.rewardLinksData.next > now) {
+                        pushReason(guiString('rlMaxReached'), guiString('rlAllCollected') + '\n' + guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]));
+                    }
+                    if (bgp.daGame.compareRewardId(reward.id, bgp.daGame.rewardLinksData.expired || '') <= 0) {
+                        pushReason(guiString('rlProbablyExpired'), guiString('rlInfoProbablyExpired'));
+                    }
+                    if ((countClicked = Object.keys(me.clicked).length) > 0 && countClicked + bgp.daGame.rewardLinksData.count >= bgp.daGame.REWARDLINKS_DAILY_LIMIT) {
+                        pushReason(guiString('rlMaxReached'), guiString('rlInfoMayExceedLimit'));
+                    }
+                    if (reasons.length) {
+                        event.preventDefault();
+                        showNextReason();
+                        return false;
+                    }
                 }
                 row.setAttribute('status', '1');
                 row.removeAttribute('rldate');
@@ -210,6 +225,7 @@ var guiTabs = (function(self) {
             else if (materialId == -3) text = guiString('rlMaxReached');
             else if (materialId == -4) text = guiString('rlNoSelf');
             else if (materialId == -5) text = guiString('rlBroken');
+            else if (materialId == -6) text = guiString('rlProbablyExpired');
             materialImageCache[materialId] = text ? image + ' ' + Dialog.escapeHtmlBr(text) : '';
         }
         return materialImageCache[materialId];
@@ -225,7 +241,8 @@ var guiTabs = (function(self) {
             dataToSet = [],
             countAdded = 0,
             countUpdated = 0,
-            rewardLinksRecent = bgp.daGame.rewardLinksRecent;
+            rewardLinksRecent = bgp.daGame.rewardLinksRecent,
+            expiredId = bgp.daGame.rewardLinksData.expired || '';
 
         numTotal = numToCollect = 0;
         rows.forEach(row => {
@@ -265,6 +282,11 @@ var guiTabs = (function(self) {
                 cell.textContent = unixDate(reward.adt, true);
                 cell.setAttribute('sorttable_customkey', reward.adt);
                 flagNew = true;
+                if (bgp.daGame.compareRewardId(reward.id, expiredId) <= 0 && !materialId) {
+                    cell = row.cells[4];
+                    cell.classList.add('rlAlert');
+                    cell.innerHTML = materialHTML(-6);
+                }
             }
             cell = row.cells[3];
             if (reward.cdt && cell.getAttribute('sorttable_customkey') != reward.cdt) {

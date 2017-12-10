@@ -985,6 +985,9 @@
     "rlBroken": {
         "message": "BROKEN LINK"
     },
+    "rlProbablyExpired": {
+        "message": "PROBABLY EXPIRED LINK"
+    },
     "rlAddLinks": {
         "message": "Add links"
     },
@@ -1067,6 +1070,9 @@
     },
     "rlInfoMayExceedLimit": {
         "message": "There are other rewards whose collection is pending.\nThis may exceed your daily limit."
+    },
+    "rlInfoProbablyExpired": {
+        "message": "This link is probably expired.\nLinks id are generated sequentially and this reward id is lower than the id of an expired reward."
     },
     "rlRemoveLinks": {
         "message": "Remove old links"
