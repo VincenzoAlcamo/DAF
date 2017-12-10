@@ -1,10 +1,19 @@
 var wait = Dialog(Dialog.WAIT),
-    dialog = Dialog();
+    dialog = Dialog(),
+    retries = 2;
 
-var container = document.getElementById('pagelet_timeline_medley_friends');
-if (!container) alert('Something went wrong!');
-else if (mode == 1) collectStandard();
-else if (mode == 2) collectAlternate()
+function collect() {
+    var container = document.getElementById('pagelet_timeline_medley_friends');
+    if (container) {
+        if (mode == 1) collectStandard();
+        if (mode == 2) collectAlternate();
+    } else if (retries > 0) {
+        retries--;
+        setTimeout(collect, 5000);
+    } else {
+        alert('Something went wrong!');
+    }
+}
 
 function sendFriends(friends) {
     document.title = chrome.i18n.getMessage('CollectStat', [friends.length]);
@@ -229,3 +238,5 @@ function collectAlternate() {
         }
     }
 }
+
+collect();
