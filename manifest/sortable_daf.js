@@ -40,9 +40,17 @@ var sorttable = (function() {
             var cell = this;
             SortTable.sortTable(cell, !cell.classList.contains('DAF-sort-ascending'));
         },
-        applySort: function(table) {
+        getSortInfo: function(table) {
             var cell = Array.from(table.tHead.rows[0].cells).find(cell => cell.classList.contains('DAF-sort-ascending') || cell.classList.contains('DAF-sort-descending'));
-            if (cell) SortTable.sortTable(cell, !cell.classList.contains('DAF-sort-descending'))
+            return {
+                cell: cell,
+                cellIndex: cell ? cell.cellIndex : -1,
+                ascending: cell ? !cell.classList.contains('DAF-sort-descending') : false
+            };
+        },
+        applySort: function(table) {
+            var info = SortTable.getSortInfo(table);
+            if (info && info.cell) SortTable.sortTable(info.cell, info.ascending);
         },
         sortTable: function(cell, flagAscending = true) {
             var row = cell.parentElement,
@@ -50,7 +58,9 @@ var sorttable = (function() {
                 tbody = table.tBodies[0],
                 sortCellIndex = cell.cellIndex,
                 convert = SortTable.convert_alpha,
-                sort = null;
+                sort = null,
+                info = SortTable.getSortInfo(table),
+                fixDescending = info.cellIndex != cell.cellIndex || info.ascending ? 1 : -1;
             if (cell.classList.contains('sorttable_nosort')) return;
             cell.classList.forEach(name => {
                 var suffix, i;
@@ -77,11 +87,11 @@ var sorttable = (function() {
                         if (cellIndex == sortCellIndex) value = SortTable.getInnerText(cellData);
                         cellIndex += cellData.colSpan;
                     });
-                    arr.push([convert(value), rows.slice(rowIndex, rowIndex + rowSpan), rowIndex]);
+                    arr.push([convert(value), rows.slice(rowIndex, rowIndex + rowSpan), fixDescending * rowIndex]);
                     rowIndex += rowSpan;
                 }
             } else {
-                arr = rows.map(row => [convert(SortTable.getInnerText(row.cells[sortCellIndex])), row, row.rowIndex]);
+                arr = rows.map(row => [convert(SortTable.getInnerText(row.cells[sortCellIndex])), row, fixDescending * row.rowIndex]);
             }
             arr.sort((a, b) => sort(a[0], b[0]) || (a[2] - b[2]));
             if (!flagAscending) arr.reverse();
