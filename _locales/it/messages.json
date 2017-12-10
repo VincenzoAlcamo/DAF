@@ -710,6 +710,18 @@
     "fCollectAlternateInfo": {
         "message": "Questo metodo è superveloce, ma non può individuare i profili disabilitati.\nPuò individuare alcuni profili \"fantasma\" e fornirà  l'opzione per cancellarli."
     },
+    "fCollectGhostDelete": {
+        "message": "Rimuovo i profili \"fantasma\"?"
+    },
+    "fCollectGhost0": {
+        "message": "Chiedi prima"
+    },
+    "fCollectGhost1": {
+        "message": "Non importa"
+    },
+    "fCollectGhost2": {
+        "message": "Automaticamente"
+    },
     "fCollectMatch": {
         "message": "Abbina"
     },

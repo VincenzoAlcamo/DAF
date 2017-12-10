@@ -161,9 +161,10 @@ function collectAlternate() {
     }
 
     function continueOperation() {
-        if (ghosts.length) {
+        if (ghosts.length > 0 && ghost != 1) {
             wait.hide();
-            return dialog.show({
+            if (ghost == 2) startRemoving(ghosts, 'GhostFriendRemoving', null);
+            else dialog.show({
                 text: chrome.i18n.getMessage('GhostFriendsDetected', [ghosts.length]),
                 style: [Dialog.OK, Dialog.CANCEL]
             }, function(method) {
@@ -173,6 +174,7 @@ function collectAlternate() {
                 }
                 startRemoving(ghosts, 'GhostFriendRemoving', 'GhostFriendRemoved');
             });
+            return;
         }
         window.close();
     }
@@ -209,10 +211,12 @@ function collectAlternate() {
             });
         } else {
             wait.hide();
-            dialog.show({
-                text: chrome.i18n.getMessage(removedMessage, [numRemoved]),
-                style: [Dialog.OK]
-            }, continueOperation);
+            if (removedMessage)
+                dialog.show({
+                    text: chrome.i18n.getMessage(removedMessage, [numRemoved]),
+                    style: [Dialog.OK]
+                }, continueOperation);
+            else continueOperation();
         }
 
         function remove() {

@@ -718,6 +718,18 @@
     "fCollectAlternateInfo": {
         "message": "This method is super fast, but cannot detect disabled accounts.\nIt can detect \"ghost\" friends and will offer the option to delete them."
     },
+    "fCollectGhostDelete": {
+        "message": "Delete \"ghost\" friends?"
+    },
+    "fCollectGhost0": {
+        "message": "Ask first"
+    },
+    "fCollectGhost1": {
+        "message": "Don't bother"
+    },
+    "fCollectGhost2": {
+        "message": "Automatically"
+    },
     "fCollectMatch": {
         "message": "Match"
     },

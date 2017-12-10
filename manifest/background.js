@@ -36,6 +36,7 @@ var exPrefs = {
     rewardsClose: false,
     rewardsCloseGems: true,
     rewardsCloseErrors: true,
+    removeGhosts: 0,
     tabIndex: 0,
     nFilter: '7',
     cFilter: 'ALL',

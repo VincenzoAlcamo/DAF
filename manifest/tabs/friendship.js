@@ -93,14 +93,27 @@ var guiTabs = (function(self) {
         if (flagStoreNeighbours) bgp.daGame.cacheSync();
     }
 
+    function getRemoveGhosts() {
+        return parseInt(bgp.exPrefs.removeGhosts) || 0;
+    }
+
     function showCollectDialog() {
+        var ghost = getRemoveGhosts();
+
         function msg(id) {
             return Dialog.escapeHtmlBr(guiString(id));
         }
 
         function button(id) {
-            var msgId = 'fCollect' + id.charAt(0).toUpperCase() + id.substr(1);
-            return '<tr><td><button value="' + id + '">' + msg(msgId) + '</button></td><td>' + msg(msgId + 'Info') + '</td></tr>';
+            var msgId = 'fCollect' + id.charAt(0).toUpperCase() + id.substr(1),
+                extra = '';
+            if (id == 'alternate') {
+                extra += '<br>' + guiString('fCollectGhostDelete') + ' <select name="ghost">';
+                for (var i = 0; i <= 2; i++)
+                    extra += '<option value="' + i + '"' + (i == ghost ? ' selected' : '') + '>' + guiString('fCollectGhost' + i) + '</option>';
+                extra += '</select>';
+            }
+            return '<tr><td><button value="' + id + '">' + msg(msgId) + '</button></td><td>' + msg(msgId + 'Info') + extra + '</td></tr>';
         }
         var friends = Object.values(bgp.daGame.getFriends());
         numFriends = friends.length;
@@ -109,7 +122,10 @@ var guiTabs = (function(self) {
             title: guiString('fCollect'),
             html: msg('fCollectPreamble') + '<table style="margin-top:16px">' + buttons.join('') + '</table>',
             style: ['standard', 'alternate', 'match', Dialog.CANCEL]
-        }, function(method) {
+        }, function(method, params) {
+            var newGhost = parseInt(params.ghost) || 0;
+            if (ghost != newGhost)
+                self.setPref('removeGhosts', newGhost);
             if (method == 'standard' || method == 'alternate' || method == 'match') {
                 var msgId = 'fCollect' + method.charAt(0).toUpperCase() + method.substr(1) + 'Info';
                 self.dialog.show({
@@ -125,7 +141,6 @@ var guiTabs = (function(self) {
             }
         });
     }
-
 
     function collectFriends(flagAlternate) {
         var width = 1000,
@@ -143,7 +158,7 @@ var guiTabs = (function(self) {
             chromeMultiInject(tabId, {
                 file: [
                     '/manifest/dialog.js',
-                    'code:mode=' + (flagAlternate ? 2 : 1) + ';',
+                    'code:mode=' + (flagAlternate ? 2 : 1) + ';ghost=' + getRemoveGhosts() + ';',
                     '/manifest/content_friendship.js'
                 ],
                 runAt: 'document_end',
