@@ -532,7 +532,7 @@
             var maxExpired = '';
             threshold = getUnixTime() - __public.REWARDLINKS_VALIDITY_DAYS * SECONDS_IN_A_DAY;
             rewards.forEach(reward => {
-                if (reward.adt <= threshold && __public.compareRewardId(reward.id, maxExpired) > 0) maxExpired = reward.id;
+                if ((reward.adt <= threshold || reward.cmt == -1) && __public.compareRewardId(reward.id, maxExpired) > 0) maxExpired = reward.id;
             });
             if (__public.compareRewardId(maxExpired, __public.rewardLinksData.expired) > 0) {
                 // this reward is expired and its id is greater than the last recorded one -> store it

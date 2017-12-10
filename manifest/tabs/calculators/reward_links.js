@@ -282,11 +282,6 @@ var guiTabs = (function(self) {
                 cell.textContent = unixDate(reward.adt, true);
                 cell.setAttribute('sorttable_customkey', reward.adt);
                 flagNew = true;
-                if (bgp.daGame.compareRewardId(reward.id, expiredId) <= 0 && !materialId) {
-                    cell = row.cells[4];
-                    cell.classList.add('rlAlert');
-                    cell.innerHTML = materialHTML(-6);
-                }
             }
             cell = row.cells[3];
             if (reward.cdt && cell.getAttribute('sorttable_customkey') != reward.cdt) {
@@ -302,6 +297,9 @@ var guiTabs = (function(self) {
                 if (materialId < 0) cell.setAttribute('sorttable_customkey', 'ZZZ' + materialId);
                 else cell.removeAttribute('sorttable_customkey');
                 flagUpdated = true;
+            } else if (!cell.hasAttribute('materialid') && !cell.classList.contains('rlAlert') && bgp.daGame.compareRewardId(reward.id, expiredId) <= 0) {
+                cell.classList.add('rlAlert');
+                cell.innerHTML = materialHTML(-6);
             }
             cell = row.cells[5];
             if (reward.cid && cell.getAttribute('cid') != reward.cid) {
