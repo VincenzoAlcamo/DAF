@@ -675,8 +675,9 @@ var guiTabs = (function(self) {
     self.isDev = function() {
         let uids = [3951243, 11530133, 8700592, 583351, 11715879, 1798336];
 
-        if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
-            return (uids.indexOf(parseInt(bgp.daGame.daUser.player.uid)) !== -1)
+        try {
+            return (uids.indexOf(parseInt(bgp.daGame.daUser.player.uid)) !== -1);
+        } catch (e) {}
 
         return false;
     }
