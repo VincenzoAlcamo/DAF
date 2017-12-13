@@ -1190,6 +1190,9 @@
     "Calculators": {
         "message": "Calculators"
     },
+    "Help": {
+        "message": "Help"
+    },
     "greenRings": {
         "message": "Green Rings"
     },
@@ -1317,6 +1320,18 @@
     },
     "Variant": {
         "message": "Variant"
+    },
+    "Reward": {
+        "message": "Reward"
+    },
+    "Rewards": {
+        "message": "Rewards"
+    },
+    "Amount": {
+        "message": "Amount"
+    },
+    "Completion": {
+        "message": "Completion"
     },
     "treasurePiece": {
         "message": "Treasure Piece"

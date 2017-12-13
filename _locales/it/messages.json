@@ -233,6 +233,9 @@
     "cssRose": {
         "message": "Acqua di rose"
     },
+    "cssMidnight": {
+        "message": "Midnight Bob"
+    },
     "capCrownsLabel": {
         "message": "Limita alla quantità possibile"
     },
@@ -1181,6 +1184,9 @@
     "Calculators": {
         "message": "Calcolatori"
     },
+    "Help": {
+        "message": "Manuale"
+    },
     "greenRings": {
         "message": "Anelli Verdi"
     },
@@ -1308,6 +1314,18 @@
     },
     "Variant": {
         "message": "Variante"
+    },
+    "Reward": {
+        "message": "Ricompensa"
+    },
+    "Rewards": {
+        "message": "Ricompense"
+    },
+    "Amount": {
+        "message": "Quantità"
+    },
+    "Completion": {
+        "message": "Completamento"
     },
     "treasurePiece": {
         "message": "Pezzo di tesoro"
