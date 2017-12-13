@@ -1,6 +1,6 @@
 var wait = Dialog(Dialog.WAIT),
     dialog = Dialog(),
-    retries = 2;
+    retries = 5;
 
 function collect() {
     var container = document.getElementById('pagelet_timeline_medley_friends');
@@ -9,7 +9,7 @@ function collect() {
         if (mode == 2) collectAlternate();
     } else if (retries > 0) {
         retries--;
-        setTimeout(collect, 5000);
+        setTimeout(collect, 2000);
     } else {
         alert('Something went wrong!');
     }
