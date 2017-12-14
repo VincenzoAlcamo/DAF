@@ -1335,6 +1335,10 @@ td.rlAlert {
   background-color: #FD0;
 }
 
+#rlTable td:empty {
+  background-color: rgba(0, 255, 255, 0.2);
+}
+
 #rlTable tr.selected {
   background-image: -webkit-linear-gradient(top left, rgba(0, 0, 255, 0.3), rgba(0, 255, 255, 0.2), rgba(255, 255, 128, 0.2));
 }
