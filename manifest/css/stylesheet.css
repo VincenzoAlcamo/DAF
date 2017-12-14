@@ -1335,7 +1335,7 @@ td.rlAlert {
   background-color: #FD0;
 }
 
-#rlTable td:empty {
+#rlTable td:nth-child(5):empty {
   background-color: rgba(0, 255, 255, 0.2);
 }
 
