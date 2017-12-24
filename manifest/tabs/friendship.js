@@ -104,17 +104,34 @@ var guiTabs = (function(self) {
             return Dialog.escapeHtmlBr(guiString(id));
         }
 
-        function button(id) {
-            var msgId = 'fCollect' + id.charAt(0).toUpperCase() + id.substr(1),
-                extra = '';
-            if (id == 'alternate') {
+        function addAlternateSettings(method) {
+            var extra = '';
+            if (method == 'alternate') {
                 extra += '<br>' + guiString('fCollectGhostDelete') + ' <select name="ghost">';
                 for (var i = 0; i <= 2; i++)
                     extra += '<option value="' + i + '"' + (i == ghost ? ' selected' : '') + '>' + guiString('fCollectGhost' + i) + '</option>';
                 extra += '</select>';
             }
-            return '<tr><td><button value="' + id + '">' + msg(msgId) + '</button></td><td>' + msg(msgId + 'Info') + extra + '</td></tr>';
+            return extra;
         }
+
+        function getMessageId(method) {
+            return 'fCollect' + method.charAt(0).toUpperCase() + method.substr(1);
+        }
+
+        function button(method) {
+            var msgId = getMessageId(method);
+            return '<tr><td><button value="' + method + '">' + msg(msgId) + '</button></td><td>' + msg(msgId + 'Info') + addAlternateSettings(method) + '</td></tr>';
+        }
+
+        function setNewGhost(params) {
+            var newGhost = parseInt(params.ghost) || 0;
+            if (ghost != newGhost) {
+                self.setPref('removeGhosts', newGhost);
+                ghost = newGhost;
+            }
+        }
+
         var friends = Object.values(bgp.daGame.getFriends());
         numFriends = friends.length;
         var buttons = [button('standard'), button('alternate'), numFriends > 0 ? button('match') : ''];
@@ -123,16 +140,14 @@ var guiTabs = (function(self) {
             html: msg('fCollectPreamble') + '<table style="margin-top:16px">' + buttons.join('') + '</table>',
             style: ['standard', 'alternate', 'match', Dialog.CANCEL]
         }, function(method, params) {
-            var newGhost = parseInt(params.ghost) || 0;
-            if (ghost != newGhost)
-                self.setPref('removeGhosts', newGhost);
+            setNewGhost(params);
             if (method == 'standard' || method == 'alternate' || method == 'match') {
-                var msgId = 'fCollect' + method.charAt(0).toUpperCase() + method.substr(1) + 'Info';
                 self.dialog.show({
                     title: guiString('fCollect'),
-                    text: guiString(msgId) + '\n\n' + guiString('ConfirmWarning'),
+                    html: msg(getMessageId(method) + 'Info') + addAlternateSettings(method) + '<br><br>' + msg('ConfirmWarning'),
                     style: [Dialog.CRITICAL, Dialog.CONFIRM, Dialog.CANCEL]
-                }, function(confirmation) {
+                }, function(confirmation, params) {
+                    if (method == 'alternate') setNewGhost(params);
                     if (confirmation != Dialog.CONFIRM) return;
                     if (method == 'standard') collectFriends(false);
                     else if (method == 'alternate') collectFriends(true);
