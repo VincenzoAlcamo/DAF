@@ -152,7 +152,7 @@ var guiTabs = (function(self) {
             title = guiString('rlRemoveLinks');
         if (days <= 0 || days > bgp.daGame.REWARDLINKS_REMOVE_DAYS - 1) days = bgp.daGame.REWARDLINKS_REMOVE_DAYS;
         html.push('<select name="days">');
-        for (var i = 1; i <= bgp.daGame.REWARDLINKS_REMOVE_DAYS - 1; i++)
+        for (var i = 0; i <= bgp.daGame.REWARDLINKS_REMOVE_DAYS - 1; i++)
             html.push('<option value="', i, '"', i == days ? ' selected' : '', '>', i, '</option>');
         html.push('</select>');
         html = Dialog.escapeHtmlBr(guiString('rlRemoveLinksDays', [bgp.daGame.REWARDLINKS_REMOVE_DAYS])).replace('#DAYS#', html.join(''));
@@ -163,7 +163,7 @@ var guiTabs = (function(self) {
         }, function(method, params) {
             if (method != Dialog.CONFIRM) return;
             var days = parseInt(params.days);
-            if (days > 0) {
+            if (days >= 0) {
                 self.setPref('rewardsRemoveDays', days);
                 var rewards = Object.values(bgp.daGame.getRewards()),
                     now = getUnixTime(),
