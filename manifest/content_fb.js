@@ -448,8 +448,12 @@
             var match = hovercard.match(reCid);
             if (!match) return false;
             data.cid = match[2];
-            var name = actor.firstChild && actor.firstChild.textContent;
-            if (name && (name = name.trim())) data.cnm = name;
+            for (var node = actor.firstChild; node; node = node.nextSibling) {
+                if (node.nodeType == Node.TEXT_NODE && node.textContent.trim() != "") {
+                    data.cnm = node.textContent;
+                    break;
+                }
+            }
             return true;
         }
         links.forEach(a => {

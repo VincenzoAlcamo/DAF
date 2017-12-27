@@ -304,7 +304,7 @@ var guiTabs = (function(self) {
             cell = row.cells[5];
             if (reward.cid && cell.getAttribute('cid') != reward.cid) {
                 cell.setAttribute('cid', reward.cid);
-                cell.innerHTML = '<a class="rlUser" target="_blank" href="https://www.facebook.com/' + reward.cid + '"><img class="rlUser" src="' + getFBFriendAvatarUrl(reward.cid) + '"/>' + reward.cnm + '</a>';
+                cell.innerHTML = '<a class="rlUser" target="_blank" href="https://www.facebook.com/' + reward.cid + '"><img class="rlUser" src="' + getFBFriendAvatarUrl(reward.cid) + '"/>' + (reward.cnm || "") + '</a>';
                 flagUpdated = true;
             }
             if (!materialId && !reward.cdt) numToCollect++;
