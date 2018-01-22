@@ -118,6 +118,9 @@ div.DAF-gc-level {
 .DAF-gc-small img.DAF-gc-avatar,
 .DAF-gc-small div.DAF-gc-name {
   width: 50px;
+}
+
+.DAF-gc-small img.DAF-gc-avatar {
   height: 50px;
 }
 
@@ -136,6 +139,9 @@ div.DAF-gc-counter {
 .DAF-gc-large img.DAF-gc-avatar,
 .DAF-gc-large div.DAF-gc-name {
   width: 64px;
+}
+
+.DAF-gc-large img.DAF-gc-avatar {
   height: 64px;
 }
 
@@ -154,6 +160,9 @@ div.DAF-gc-counter {
 .DAF-gc-xlarge img.DAF-gc-avatar,
 .DAF-gc-xlarge div.DAF-gc-name {
   width: 80px;
+}
+
+.DAF-gc-xlarge img.DAF-gc-avatar {
   height: 80px;
 }
 
