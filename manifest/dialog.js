@@ -166,6 +166,7 @@ Object.assign(Dialog.prototype, {
     setStyle: function(style) {
         if (style === null || style === undefined) style = this.lastStyle;
         style = this.lastStyle = style instanceof Array ? style : String(style).split(/,|\s/);
+        style = style.map(method => method.toLowerCase());
         this.getElement().classList.toggle('DAF-md-critical', style.indexOf(Dialog.CRITICAL) >= 0);
         Array.from(this.element.getElementsByTagName('button')).forEach(button => {
             var dialog = this,
