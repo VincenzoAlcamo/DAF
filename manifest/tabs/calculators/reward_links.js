@@ -53,10 +53,11 @@ var guiTabs = (function(self) {
 
         var reasons = [];
 
-        function pushReason(title, text) {
+        function pushReason(title, text, action) {
             reasons.push({
                 title: title,
-                text: text
+                text: text,
+                action: action
             });
         }
 
@@ -67,12 +68,27 @@ var guiTabs = (function(self) {
                 target.click();
                 return;
             }
+            var html = Dialog.escapeHtmlBr(reason.text + '\n\n' + guiString('rlCollectAnyway'));
+            if (reason.action) {
+                html += '<br><table style="margin-top:16px"><tr><td><button value="reset">' + Dialog.escapeHtmlBr(guiString('rlReset')) + '</button></td><td>';
+                html += Dialog.escapeHtmlBr(guiString('rl' + reason.action));
+                html += '</td></tr></table>';
+            }
             self.dialog.show({
                 title: reason.title,
-                text: reason.text + '\n\n' + guiString('rlCollectAnyway'),
+                html: html,
                 defaultButton: Dialog.CANCEL,
-                style: [Dialog.CRITICAL, Dialog.CONFIRM, Dialog.CANCEL]
+                style: [Dialog.CRITICAL, Dialog.CONFIRM, Dialog.CANCEL, 'RESET']
             }, function(method, params) {
+                if (method == 'reset') {
+                    var rewardLinksData = bgp.daGame.rewardLinksData,
+                        data = {};
+                    data.rewardLinksData = rewardLinksData;
+                    if (reason.action == 'ResetCount') rewardLinksData.count = rewardLinksData.next = 0;
+                    if (reason.action == 'ResetExpired') rewardLinksData.expired = '';
+                    updateTable();
+                    chrome.storage.local.set(data, showNextReason);
+                }
                 if (method == Dialog.CONFIRM) showNextReason();
             });
         }
@@ -101,10 +117,10 @@ var guiTabs = (function(self) {
                         pushReason(guiString('rlBroken'), guiString('rlInfoBroken'));
                     }
                     if (bgp.daGame.rewardLinksData.next > now) {
-                        pushReason(guiString('rlMaxReached'), guiString('rlAllCollected') + '\n' + guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]));
+                        pushReason(guiString('rlMaxReached'), guiString('rlAllCollected') + '\n' + guiString('rlNextTime', [unixDate(bgp.daGame.rewardLinksData.next, true)]), 'ResetCount');
                     }
                     if (bgp.daGame.compareRewardId(reward.id, bgp.daGame.rewardLinksData.expired || '') <= 0) {
-                        pushReason(guiString('rlProbablyExpired'), guiString('rlInfoProbablyExpired'));
+                        pushReason(guiString('rlProbablyExpired'), guiString('rlInfoProbablyExpired'), 'ResetExpired');
                     }
                     if ((countClicked = Object.keys(me.clicked).length) > 0 && countClicked + bgp.daGame.rewardLinksData.count >= bgp.daGame.REWARDLINKS_DAILY_LIMIT) {
                         pushReason(guiString('rlMaxReached'), guiString('rlInfoMayExceedLimit'));
@@ -297,9 +313,14 @@ var guiTabs = (function(self) {
                 if (materialId < 0) cell.setAttribute('sorttable_customkey', 'ZZZ' + materialId);
                 else cell.removeAttribute('sorttable_customkey');
                 flagUpdated = true;
-            } else if (!cell.hasAttribute('materialid') && !cell.classList.contains('rlAlert') && bgp.daGame.compareRewardId(reward.id, expiredId) <= 0) {
-                cell.classList.add('rlAlert');
-                cell.innerHTML = materialHTML(-6);
+            }
+            if (!cell.hasAttribute('materialid')) {
+                var hasAlert = cell.classList.contains('rlAlert'),
+                    isProbablyExpired = bgp.daGame.compareRewardId(reward.id, expiredId) <= 0;
+                if (hasAlert != isProbablyExpired) {
+                    cell.classList.toggle('rlAlert', isProbablyExpired);
+                    cell.innerHTML = isProbablyExpired ? materialHTML(-6) : '';
+                }
             }
             cell = row.cells[5];
             if (reward.cid && cell.getAttribute('cid') != reward.cid) {

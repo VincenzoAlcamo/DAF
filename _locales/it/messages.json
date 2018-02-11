@@ -1113,6 +1113,15 @@
             }
         }
     },
+    "rlReset": {
+        "message": "Azzera"
+    },
+    "rlResetCount": {
+        "message": "Puoi azzerare la data della prossima raccolta e procedere comunque con questo link."
+    },
+    "rlResetExpired": {
+        "message": "Puoi azzerare l'informazione sui link probabilmente scaduti e procedere comunque con questo link."
+    },
     "rewardsCloseLabel": {
         "message": "Chiudi automaticamente la pagina ricompensa, eccetto per:"
     },
