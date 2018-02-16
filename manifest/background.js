@@ -677,6 +677,7 @@ function onRewardNavigation(info) {
     if (exPrefs.debug) console.log("injecting reward", info.url);
     chromeMultiInject(info.tabId, {
         file: '/manifest/content_reward.js',
+        runAt: 'document_end',
         allFrames: false,
         frameId: info.frameId
     });
