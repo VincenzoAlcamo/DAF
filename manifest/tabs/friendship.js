@@ -255,8 +255,16 @@ var guiTabs = (function(self) {
             row.parentNode.insertBefore(row2, row);
 
             row2.classList.remove('f-neighbour');
-            for (i = 4; i <= 8; i++) row2.cells[i].innerHTML = '';
+            for (i = 4; i <= 6; i++) row2.cells[i].innerHTML = '';
             setButtonAction(row2.cells[3].getElementsByTagName('button')[0], 'ignore');
+            if (friend.adt) {
+                row2.cells[7].setAttribute('sorttable_customkey', friend.adt);
+                row2.cells[7].innerText = unixDate(friend.adt, true, false);
+                row2.cells[8].innerText = unixDaysAgo(friend.adt, getUnixTime(), 0);
+            } else {
+                row2.cells[7].removeAttribute('sorttable_customkey');
+                row2.cells[7].innerText = row2.cells[8].innerText = '';
+            }
 
             row.classList.remove('f-friend');
             row.classList.remove('f-disabled');
@@ -342,10 +350,10 @@ var guiTabs = (function(self) {
 
         var today = getUnixTime();
 
-        function pushCreated(info) {
-            if (info && info.created) {
-                html.push('<td sorttable_customkey="', info.created, '">', unixDate(info.created, false, false), '</td>');
-                html.push('<td>', unixDaysAgo(info.created, today, 0), '</td>');
+        function pushCreated(created) {
+            if (created) {
+                html.push('<td sorttable_customkey="', created, '">', unixDate(created, false, false), '</td>');
+                html.push('<td>', unixDaysAgo(created, today, 0), '</td>');
             } else {
                 html.push('<td></td><td></td>');
             }
@@ -389,9 +397,9 @@ var guiTabs = (function(self) {
                 html.push('<td>', info.level, '</td>');
                 delete notmatched[friend.uid];
             } else {
-                html.push('<td></td><td>', friend.score == -1 ? buttonRegard : buttonIgnore, '</td><td></td><td><td></td></td>');
+                html.push('<td></td><td>', friend.score == -1 ? buttonRegard : buttonIgnore, '</td><td></td><td></td><td></td>');
             }
-            pushCreated(info);
+            pushCreated(info ? info.created : friend.adt);
             html.push('</tr>');
         });
         Object.keys(notmatched).forEach(uid => {
@@ -401,7 +409,7 @@ var guiTabs = (function(self) {
             html.push('<td>', info.anchor, info.image, '</a></td>');
             html.push('<td>', info.anchor, info.name, '</a></td>');
             html.push('<td>', info.level, '</td>');
-            pushCreated(info);
+            pushCreated(info && info.created);
             html.push('</tr>');
         });
 

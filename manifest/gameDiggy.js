@@ -449,13 +449,16 @@
             if (exPrefs.debug) console.log("Friends captured", newFriends.length);
             if (newFriends.length == 0) return;
             var oldFriends = Object.assign({}, __public.getFriends());
-            var friends = {};
+            var friends = {},
+                now = getUnixTime();
             // We retain the old association (score and uid)
             newFriends.forEach(friend => {
+                friend.adt = now;
                 var oldFriend = oldFriends[friend.fb_id];
                 if (oldFriend) {
                     friend.score = oldFriend.score;
                     friend.uid = oldFriend.uid;
+                    if (oldFriend.adt) friend.adt = oldFriend.adt;
                 }
                 delete oldFriends[friend.fb_id];
                 friends[friend.fb_id] = friend;
