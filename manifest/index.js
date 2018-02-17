@@ -7,6 +7,17 @@ var wikiVars = "/index.php?title=";
 var eventToggle = new Event('toggle');
 var eventDASync = new Event('daSync');
 
+// Lazy load images using an IntersectionObserver
+var lazyObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+        if (entry.intersectionRatio <= 0) return;
+        lazyObserver.unobserve(entry.target);
+        if (!entry.target.hasAttribute('lazy-src')) return;
+        entry.target.setAttribute('src', entry.target.getAttribute('lazy-src'));
+        entry.target.removeAttribute('lazy-src');
+    });
+});
+
 // Add Property value as a Message Key in _locales/xx/messages.json
 // So the user gets a nice description of the theme/alarm sound.
 var pageThemes = {
@@ -332,10 +343,6 @@ var guiTabs = (function() {
                         } else {
                             document.getElementById("topBtn").style.display = "none";
                         }
-                        loadLazyImages();
-                    };
-                    window.onresize = function() {
-                        loadLazyImages();
                     };
 
                     guiNews();
@@ -351,42 +358,11 @@ var guiTabs = (function() {
     }
 
     /*
-     ** @Private - load lazy images when scrolled into view
-     */
-    function loadLazyImages() {
-        var tab = active in self.tabs ? self.tabs[active] : null;
-        // tab must exist, container must exists, container must be visible, tabs must have lazy images
-        if (!tab || !tab.container || !tab.container.offsetParent || !tab.lazyImages) return;
-        var lazyImages = tab.lazyImages,
-            top = 0,
-            bottom = top + window.innerHeight,
-            refilter = false;
-        lazyImages.forEach((item, index) => {
-            if (item && item.hasAttribute('lazy-src')) {
-                var rect = item.getBoundingClientRect();
-                if (rect.bottom < top || rect.top > bottom || rect.height == 0) return;
-                item.setAttribute('src', item.getAttribute('lazy-src'));
-                item.removeAttribute('lazy-src');
-            }
-            lazyImages[index] = null;
-            refilter = true;
-        });
-        if (refilter) {
-            lazyImages = self.tabs[active].lazyImages = lazyImages.filter(item => !!item);
-        }
-    }
-
-    /*
      ** @Public - collect lazy images
      */
     self.collectLazyImages = function(tab) {
         var tab = tab || self.tabs[active];
-        if (tab) {
-            var lazyImages = Array.from(tab.container.getElementsByTagName('img'));
-            lazyImages.filter(item => item.hasAttribute('lazy-src'));
-            tab.lazyImages = lazyImages;
-            if (lazyImages.length) setTimeout(loadLazyImages, 10);
-        }
+        if (tab) Array.from(tab.container.querySelectorAll('img[lazy-src]')).forEach(item => lazyObserver.observe(item));
     };
 
     /*
