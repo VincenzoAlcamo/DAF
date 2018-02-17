@@ -185,7 +185,7 @@ var guiTabs = (function(self) {
                     now = getUnixTime(),
                     expiryThreshold = now - bgp.daGame.REWARDLINKS_VALIDITY_DAYS * SECONDS_IN_A_DAY,
                     checkThreshold = now - days * SECONDS_IN_A_DAY;
-                rewards = rewards.filter(reward => reward.adt <= checkThreshold && (reward.adt <= expiryThreshold || (reward.cmt || 0) != 0));
+                rewards = rewards.filter(reward => Math.max(reward.adt, reward.cdt || 0) <= checkThreshold && (reward.adt <= expiryThreshold || (reward.cmt || 0) != 0));
                 removeLinks(title, rewards);
             }
         });
