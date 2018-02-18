@@ -1123,10 +1123,10 @@
         "message": "Reset"
     },
     "rlResetCount": {
-        "message": "You can reset the collect information and proceed with this link anyway."
+        "message": "You can reset the \"Next collection\" information and proceed with this link anyway."
     },
     "rlResetExpired": {
-        "message": "You can reset the expired information and proceed with this link anyway."
+        "message": "You can reset the \"Probably expired\" information and proceed with this link anyway."
     },
     "rewardsCloseLabel": {
         "message": "Auto-close any reward page, except for:"
