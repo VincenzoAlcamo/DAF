@@ -287,6 +287,9 @@
     "predictedBoost": {
         "message": "Energia guadagnata dall'avanzamento livello"
     },
+    "ignoreCrown": {
+        "message": "Clicca per ignorare/considerare"
+    },
     "activeEvents": {
         "message": "Eventi attivi"
     },

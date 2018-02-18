@@ -44,6 +44,7 @@ var exPrefs = {
     rFilter: 'ALL',
     crownGrid: false,
     capCrowns: true,
+    ignoredCrowns: '',
     trackGift: true,
     hidePastEvents: false,
     hideGiftTime: true,

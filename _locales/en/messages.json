@@ -290,6 +290,9 @@
     "predictedBoost": {
         "message": "Predicted Energy Gain from Level Up's"
     },
+    "ignoreCrown": {
+        "message": "Click to ignore/consider"
+    },
 
     "activeEvents": {
         "message": "Active Events"

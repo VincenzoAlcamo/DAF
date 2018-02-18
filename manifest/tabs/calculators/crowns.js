@@ -394,7 +394,35 @@ var guiTabs = (function(self) {
         tgrid = document.getElementById("cctb2");
         igrid = document.getElementById("crownGrid");
         cappd = document.getElementById("capCrowns");
-        
+
+        ccTable.addEventListener('click', function(e) {
+            if (e.target && e.target.tagName == 'IMG') {
+                var img = e.target,
+                    did = img.getAttribute('did'),
+                    cell = img.parentNode,
+                    row = cell.parentNode,
+                    el = (row.classList.contains('grid') ? cell : row),
+                    input = el.querySelector('input');
+                ignoredCrowns = String(bgp.exPrefs.ignoredCrowns).split(','),
+                    i = ignoredCrowns.indexOf(did),
+                    crown = daCrowns.find(item => item.decoration_id == did);
+                if (i >= 0) {
+                    // found -> remove
+                    ignoredCrowns.splice(i, 1);
+                    el.classList.remove('ignored');
+                    crown.use = crown.qty || 0;
+                } else {
+                    // not found -> add
+                    ignoredCrowns.push(did);
+                    el.classList.add('ignored');
+                    crown.use = 0;
+                }
+                bgp.exPrefs.ignoredCrowns = self.setPref('ignoredCrowns', ignoredCrowns.join(','));
+                input.value = crown.use;
+                input.dispatchEvent(new InputEvent('input'));
+            }
+        });
+
         guiText_i18n(ccTable);
 
         if (igrid) {
@@ -467,6 +495,8 @@ var guiTabs = (function(self) {
 
         //level = 151;  /** For Theme Testing Etc. **/
 
+        var ignoredCrowns = String(bgp.exPrefs.ignoredCrowns).split(',').map(item => parseInt(item));
+
         Object.keys(daCrowns).sort(function(a, b) {
             var s = daCrowns[a].level - daCrowns[b].level;
             if (s != 0)
@@ -477,24 +507,22 @@ var guiTabs = (function(self) {
             var name = bgp.daGame.string(daCrowns[k].name_loc);
             if (name == daCrowns[k].name_loc)
                 name = daCrowns[k].name;
-            var cImg = '<img src="' + daCrowns[k].img + '" title="' + name + '"/>';
             var did = daCrowns[k].decoration_id;
+            var cImg = '<img src="' + daCrowns[k].img + '" title="' + name + '&#10;' + guiString('ignoreCrown') + '" style="cursor:pointer" did="' + did + '"/>';
             var price = parseInt(daCrowns[k].sell_price);
             var mat = parseInt(daCrowns[k].material_cost);
             var xp = parseInt(daCrowns[k].xp);
+            var isIgnored = ignoredCrowns.indexOf(did) >= 0;
             var inv, qty, nxt, pxp, coins;
 
             daCrowns[k].inv = inv = self.materialInventory(daCrowns[k].material_id);
             daCrowns[k].qty = qty = Math.floor(inv / mat);
 
+            use = isIgnored ? 0 : qty;
             if ((self.tabs['Calculators'].time) && daCrowns[k].hasOwnProperty('use')) {
-                if ((use = daCrowns[k].use) > 999)
-                    use = 999;
-                if ((bgp.exPrefs.capCrowns) && use > qty)
-                    use = qty;
-                daCrowns[k].use = use;
-            } else
-                daCrowns[k].use = use = qty;
+                use = Math.min(daCrowns[k].use, bgp.exPrefs.capCrowns ? qty : 999);
+            }
+            daCrowns[k].use = use;
 
             daCrowns[k].inv = nxt = ((inv - (mat * use)) / mat) * 100;
             daCrowns[k].pxp = pxp = xp * use;
@@ -505,11 +533,12 @@ var guiTabs = (function(self) {
                 if (level >= parseInt(daCrowns[k].level)) {
                     if ((!ry) || cx == mgc) {
                         ry = tgrid.insertRow();
+                        ry.classList.add('grid');
                         cx = 0;
                     }
                     var cell = ry.insertCell();
+                    if (isIgnored) cell.classList.add('ignored');
                     var e = document.createElement("INPUT");
-                    cell.id = did + '_Crown';
                     cell.innerHTML = cImg;
                     inputCrown(k, did, name, cell);
 
@@ -521,6 +550,7 @@ var guiTabs = (function(self) {
                 }
             } else {
                 var row = tbody.insertRow();
+                if (isIgnored) row.classList.add('ignored');
                 var cell0 = row.insertCell();
                 var cell1 = row.insertCell();
                 var cell2 = row.insertCell();
@@ -594,34 +624,30 @@ var guiTabs = (function(self) {
         input.step = 1;
         input.min = 0;
         input.max = 999;
-        input.oninput = function(e) {
-            var use = e.target.valueAsNumber;
-            var key = e.target.name;
-            e.target.max = (bgp.exPrefs.capCrowns) ? daCrowns[key].qty : 999;
-
-            if (!isNaN(use)) {
-                if (use < e.target.min) use = e.target.min;
-                if (use > e.target.max) use = e.target.max;
-            } else
-                use = 0;
-
-            e.target.parentElement.setAttribute("sorttable_customkey", use);
-            e.target.value = daCrowns[key].use = use;
-            daCrowns[key].pxp = parseInt(daCrowns[key].xp) * use;
-            daCrowns[key].coins = parseInt(daCrowns[key].sell_price) * use;
-            var cell = e.target.parentNode;
-            if (!cell.hasAttribute('id')) {
-                cell = cell.nextSibling;
-                cell.innerText = numberWithCommas(daCrowns[key].pxp);
-                cell = cell.nextSibling;
-                cell.innerText = numberWithCommas(daCrowns[key].coins);
-            }
-            updateCrowns();
-        };
-        parent.setAttribute("sorttable_customkey", daCrowns[key].use);
+        input.oninput = onInput;
         parent.appendChild(input);
         return input;
     }
+
+    function onInput() {
+        var input = this,
+            use = input.valueAsNumber || 0,
+            key = input.name,
+            crown = daCrowns[key];
+        input.max = (bgp.exPrefs.capCrowns) ? crown.qty : 999;
+        use = Math.min(Math.max(use, input.min), input.max);
+        input.value = crown.use = use;
+        crown.pxp = parseInt(crown.xp) * use;
+        crown.coins = parseInt(crown.sell_price) * use;
+        var cell = input.parentNode;
+        if (!cell.parentNode.classList.contains('grid')) {
+            cell = cell.nextSibling;
+            cell.innerText = numberWithCommas(crown.pxp);
+            cell = cell.nextSibling;
+            cell.innerText = numberWithCommas(crown.coins);
+        }
+        updateCrowns();
+    };
 
     /*
      ** @Private - Filter Crowns

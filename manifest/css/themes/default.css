@@ -154,6 +154,11 @@ tr.high-level td {
   background: WhiteSmoke;
 }
 
+.crowns tbody tr.ignored td,
+.crowns tbody tr td.ignored {
+  background: #FCC;
+}
+
 .crowns tfoot {
   background: WhiteSmoke;
   color: SteelBlue;
