@@ -473,6 +473,9 @@
     "optDownload": {
         "message": "Download your game data"
     },
+    "optDownloadMaterial": {
+        "message": "Download materials list"
+    },
     "pastSpecial": {
         "message": "Past Special Events/Weeks"
     },

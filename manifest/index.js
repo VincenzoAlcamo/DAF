@@ -160,8 +160,8 @@ function downloadData(data, fileName) {
     var a = document.createElement('a');
     a.style.display = 'none';
     document.body.appendChild(a);
-    var json = JSON.stringify(data),
-        blob = new Blob([json], {
+    var payload = typeof data == 'string' ? data : JSON.stringify(data),
+        blob = new Blob([payload], {
             type: "text/plain"
         }),
         url = window.URL.createObjectURL(blob);
@@ -434,7 +434,7 @@ var guiTabs = (function() {
      ** @Public - Hide ALL Tab Content
      */
     self.hideContent = function(state) {
-        if(tabWrapper) tabWrapper.style.display = (state ? 'none' : 'block');
+        if (tabWrapper) tabWrapper.style.display = (state ? 'none' : 'block');
     }
 
     /*
@@ -669,6 +669,20 @@ var guiTabs = (function() {
                 if (typeof bgp.daGame[key] != 'function') data[key] = bgp.daGame[key];
             });
             downloadData(data, 'DAF_gamedata.json');
+        });
+
+        document.getElementById('optDownloadMaterial').addEventListener('click', function() {
+            var data = [],
+                materials = bgp.daGame.daUser.materials;
+            data.push('LEVEL\t' + bgp.daGame.daUser.level);
+            data.push('REGION\t' + bgp.daGame.daUser.region);
+            data.push('');
+            data.push('MAT_ID\tMAT_NAME\tQTY');
+            Object.keys(materials).forEach(key => {
+                if (materials[key] > 0) data.push(key + '\t' + self.materialName(key) + '\t' + materials[key]);
+            });
+            data = data.join('\n');
+            downloadData(data, 'DAF_materials.csv');
         });
 
         document.getElementById('optGeneral').innerHTML = guiString('General');

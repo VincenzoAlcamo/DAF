@@ -468,6 +468,9 @@
     "optDownload": {
         "message": "Scarica i tuoi dati di gioco"
     },
+    "optDownloadMaterial": {
+        "message": "Scarica la lista materiali"
+    },
     "pastSpecial": {
         "message": "Eventi/Settimane speciali passate"
     },
