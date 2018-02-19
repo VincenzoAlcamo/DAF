@@ -147,6 +147,7 @@ tr.high-level td {
 .crowns input {
   background: WhiteSmoke;
   border-color: white;
+  text-align: right;
 }
 
 .crowns tbody tr td,
@@ -155,8 +156,11 @@ tr.high-level td {
 }
 
 .crowns tbody tr.ignored td,
-.crowns tbody tr td.ignored {
-  background: #FCC;
+.crowns tbody tr td.ignored,
+.crowns tbody tr.ignored td input,
+.crowns tbody tr td.ignored input {
+  background: #D0D0D0;
+  color: #707070;
 }
 
 .crowns tfoot {

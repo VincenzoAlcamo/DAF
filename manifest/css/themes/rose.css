@@ -133,11 +133,20 @@ tr.high-level td {
 
 .crowns input {
   background: #E4D2D2;
+  text-align: right;
 }
 
 .crowns tbody tr td,
 .recipes tbody tr td {
     background: #E4D2D2;
+}
+
+.crowns tbody tr.ignored td,
+.crowns tbody tr td.ignored,
+.crowns tbody tr.ignored td input,
+.crowns tbody tr td.ignored input {
+  background: #D0D0D0;
+  color: #707070;
 }
 
 .crowns tfoot {
