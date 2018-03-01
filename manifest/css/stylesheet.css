@@ -464,6 +464,17 @@ tr.no-crowns td {
   text-align: left !important;
 }
 
+.crowns input[type=checkbox] {
+  zoom: 1.8;
+  margin: 0;
+  float: left;
+  cursor: pointer;
+}
+
+.crowns input[type=number] {
+  width: 42px;
+}
+
 tr.sub-break,
 tr.sub-header,
 thead tr:nth-child(n+1) {

@@ -396,31 +396,8 @@ var guiTabs = (function(self) {
         cappd = document.getElementById("capCrowns");
 
         ccTable.addEventListener('click', function(e) {
-            if (e.target && e.target.tagName == 'IMG') {
-                var img = e.target,
-                    did = img.getAttribute('did'),
-                    cell = img.parentNode,
-                    row = cell.parentNode,
-                    el = (row.classList.contains('grid') ? cell : row),
-                    input = el.querySelector('input');
-                ignoredCrowns = String(bgp.exPrefs.ignoredCrowns).split(','),
-                    i = ignoredCrowns.indexOf(did),
-                    crown = daCrowns.find(item => item.decoration_id == did);
-                if (i >= 0) {
-                    // found -> remove
-                    ignoredCrowns.splice(i, 1);
-                    el.classList.remove('ignored');
-                    crown.use = crown.qty || 0;
-                } else {
-                    // not found -> add
-                    ignoredCrowns.push(did);
-                    el.classList.add('ignored');
-                    crown.use = 0;
-                }
-                bgp.exPrefs.ignoredCrowns = self.setPref('ignoredCrowns', ignoredCrowns.join(','));
-                input.value = crown.use;
-                input.dispatchEvent(new InputEvent('input'));
-            }
+            var did = e.target && parseInt(e.target.getAttribute('did'));
+            if (did) toggleIgnore(did);
         });
 
         guiText_i18n(ccTable);
@@ -456,6 +433,33 @@ var guiTabs = (function(self) {
         })
 
         sorttable.makeSortable(ccTable);
+    }
+
+    function toggleIgnore(did) {
+        did = String(did);
+        var input = ccTable.querySelector('input[id="' + did  + '"]');
+        if (!input) return;
+        var cell = input.parentNode,
+            row = cell.parentNode,
+            el = (row.classList.contains('grid') ? cell : row),
+            ignoredCrowns = String(bgp.exPrefs.ignoredCrowns).split(','),
+            i = ignoredCrowns.indexOf(did),
+            crown = daCrowns.find(item => item.decoration_id == did);
+        cell.querySelector('input[type=checkbox]').checked = i >= 0;
+        if (i >= 0) {
+            // found -> remove
+            ignoredCrowns.splice(i, 1);
+            el.classList.remove('ignored');
+            crown.use = crown.qty || 0;
+        } else {
+            // not found -> add
+            ignoredCrowns.push(did);
+            el.classList.add('ignored');
+            crown.use = 0;
+        }
+        bgp.exPrefs.ignoredCrowns = self.setPref('ignoredCrowns', ignoredCrowns.join(','));
+        input.value = crown.use;
+        input.dispatchEvent(new InputEvent('input'));
     }
 
     /*
@@ -514,6 +518,7 @@ var guiTabs = (function(self) {
             var xp = parseInt(daCrowns[k].xp);
             var isIgnored = ignoredCrowns.indexOf(did) >= 0;
             var inv, qty, nxt, pxp, coins;
+            var parentInput;
 
             daCrowns[k].inv = inv = self.materialInventory(daCrowns[k].material_id);
             daCrowns[k].qty = qty = Math.floor(inv / mat);
@@ -529,6 +534,7 @@ var guiTabs = (function(self) {
             daCrowns[k].coins = coins = price * use;
 
             // Grid
+            parentInput = null;
             if (bgp.exPrefs.crownGrid) {
                 if (level >= parseInt(daCrowns[k].level)) {
                     if ((!ry) || cx == mgc) {
@@ -540,7 +546,7 @@ var guiTabs = (function(self) {
                     if (isIgnored) cell.classList.add('ignored');
                     var e = document.createElement("INPUT");
                     cell.innerHTML = cImg;
-                    inputCrown(k, did, name, cell);
+                    parentInput = cell;
 
                     cx++;
                     tot_xp = tot_xp + pxp;
@@ -579,7 +585,7 @@ var guiTabs = (function(self) {
                 cell8.setAttribute('sorttable_customkey', numberWithCommas(qty + nxt / 100));
 
                 if (level >= parseInt(daCrowns[k].level)) {
-                    inputCrown(k, did, name, cell9);
+                    parentInput = cell9;
                     cell10.innerText = numberWithCommas(pxp);
                     cell11.innerText = numberWithCommas(coins);
 
@@ -593,6 +599,26 @@ var guiTabs = (function(self) {
                     cell10.innerText = '-';
                     cell11.innerText = '-';
                 }
+            }
+            if (parentInput) {
+                var input = document.createElement("INPUT");
+                input.setAttribute("type", "checkbox");
+                input.setAttribute('did', did);
+                input.title = guiString('ignoreCrown');
+                input.checked = !isIgnored;
+                parentInput.appendChild(input);
+                var input = document.createElement("INPUT");
+                input.setAttribute("type", "number");
+                input.id = did;
+                input.name = k;
+                input.title = name + ' (' + qty + ')';
+                input.defaultValue = qty;
+                input.value = use;
+                input.step = 1;
+                input.min = 0;
+                input.max = 999;
+                input.oninput = onInput;
+                parentInput.appendChild(input);
             }
         });
 
@@ -608,25 +634,6 @@ var guiTabs = (function(self) {
         }
 
         return true;
-    }
-
-    /*
-     ** @Private - Input (Qty) Crown
-     */
-    function inputCrown(key, did, name, parent) {
-        var input = document.createElement("INPUT");
-        input.setAttribute("type", "number");
-        input.id = did;
-        input.name = key;
-        input.title = name + ' (' + daCrowns[key].qty + ')';
-        input.defaultValue = daCrowns[key].qty;
-        input.value = daCrowns[key].use;
-        input.step = 1;
-        input.min = 0;
-        input.max = 999;
-        input.oninput = onInput;
-        parent.appendChild(input);
-        return input;
     }
 
     function onInput() {
