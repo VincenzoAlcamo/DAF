@@ -162,7 +162,7 @@ function downloadData(data, fileName) {
     document.body.appendChild(a);
     var payload = typeof data == 'string' ? data : JSON.stringify(data),
         blob = new Blob([payload], {
-            type: "text/plain"
+            type: "text/plain; charset=utf-8"
         }),
         url = window.URL.createObjectURL(blob);
     a.href = url;
