@@ -131,7 +131,7 @@ function gcTable(forceRefresh = false, simulate = 0) {
                         break;
                     }
                 }
-                if (found && (!DAF.getValue('gameSync') || div.className.indexOf('DAF-gc-simulated') > 0))
+                if (found && (!DAF.getValue('gameSync') || div.className.indexOf('DAF-gc-simulated') > 0 || e.ctrlKey))
                     gcTable_remove(div);
             });
         }
