@@ -354,6 +354,12 @@
     "firstRecorded": {
         "message": "Prima\nregistrazione"
     },
+    "FriendFirstRecordedTooltip": {
+        "message": "Questa è la data in cui l'amico è stato registrato per la prima volta da DAF"
+    },
+    "NeighbourFirstRecordedTooltip": {
+        "message": "Questa è la data in cui il vicino è stato registrato per la prima volta da DAF"
+    },
     "Finished": {
         "message": "Finito"
     },
@@ -700,6 +706,17 @@
                 "content": "$1"
             }
         }
+    },
+    "fFilterS": {
+        "message": "Amici e vicini non abbinati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "FriendSearchLabel": {
+        "message": "Cerca"
     },
     "fCollect": {
         "message": "Colleziona e abbina"

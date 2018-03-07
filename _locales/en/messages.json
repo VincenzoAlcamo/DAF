@@ -358,6 +358,12 @@
     "firstRecorded": {
         "message": "First Recorded"
     },
+    "FriendFirstRecordedTooltip": {
+        "message": "This is the date when the friend has been first recorded by DAF"
+    },
+    "NeighbourFirstRecordedTooltip": {
+        "message": "This is the date when the neighbour has been first recorded by DAF"
+    },
     "Finished": {
         "message": "Finished"
     },
@@ -705,6 +711,17 @@
                 "content": "$1"
             }
         }
+    },
+    "fFilterS": {
+        "message": "Friends and neighbours not matched: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "FriendSearchLabel": {
+        "message": "Search"
     },
     "fCollect": {
         "message": "Collect and match"

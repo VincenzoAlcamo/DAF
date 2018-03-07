@@ -2,7 +2,7 @@
  ** DA Friends - friendship.js
  */
 var guiTabs = (function(self) {
-    var tabID, ifTable, theadSaved, matchingUid;
+    var tabID, ifTable, matchingUid, searchTerm;
     var firstTimeManualHelp = true,
         numFriends = 0,
         numDisabled = 0,
@@ -13,6 +13,11 @@ var guiTabs = (function(self) {
         numIgnored = 0,
         numAnalyzed = 0,
         numToAnalyze = 0;
+
+    var buttonUnlink = '<button class="action unlink" title="' + Dialog.escapeHtml(guiString('ActionUnlink')) + '"></button>',
+        buttonIgnore = '<button class="action ignore" title="' + Dialog.escapeHtml(guiString('ActionIgnore')) + '"></button>',
+        buttonRegard = '<button class="action regard" title="' + Dialog.escapeHtml(guiString('ActionRegard')) + '"></button>',
+        buttonManual = '<button class="action manual" title="' + Dialog.escapeHtml(guiString('ActionManual')) + '"></button>';
 
     /*
      ** Define this tab's details
@@ -39,13 +44,30 @@ var guiTabs = (function(self) {
 
         ifTable = document.getElementById('ifTable');
         guiText_i18n(ifTable);
-        theadSaved = ifTable.tHead.innerHTML;
-        ifTable.tBodies[0].addEventListener('click', tableClick);
+        var tbody = ifTable.getElementsByTagName("tbody")[0];
+        tbody.addEventListener('click', tableClick);
+        tbody.addEventListener('render', function(event) {
+            updateRow(event.target);
+        });
+        ifTable.addEventListener('sort', updateTable);
+        sorttable.makeSortable(ifTable);
+        sorttable.setSortHeader(ifTable, 1, true);
 
         document.getElementById('fMatchPlayer').addEventListener('click', cancelMatch);
 
+        var searchInput = document.getElementById('fSearch'),
+            searchHandler = 0;
+        searchInput.addEventListener('input', function() {
+            var value = searchInput.value.toUpperCase();
+            if (value != searchTerm) {
+                searchTerm = value;
+                if (searchHandler) clearTimeout(searchHandler);
+                searchHandler = setTimeout(updateTable, 500);
+            }
+        });
+
         var select = document.getElementById('fFilter');
-        var filters = 'ADMGHIFUN'.split('');
+        var filters = 'ADMGHIFUNS'.split('');
         filters.forEach(char => {
             var option = document.createElement('option');
             option.value = char;
@@ -57,7 +79,8 @@ var guiTabs = (function(self) {
         select.addEventListener('change', function(e) {
             var filter = document.getElementById('fFilter').value;
             bgp.exPrefs.fFilter = filter;
-            filterTable();
+            //filterTable();
+            updateTable();
         });
     }
 
@@ -69,22 +92,6 @@ var guiTabs = (function(self) {
         if (action == 'friends-analyze') {
             matchStoreAndUpdate();
         }
-    }
-
-    function filterTable() {
-        var filter = bgp.exPrefs.fFilter;
-        var select = document.getElementById('fFilter');
-        select.value = filter;
-        self.wait.show();
-        setTimeout(() => {
-            ifTable.tBodies[0].setAttribute('filter', filter);
-            setTimeout(() => {
-                self.wait.hide();
-                // Dispatch the scroll event to load lazy images brought into view by the filter
-                window.dispatchEvent(new Event("scroll"));
-            }, 0);
-        }, 50);
-
     }
 
     function storeFriends(flagStoreNeighbours) {
@@ -197,11 +204,6 @@ var guiTabs = (function(self) {
         return true;
     }
 
-    function setButtonAction(button, action) {
-        ['unlink', 'delete', 'ignore', 'regard', 'manual'].forEach(name => button.classList.toggle(name, name == action));
-        button.title = guiString('Action' + action.substr(0, 1).toUpperCase() + action.substr(1));
-    }
-
     function tableClick(event) {
         var row = event.target;
         while (true) {
@@ -213,80 +215,44 @@ var guiTabs = (function(self) {
             id = row.id,
             fb_id = id.startsWith('fb-') ? id.substr(3) : null,
             uid = id.startsWith('nb-') ? id.substr(3) : null,
-            friend = bgp.daGame.getFriend(fb_id),
+            friend = fb_id && bgp.daGame.getFriend(fb_id),
             pal = uid && getNeighbour(uid),
             flagModified = false,
             i, row2;
 
-        if (el.tagName == 'TD' && el.cellIndex == 2 && ifTable.classList.contains('f-matching') && matchingUid && friend) {
+        if (el.tagName == 'TD' && el.cellIndex == 2 && ifTable.classList.contains('f-matching') && matchingUid && friend && friend.score <= 0) {
             // MANUAL MATCH
             pal = getNeighbour(matchingUid);
-            row2 = pal && document.getElementById('nb-' + pal.uid);
-            if (row2) {
-                matchFriendBase(friend, pal, 99);
-                row.classList.remove('f-notmatched');
-                row.classList.add('f-matched');
-                row.classList.add('f-matched-manually');
-                row.classList.add('f-neighbour');
-                row.cells[2].innerText = friend.score;
-                for (i = 4; i <= 8; i++) row.cells[i].innerHTML = row2.cells[i].innerHTML;
-                row2.parentNode.removeChild(row2);
-                setButtonAction(row.cells[3].getElementsByTagName('button')[0], 'unlink');
-                flagModified = true;
-            }
+            row2 = document.getElementById('nb-' + pal.uid);
+            if (row2) row2.parentNode.removeChild(row2);
+            matchFriendBase(friend, pal, 99);
+            flagModified = true;
             cancelMatch();
         } else if (el.tagName != 'BUTTON' || !el.classList.contains('action')) {
             return;
         } else if (el.classList.contains('unlink') && friend && friend.score > 0 && friend.uid) {
             // UNLINK
-            row.classList.remove('f-matched');
-            if (row.classList.contains('f-matched-image')) {
-                numMatchedImage--;
-                row.classList.remove('f-matched-image');
-            }
-            if (row.classList.contains('f-matched-manually')) {
-                numMatchedManually--;
-                row.classList.remove('f-matched-manually');
-            }
-            row.classList.add('f-notmatched');
-            row.cells[2].innerHTML = '';
-
-            row2 = row.cloneNode(true);
-            row.parentNode.insertBefore(row2, row);
-
-            row2.classList.remove('f-neighbour');
-            for (i = 4; i <= 6; i++) row2.cells[i].innerHTML = '';
-            setButtonAction(row2.cells[3].getElementsByTagName('button')[0], 'ignore');
-            if (friend.adt) {
-                row2.cells[7].setAttribute('sorttable_customkey', friend.adt);
-                row2.cells[7].innerText = unixDate(friend.adt, true, false);
-                row2.cells[8].innerText = unixDaysAgo(friend.adt, getUnixTime(), 0);
-            } else {
-                row2.cells[7].removeAttribute('sorttable_customkey');
-                row2.cells[7].innerText = row2.cells[8].innerText = '';
-            }
-
-            row.classList.remove('f-friend');
-            row.classList.remove('f-disabled');
-            row.id = 'nb-' + friend.uid;
-            for (i = 0; i <= 1; i++) row.cells[i].innerHTML = '';
-            setButtonAction(row.cells[3].getElementsByTagName('button')[0], 'manual');
-
+            uid = friend.uid;
+            pal = getNeighbour(uid);
             numMatched--;
             delete friend.uid;
             delete friend.score;
             flagModified = true;
+            if (isRowVisible(null, pal)) {
+                row2 = row.parentNode.appendChild(document.createElement('tr'));
+                row2.id = 'nb-' + uid;
+                updateRow(row2);
+            }
+            pal = null;
         } else if (friend && (el.classList.contains('ignore') || el.classList.contains('regard'))) {
             // IGNORE or REGARD
             var flag = el.classList.contains('ignore');
-            row.classList.toggle('f-ignored', flag);
-            setButtonAction(el, flag ? 'regard' : 'ignore');
-            if (flag) numIgnored++;
-            else numIgnored--;
             delete friend.uid;
             delete friend.score;
             if (flag) friend.score = -1;
             flagModified = true;
+            if (flag) numIgnored++;
+            else numIgnored--;
         } else if (el.classList.contains('manual') && pal) {
             if (matchingUid == pal.uid) {
                 cancelMatch();
@@ -308,10 +274,10 @@ var guiTabs = (function(self) {
             }
         }
         if (flagModified) {
+            if (isRowVisible(friend, pal)) updateRow(row);
+            else row.parentNode.removeChild(row);
             bgp.daGame.setFriend(friend)
             showStats();
-            // Dispatch the scroll event to load lazy images brought into view
-            window.dispatchEvent(new Event("scroll"));
         }
     }
 
@@ -333,92 +299,136 @@ var guiTabs = (function(self) {
         return bgp.daGame.daUser.neighbours[uid];
     }
 
+    function isRowVisible(friend, pal) {
+        if (searchTerm) {
+            var term = (friend ? friend.name : '') + '\t' + (pal ? getPlayerNameFull(pal) : '');
+            if (term.toUpperCase().indexOf(searchTerm) < 0) return false;
+        }
+        switch (bgp.exPrefs.fFilter) {
+            case 'A':
+                return true;
+            case 'D':
+                return friend && friend.disabled;
+            case 'M':
+                return friend && pal;
+            case 'G':
+                return friend && pal && friend.score == 95;
+            case 'H':
+                return friend && pal && friend.score == 99;
+            case 'I':
+                return friend && friend.score == -1;
+            case 'F':
+                return friend && friend.score == 0;
+            case 'U':
+                return friend && !pal;
+            case 'N':
+                return pal && !friend;
+            case 'S':
+                return friend ? friend.score == 0 : pal;
+            default:
+                return false;
+        }
+    }
+
     function updateTable() {
-        cancelMatch();
-
-        var tbody = ifTable.getElementsByTagName("tbody")[0];
-        tbody.innerHTML = '';
-        ifTable.tHead.innerHTML = theadSaved;
-        sorttable.makeSortable(ifTable);
-
-        var friends = Object.values(bgp.daGame.getFriends());
+        var friends = Object.values(bgp.daGame.getFriends()),
+            notmatched = getNeighboursAsNotMatched(),
+            filter = bgp.exPrefs.fFilter,
+            sortInfo = sorttable.getSortInfo(ifTable),
+            sortKey = sortInfo.cell && sortInfo.cell.getAttribute('sortkey'),
+            convert = sortInfo.convertFn,
+            sort = sortInfo.sortFn,
+            isAscending = sortInfo.ascending,
+            arr = [];
         numFriends = friends.length;
-        var notmatched = getNeighboursAsNotMatched();
         numNeighbours = Object.keys(notmatched).length;
         numMatched = numMatchedImage = numMatchedManually = numDisabled = numIgnored = 0;
-        var html = [];
-
-        var today = getUnixTime();
-
-        function pushCreated(created) {
-            if (created) {
-                html.push('<td sorttable_customkey="', created, '">', unixDate(created, false, false), '</td>');
-                html.push('<td>', unixDaysAgo(created, today, 0), '</td>');
-            } else {
-                html.push('<td></td><td></td>');
-            }
-        }
-
-        var buttonUnlink = '<button class="action unlink" title="' + Dialog.escapeHtml(guiString('ActionUnlink')) + '"></button>',
-            buttonIgnore = '<button class="action ignore" title="' + Dialog.escapeHtml(guiString('ActionIgnore')) + '"></button>',
-            buttonRegard = '<button class="action regard" title="' + Dialog.escapeHtml(guiString('ActionRegard')) + '"></button>',
-            buttonManual = '<button class="action manual" title="' + Dialog.escapeHtml(guiString('ActionManual')) + '"></button>';
-
+        var firstAlpha = isAscending ? '0' : '1',
+            lastAlpha = isAscending ? '1' : '0',
+            lastDate = isAscending ? 9e9 : 0;
+        var getSortValue =
+            sortKey == 'fname' ? (friend, pal) => (friend ? firstAlpha + friend.name : lastAlpha) :
+            sortKey == 'fdate' ? (friend, pal) => (friend ? friend.adt || lastDate : lastDate) :
+            sortKey == 'fscore' ? (friend, pal) => (friend ? (friend.score > 0 || !isAscending ? friend.score : 101 - friend.score) : (isAscending ? 103 : -2)) :
+            sortKey == 'nname' ? (friend, pal) => (pal ? firstAlpha + getPlayerNameFull(pal) : lastAlpha) :
+            sortKey == 'nlevel' ? (friend, pal) => (pal ? pal.level : (sortInfo.ascending ? 9999 : -1)) :
+            sortKey == 'ndate' ? (friend, pal) => (pal ? getPlayerCreated(pal) : lastDate) :
+            (friend, pal) => '';
         friends.forEach(friend => {
-            var fb_id = friend.fb_id,
-                info = friend.score > 0 && getNeighbourCellData(notmatched[friend.uid], true),
-                classes = ['f-friend', info ? 'f-neighbour f-matched' : 'f-notmatched'];
-            if (friend.disabled) {
-                numDisabled++;
-                classes.push('f-disabled');
-            }
-            if (info && friend.score == 95) {
-                numMatchedImage++;
-                classes.push('f-matched-image');
-            }
-            if (info && friend.score == 99) {
-                numMatchedManually++;
-                classes.push('f-matched-manually');
-            }
-            if (friend.score == -1) {
-                classes.push('f-ignored');
-                numIgnored++;
-            }
-            html.push('<tr id="fb-', fb_id, '" class="', classes.join(' '), '">');
-            var a = getFBFriendAnchor(fb_id);
-            html.push('<td>', a, '<img height="50" width="50" lazy-src="', getFBFriendAvatarUrl(fb_id), '"/></a></td>');
-            html.push('<td>', a, friend.name, '</a></td>');
-            if (info) {
-                numMatched++;
-                html.push('<td>', friend.score, '</td>');
-                html.push('<td>', buttonUnlink, '</td>');
-                html.push('<td>', info.anchor, info.image, '</a></td>');
-                html.push('<td>', info.anchor, info.name, '</a></td>');
-                html.push('<td>', info.level, '</td>');
+            var pal = friend.score > 0 && notmatched[friend.uid];
+            if (friend.disabled) numDisabled++;
+            if (pal) {
                 delete notmatched[friend.uid];
+                numMatched++;
+                if (friend.score == 95) numMatchedImage++;
+                if (friend.score == 99) numMatchedManually++;
             } else {
-                html.push('<td></td><td>', friend.score == -1 ? buttonRegard : buttonIgnore, '</td><td></td><td></td><td></td>');
+                if (friend.score == -1) numIgnored++;
+                else friend.score = 0;
             }
-            pushCreated(info ? info.created : friend.adt);
-            html.push('</tr>');
+            if (isRowVisible(friend, pal))
+                arr.push([convert(getSortValue(friend, pal)), '<tr id="fb-' + friend.fb_id + '" lazy-render height="61"></tr>']);
         });
         Object.keys(notmatched).forEach(uid => {
-            var info = getNeighbourCellData(notmatched[uid], true);
-            html.push('<tr id="nb-', uid, '" class="f-neighbour f-notmatched">');
-            html.push('<td></td><td></td><td></td><td>', buttonManual, ' </td>');
-            html.push('<td>', info.anchor, info.image, '</a></td>');
-            html.push('<td>', info.anchor, info.name, '</a></td>');
-            html.push('<td>', info.level, '</td>');
-            pushCreated(info && info.created);
-            html.push('</tr>');
+            var pal = notmatched[uid];
+            if (isRowVisible(null, pal))
+                arr.push([convert(getSortValue(null, pal)), '<tr id="nb-' + uid + '" lazy-render height="61"></tr>']);
         });
 
-        tbody.innerHTML = html.join('');
+        if (sortKey) {
+            arr.sort((a, b) => sort(a[0], b[0]));
+            if (!sortInfo.ascending) arr.reverse();
+        }
+        var html = arr.map(item => item[1]).join('');
 
+        var tbody = ifTable.getElementsByTagName("tbody")[0];
+        tbody.innerHTML = html;
         self.collectLazyImages();
-        filterTable();
-
         showStats();
+    }
+
+    function updateRow(row) {
+        var id = row.id.substr(3),
+            isFriend = row.id.startsWith('fb-'),
+            fb_id = isFriend && id,
+            friend = isFriend && bgp.daGame.getFriend(fb_id),
+            uid = isFriend ? friend.score > 0 && friend.uid : id,
+            pal = uid && getNeighbour(uid),
+            today = getUnixTime(),
+            html = [],
+            created;
+        created = friend && friend.adt;
+        if (friend) {
+            var a = getFBFriendAnchor(fb_id);
+            html.push('<td>', a, '<img height="50" width="50" src="', getFBFriendAvatarUrl(fb_id), '"/></a></td>');
+            html.push('<td>', a, friend.name, '</a></td>');
+            html.push('<td>', created ? unixDate(created, false, false) + '<br>' + unixDaysAgo(created, today, 0) : '', '</td>');
+            if (pal) {
+                html.push('<td>', friend.score, '</td>');
+                html.push('<td>', buttonUnlink, '</td>');
+            } else {
+                html.push('<td></td><td>', friend.score == -1 ? buttonRegard : buttonIgnore, '</td>');
+            }
+        } else {
+            html.push('<td></td><td></td><td></td><td></td><td>', buttonManual, ' </td>');
+        }
+        created = pal && getPlayerCreated(pal);
+        if (pal) {
+            a = getFBFriendAnchor(pal.fb_id);
+            html.push('<td>', a, '<img height="50" width="50" src="' + pal.pic_square + '"/></a></td>');
+            html.push('<td>', a, getPlayerNameFull(pal), '</a></td>');
+            html.push('<td>', pal.level, '</td>');
+        } else {
+            html.push('<td></td><td></td><td></td>');
+        }
+        html.push('<td>', created ? unixDate(created, false, false) + '<br>' + unixDaysAgo(created, today, 0) : '', '</td>');
+        row.innerHTML = html.join('');
+        var isIgnored = friend ? friend.score == -1 : false,
+            isDisabled = friend ? !!friend.disabled : false,
+            isNotMatched = friend && !pal ? !isIgnored : false;
+        row.classList.toggle('f-disabled', isDisabled);
+        row.classList.toggle('f-ignored', isIgnored);
+        row.classList.toggle('f-notmatched', isNotMatched);
     }
 
     function getFBFriendAvatarUrl(fb_id) {
@@ -427,23 +437,6 @@ var guiTabs = (function(self) {
 
     function getFBFriendAnchor(fb_id) {
         return '<a target="_blank" href="https://www.facebook.com/' + fb_id + '">';
-    }
-
-    function getNeighbourCellData(pal, lazy) {
-        if (!pal) return null;
-        var created = null;
-        try {
-            created = bgp.daGame.daUser.derived.neighbours[pal.uid].present[0].first;
-        } catch (e) {
-            created = pal.timeCreated;
-        }
-        return {
-            anchor: getFBFriendAnchor(pal.fb_id),
-            image: '<img height="50" width="50" ' + (lazy ? 'lazy-' : '') + 'src="' + pal.pic_square + '"/>',
-            name: getPlayerNameFull(pal),
-            level: pal.level,
-            created: created
-        };
     }
 
     function showStats() {
@@ -471,7 +464,8 @@ var guiTabs = (function(self) {
             'fFilterI': [numberWithCommas(numIgnored)],
             'fFilterF': [numberWithCommas(numFriends - numMatched - numIgnored)],
             'fFilterU': [numberWithCommas(numFriends - numMatched)],
-            'fFilterN': [numberWithCommas(numNeighbours - numMatched)]
+            'fFilterN': [numberWithCommas(numNeighbours - numMatched)],
+            'fFilterS': [numberWithCommas(numNeighbours - numMatched + numFriends - numMatched - numIgnored)]
         };
         Array.from(document.getElementById('fFilter').getElementsByTagName('option')).forEach(option => {
             var msgId = 'fFilter' + option.value;
@@ -748,6 +742,14 @@ var guiTabs = (function(self) {
 
     function getPlayerName(pal) {
         return pal.name || 'Player ' + pal.uid;
+    }
+
+    function getPlayerCreated(pal) {
+        try {
+            return bgp.daGame.daUser.derived.neighbours[pal.uid].present[0].first;
+        } catch (e) {
+            return pal.timeCreated;
+        }
     }
 
     function getPlayerNameFull(pal) {

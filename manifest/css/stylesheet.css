@@ -263,6 +263,7 @@ select.button {
 }
 
 button,
+input.button,
 select.button {
   -webkit-border-radius: 28;
   -moz-border-radius: 28;
@@ -330,14 +331,6 @@ img.fb {
   vertical-align: middle;
   float: left;
   padding: 0px 10px 0px 0px;
-}
-
-table th:not(.sorttable_nosort) {
-  cursor: crosshair;
-}
-
-table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after {
-  content: " \25B4\25BE"
 }
 
 th,
@@ -977,17 +970,17 @@ a.gallery:visited,
 }
 
 #ifTable td:nth-child(1),
-#ifTable td:nth-child(5) {
+#ifTable td:nth-child(6) {
   min-width: 50px;
 }
 
-#ifTable td:nth-child(3),
-#ifTable td:nth-child(4) {
+#ifTable td:nth-child(4),
+#ifTable td:nth-child(5) {
   min-width: 36px;
 }
 
 #ifTable td:nth-child(2),
-#ifTable td:nth-child(6) {
+#ifTable td:nth-child(7) {
   text-align: left;
   min-width: 180px;
   max-width: 300px;
@@ -1025,22 +1018,7 @@ tr.f-disabled td:nth-child(2):after {
 }
 
 tr.f-ignored td {
-  background-color: #fcc;
-}
-
-tbody[filter="D"] tr:not(.f-disabled),
-tbody[filter="M"] tr:not(.f-matched),
-tbody[filter="G"] tr:not(.f-matched-image),
-tbody[filter="H"] tr:not(.f-matched-manually),
-tbody[filter="I"] tr:not(.f-ignored),
-tbody[filter="F"] tr.f-neighbour,
-tbody[filter="F"] tr.f-matched,
-tbody[filter="F"] tr.f-ignored,
-tbody[filter="U"] tr.f-matched,
-tbody[filter="U"] tr.f-neighbour,
-tbody[filter="N"] tr.f-friend,
-tbody[filter="N"] tr.f-matched {
-  display: none;
+  background-color: rgba(255,192,192,0.6);
 }
 
 #fMatchPlayer {
@@ -1057,7 +1035,7 @@ button.action {
   height: 36px;
 }
 
-table.f-matching tr.f-friend.f-notmatched td:nth-child(3):after {
+table.f-matching tr.f-notmatched td:nth-child(4):after {
   content: " ";
   padding: 0;
   display: inline-block;
@@ -1073,14 +1051,14 @@ table.f-matching tr.f-friend.f-notmatched td:nth-child(3):after {
 
 button.action,
 button.action:hover,
-table.f-matching tr.f-friend.f-notmatched td:nth-child(3):after {
+table.f-matching tr.f-notmatched td:nth-child(4):after {
   background-repeat: no-repeat;
   background-position: 4px 4px;
   background-size: 24px;
 }
 
 button.action:hover,
-table.f-matching tr.f-friend.f-notmatched td:nth-child(3):hover:after {
+table.f-matching tr.f-notmatched td:nth-child(4):hover:after {
   background-color: #ff0;
 }
 

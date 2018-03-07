@@ -4,28 +4,30 @@
         <br/>
         <span data-i18n-text="FriendFilterLabel"></span>
         <select class="button" id="fFilter"></select>
+        <span data-i18n-text="FriendSearchLabel"></span>
+        <input class="button" id="fSearch" size="15">
         <button id="ifCollect" data-i18n-text="fCollect"></button>
     </div>
     <br />
-    <table id="ifTable">
+    <table id="ifTable" class="sorttable_event">
         <thead>
             <tr>
                 <th class="sorttable_nosort">
                     <img src="/img/friends.png" />
                 </th>
-                <th class="sorttable_alpha" data-i18n-text="Friend"></th>
-                <th class="sorttable_numeric" data-i18n-text="Score" data-i18n-title="ScoreTooltip" style="cursor:help"></th>
+                <th class="sorttable_alpha"  sortkey="fname" data-i18n-text="Friend"></th>
+                <th class="sorttable_numeric" sortkey="fdate" data-i18n-text="firstRecorded" data-i18n-title="FriendFirstRecordedTooltip" style="cursor:help"></th>
+                <th class="sorttable_numeric"  sortkey="fscore" data-i18n-text="Score" data-i18n-title="ScoreTooltip" style="cursor:help"></th>
                 <th class="sorttable_nosort" data-i18n-text="Action"></th>
                 <th class="sorttable_nosort">
                     <img data-wiki-page="Neighbors" src="/img/neighbours.png" />
                 </th>
-                <th class="sorttable_alpha" data-i18n-text="Neighbour"></th>
-                <th class="sorttable_numeric" data-i18n-text="Level"></th>
-                <th class="sorttable_numeric" data-i18n-text="firstRecorded"></th>
-                <th class="sorttable_nosort" data-i18n-text="timeAgo"></th>
+                <th class="sorttable_alpha" sortkey="nname" data-i18n-text="Neighbour"></th>
+                <th class="sorttable_numeric"  sortkey="nlevel" data-i18n-text="Level"></th>
+                <th class="sorttable_numeric"  sortkey="ndate" data-i18n-text="firstRecorded" data-i18n-title="NeighbourFirstRecordedTooltip" style="cursor:help"></th>
             </tr>
         </thead>
-        <tbody class="no-row-coloring">
+        <tbody>
         </tbody>
     </table>
     <div id="fMatchPlayer" class="DAF-gc-player DAF-gc-xlarge" style="display:none" data-i18n-title="MatchPlayerTitle">
