@@ -38,13 +38,34 @@ var sorttable = (function() {
         },
         clickHandler: function() {
             var cell = this;
+            var table = cell.parentElement.parentElement.parentElement;
+            if (table.classList.contains('sorttable_event')) {
+                SortTable.setSortHeader(table, cell.cellIndex, !cell.classList.contains('DAF-sort-ascending'));
+                table.dispatchEvent(new Event('sort'));
+                return;
+            }
             SortTable.sortTable(cell, !cell.classList.contains('DAF-sort-ascending'));
         },
         getSortInfo: function(table) {
             var cell = Array.from(table.tHead.rows[0].cells).find(cell => cell.classList.contains('DAF-sort-ascending') || cell.classList.contains('DAF-sort-descending'));
+            var convert = SortTable.convert_alpha,
+                sort = null;
+            if (cell) {
+                cell.classList.forEach(name => {
+                    var suffix, i;
+                    if (name.startsWith('sorttable_') && typeof SortTable['convert_' + (suffix = name.substr(10))] == 'function') {
+                        convert = SortTable['convert_' + suffix];
+                        sort = SortTable['sort_' + suffix];
+                        if (!sort && (i = suffix.indexOf('_')) > 0) sort = SortTable['sort_' + suffix.substr(0, i)];
+                    }
+                });
+            }
+            sort = sort || SortTable.sort_alpha;
             return {
                 cell: cell,
                 cellIndex: cell ? cell.cellIndex : -1,
+                convertFn: convert,
+                sortFn: sort,
                 ascending: cell ? !cell.classList.contains('DAF-sort-descending') : false
             };
         },
@@ -57,22 +78,14 @@ var sorttable = (function() {
                 table = row.parentElement.parentElement,
                 tbody = table.tBodies[0],
                 sortCellIndex = cell.cellIndex,
-                convert = SortTable.convert_alpha,
-                sort = null,
                 info = SortTable.getSortInfo(table),
                 fixDescending = info.cellIndex != cell.cellIndex || info.ascending ? 1 : -1;
             if (cell.classList.contains('sorttable_nosort')) return;
-            cell.classList.forEach(name => {
-                var suffix, i;
-                if (name.startsWith('sorttable_') && typeof SortTable['convert_' + (suffix = name.substr(10))] == 'function') {
-                    convert = SortTable['convert_' + suffix];
-                    sort = SortTable['sort_' + suffix];
-                    if (!sort && (i = suffix.indexOf('_')) > 0) sort = SortTable['sort_' + suffix.substr(0, i)];
-                }
-            });
-            sort = sort || SortTable.sort_alpha;
             SortTable.setSortHeader(table, cell.cellIndex, flagAscending);
+            info = SortTable.getSortInfo(table);
             var rows = Array.from(tbody.rows),
+                convert = info.convertFn,
+                sort = info.sortFn,
                 arr;
             if (table.classList.contains('sorttable_rowspan')) {
                 arr = [];
@@ -99,9 +112,6 @@ var sorttable = (function() {
                 if (a[1] instanceof Array) a[1].forEach(el => tbody.appendChild(el));
                 else tbody.appendChild(a[1]);
             });
-            // Dispatch the scroll event to load lazy images brought into view by the sort
-            window.dispatchEvent(new Event("scroll"));
-
         },
         convert_alpha: (value) => value.toLowerCase(),
         sort_alpha: (a, b) => a.localeCompare(b),

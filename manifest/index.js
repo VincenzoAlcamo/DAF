@@ -11,10 +11,19 @@ var eventDASync = new Event('daSync');
 var lazyObserver = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
         if (entry.intersectionRatio <= 0) return;
-        lazyObserver.unobserve(entry.target);
-        if (!entry.target.hasAttribute('lazy-src')) return;
-        entry.target.setAttribute('src', entry.target.getAttribute('lazy-src'));
-        entry.target.removeAttribute('lazy-src');
+        var element = entry.target;
+        lazyObserver.unobserve(element);
+        if (element.hasAttribute('lazy-src')) {
+            element.setAttribute('src', element.getAttribute('lazy-src'));
+            element.removeAttribute('lazy-src');
+        }
+        if (element.hasAttribute('lazy-render')) {
+            var event = new Event('render', {
+                bubbles: true
+            });
+            element.dispatchEvent(event);
+            element.removeAttribute('lazy-render');
+        }
     });
 });
 
@@ -362,7 +371,7 @@ var guiTabs = (function() {
      */
     self.collectLazyImages = function(tab) {
         var tab = tab || self.tabs[active];
-        if (tab) Array.from(tab.container.querySelectorAll('img[lazy-src]')).forEach(item => lazyObserver.observe(item));
+        if (tab) Array.from(tab.container.querySelectorAll('img[lazy-src],*[lazy-render]')).forEach(item => lazyObserver.observe(item));
     };
 
     /*
