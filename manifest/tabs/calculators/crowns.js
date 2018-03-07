@@ -602,12 +602,6 @@ var guiTabs = (function(self) {
             }
             if (parentInput) {
                 var input = document.createElement("INPUT");
-                input.setAttribute("type", "checkbox");
-                input.setAttribute('did', did);
-                input.title = guiString('ignoreCrown');
-                input.checked = !isIgnored;
-                parentInput.appendChild(input);
-                var input = document.createElement("INPUT");
                 input.setAttribute("type", "number");
                 input.id = did;
                 input.name = k;
@@ -618,6 +612,12 @@ var guiTabs = (function(self) {
                 input.min = 0;
                 input.max = 999;
                 input.oninput = onInput;
+                parentInput.appendChild(input);
+                var input = document.createElement("INPUT");
+                input.setAttribute("type", "checkbox");
+                input.setAttribute('did', did);
+                input.title = guiString('ignoreCrown');
+                input.checked = !isIgnored;
                 parentInput.appendChild(input);
             }
         });
