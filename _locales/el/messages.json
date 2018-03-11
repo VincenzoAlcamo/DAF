@@ -354,6 +354,12 @@
     "firstRecorded": {
         "message": "Πρώτη Εγγραφή"
     },
+    "FriendFirstRecordedTooltip": {
+        "message": "Ημερομηνία της πρώτης καταγραφής αυτού του φίλου από το DAF"
+    },
+    "NeighbourFirstRecordedTooltip": {
+        "message": "Ημερομηνία της πρώτης καταγραφής αυτού του γείτονα από το DAF"
+    },
     "Finished": {
         "message": "Έληξε"
     },
@@ -700,6 +706,17 @@
                 "content": "$1"
             }
         }
+    },
+    "fFilterS": {
+        "message": "Φίλοι και γείτονες που δεν ταίριαξαν: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "FriendSearchLabel": {
+        "message": "Αναζήτηση"
     },
     "fCollect": {
         "message": "Συλλογή και Ταίριασμα"
