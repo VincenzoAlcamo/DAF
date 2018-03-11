@@ -1142,7 +1142,7 @@
             }
 
             return data;
-        }
+        };
 
         /*
          ** @Private - Parse Game User Gifts
@@ -1178,7 +1178,7 @@
                 }
             }
             return data;
-        }
+        };
 
         /*
          ** @Private - Parse Game Users Neighbours
@@ -1255,7 +1255,7 @@
             if (exPrefs.debug) console.log("Old Neighbours!", __public.daUser.oldNeighbours, cache);
 
             return data;
-        }
+        };
 
         /*
          ** @Private - Parse Game Users Achievement Progress
@@ -1268,7 +1268,7 @@
                 __public.daUser[tag][id] = node;
             }
             // No return value        
-        }
+        };
 
         /*
          ** @Private - Parse Game User Events
@@ -1283,7 +1283,7 @@
                 __public.daUser[tag][eid] = event;
             }
             // No return value
-        }
+        };
 
         /*
          ** @Private - Parse Game Users Location Progress
@@ -1293,7 +1293,7 @@
                 __public.daUser[tag] = new Object();
             __public.daUser[tag][node.id] = node;
             // No return value
-        }
+        };
 
         // Derive data from the raw parsed information.
         // Note that as of 2017-07-08, a little bit of this is happening during the parsing.
@@ -1517,9 +1517,9 @@
             daUsables: "xml/usables.xml",
             daArtifacts: "xml/artifacts.xml",
             daMaterials: "xml/materials.xml",
+            daBuildings: "xml/buildings.xml",
 
             //daRecipes: "xml/recipes.xml",             // Not Needed?
-            //daBuildings :   "xml/buildings.xml"       // ToDo
         };
 
         function getLangKey() {
@@ -2319,23 +2319,23 @@
             }
 
             return data;
-        }
+        };
 
         /*
          ** Extract Game Resources
          */
         handlers['__gameFile_daTokens'] = function(key, xml) {
             return __gameFile_daResources(key, xml, 'token');
-        }
+        };
         handlers['__gameFile_daTablets'] = function(key, xml) {
             return __gameFile_daResources(key, xml, 'tablet');
-        }
+        };
         handlers['__gameFile_daArtifacts'] = function(key, xml) {
             return __gameFile_daResources(key, xml, 'artifact');
-        }
+        };
         handlers['__gameFile_daMaterials'] = function(key, xml) {
             return __gameFile_daResources(key, xml, 'material');
-        }
+        };
 
         function __gameFile_daResources(key, xml, node) {
             let items = xml.getElementsByTagName(node);
@@ -2396,11 +2396,40 @@
         }
 
         /*
-         ** Extract Game Buildings - TODO
+         ** Extract Game Buildings
          */
-        //handlers['__gameFile_daBuildings'] = function(key, xml)
-        //{
-        //}
+        handlers['__gameFile_daBuildings'] = function(key, xml) {
+            let buildings = xml.getElementsByTagName('building');
+            let data = {};
+            let def = {};
+
+            for (var i = 0; i < buildings.length; i++) {
+                let id = parseInt(buildings[i].attributes.id.textContent);
+                let info = XML2jsobj(buildings[i]);
+
+                if (id != 0) {
+                    let building = {
+                        bid: info.def_id
+                    };
+
+                    gfItemCopy('nid', building, def, info, 'name_loc');
+                    gfItemCopy('hei', building, def, info, 'rows');
+                    gfItemCopy('wid', building, def, info, 'columns');
+                    gfItemCopy('spr', building, def, info, 'sell_price');
+                    gfItemCopy('lim', building, def, info, 'limit');
+                    gfItemCopy('cap', building, def, info, 'max_stamina');
+                    gfItemCopy('reg', building, def, info, 'stamina_reg');
+
+                    data[id] = building;
+                } else {
+                    def = info;
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default Building:', def);
+                }
+            }
+
+            return data;
+        };
 
         /*
          ** Extract Game Level Ups

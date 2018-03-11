@@ -94,6 +94,7 @@ var webData = {
     requestForm: null,
     requestHeaders: null,
 };
+var lastVisitedCamp = null;
 
 var xmlRequests = {};
 

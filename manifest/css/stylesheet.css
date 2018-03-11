@@ -1398,3 +1398,108 @@ a.rlLink:hover {
   transform: scale(1.5);
   cursor: pointer;
 }
+
+/* 
+ * CAMP 
+ */
+.camp_tables {
+  border: 0;
+  margin-bottom: 16px;
+}
+
+.camp_tables>tbody>tr {
+  background-color: transparent;
+}
+
+.camp_tables>tbody>tr>td {
+  border: 0;
+  vertical-align: top;
+}
+
+.camp_tables table tbody {
+  border: 2px solid #36648b;
+}
+
+.camp {
+  --size: 20px;
+  width: calc(var(--size) * 49);
+  height: calc(var(--size) * 12);
+  margin: auto;
+}
+
+.camp div {
+  box-sizing: border-box;
+}
+
+.camp .line {
+  width: calc(var(--lw) * var(--size));
+  height: calc(var(--lh) * var(--size));
+  background-color: #ccc;
+  margin-bottom: var(--size);
+  float: left;
+}
+
+.camp .line:nth-child(odd) {
+  margin-right: var(--size);
+}
+
+.camp .line:nth-child(even) {}
+
+.camp .item {
+  width: calc(var(--w) * var(--size));
+  height: calc(var(--h) * var(--size));
+  margin-top: calc((var(--lh) - var(--h)) * var(--size));
+  cursor: help;
+  float: left;
+}
+
+.camp .item.capacity {
+  background-color: #5BA4FF;
+  background: -webkit-linear-gradient(top, #5BA4FF, #5B527F);
+}
+
+.camp .item.regen {
+  background-color: #C0F644;
+  background: -webkit-linear-gradient(top, #C0F644, #607E44);
+}
+
+.camp .item.building {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.camp .item.block {
+  background-color: #333;
+}
+
+.camp .value {
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 7pt;
+  font-weight: bold;
+  text-align: center;
+  color: #FFF;
+  float: left;
+  width: calc(var(--size) - 2px);
+  margin-left: 1px;
+  margin-right: 1px;
+  margin-top: calc(var(--h) * var(--size));
+  background-color: rgba(0, 0, 0, 0.3);
+  height: 12px;
+}
+
+.camp .regen .value {
+  color: #177516;
+  background-color: #E9FCDF;
+}
+
+.camp .capacity .value {
+  color: #0167CD;
+  background-color: #DCF3F9;
+}
+
+.camp .item .value:nth-child(1) {
+  margin-left: 0px;
+}
+
+.camp .item .value:last-child {
+  margin-right: 0px;
+}

@@ -1160,6 +1160,74 @@
     "rewardsCloseErrorsLabel": {
         "message": "Errors"
     },
+    "camp_player_name": {
+        "message": "$PLAYER$'s camp",
+        "placeholders": {
+            "player": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_no_player": {
+        "message": "No camp was visited yet"
+    },
+    "camp_player_region": {
+        "message": "Player's region"
+    },
+    "camp_player_level": {
+        "message": "Player's level"
+    },
+    "camp_regen_tot": {
+        "message": "Regeneration per hour"
+    },
+    "camp_regen_min": {
+        "message": "Minimum regeneration"
+    },
+    "camp_regen_max": {
+        "message": "Maximum regeneration"
+    },
+    "camp_capacity_tot": {
+        "message": "Maximum capacity"
+    },
+    "camp_windmill_max": {
+        "message": "Maximum number of windmills"
+    },
+    "camp_windmill_regen": {
+        "message": "Windmill regeneration"
+    },
+    "camp_windmill_num": {
+        "message": "Current number of windmills"
+    },
+    "camp_windmill_expiry": {
+        "message": "Windmills will expire on\n$TIME$",
+        "placeholders": {
+            "time": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_slot_empty": {
+        "message": "Empty slot"
+    },
+    "camp_slot_blocked": {
+        "message": "Blocked space"
+    },
+    "camp_slot_capacity": {
+        "message": "Capacity: $VALUE$",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_slot_regen": {
+        "message": "Regeneration: $VALUE$",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
     "Top": {
         "message": "Top"
     },

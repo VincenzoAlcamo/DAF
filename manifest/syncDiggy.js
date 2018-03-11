@@ -150,6 +150,11 @@
             return null;
         }
 
+        handlers['__gameSync_visit_camp'] = function(action, result) {
+            if(result) lastVisitedCamp = result;
+            return !!result;
+        };
+
         /*
          ** friend_child_charge
          */
