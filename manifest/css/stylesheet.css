@@ -197,11 +197,11 @@ body.wait * {
   clear: left;
 }
 
-.clicker-show:hover {
+.clicker-show {
   cursor: s-resize;
 }
 
-.clicker-hide:hover {
+.clicker-hide {
   cursor: s-resize;
 }
 
@@ -1404,7 +1404,6 @@ a.rlLink:hover {
  */
 .camp_tables {
   border: 0;
-  margin-bottom: 16px;
 }
 
 .camp_tables>tbody>tr {
@@ -1423,8 +1422,11 @@ a.rlLink:hover {
 .camp {
   --size: 20px;
   width: calc(var(--size) * 49);
-  height: calc(var(--size) * 12);
+  height: calc(var(--size) * 12.5);
   margin: auto;
+  background-color: #F5F5F5;
+  border: 2px solid #36648b;
+  padding: 8px;  
 }
 
 .camp div {
@@ -1435,7 +1437,7 @@ a.rlLink:hover {
   width: calc(var(--lw) * var(--size));
   height: calc(var(--lh) * var(--size));
   background-color: #ccc;
-  margin-bottom: var(--size);
+  margin-bottom: calc(var(--size) * 1.5);
   float: left;
 }
 
@@ -1453,18 +1455,62 @@ a.rlLink:hover {
   float: left;
 }
 
+.camp .item.building {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  --reg-gradient: -webkit-linear-gradient(top, #C0F644, #607E44);
+  --cap-gradient: -webkit-linear-gradient(top, #5BA4FF, #5B527F);
+}
+
 .camp .item.capacity {
   background-color: #5BA4FF;
-  background: -webkit-linear-gradient(top, #5BA4FF, #5B527F);
+  background: var(--cap-gradient);
 }
 
 .camp .item.regen {
   background-color: #C0F644;
-  background: -webkit-linear-gradient(top, #C0F644, #607E44);
+  background: var(--reg-gradient);
 }
 
-.camp .item.building {
-  border: 1px solid rgba(0, 0, 0, 0.5);
+.camp .item.capacity.reg1 {
+  background-image: url(/img/regions/1.png),var(--cap-gradient);
+}
+.camp .item.capacity.reg2 {
+  background-image: url(/img/regions/2.png),var(--cap-gradient);
+}
+.camp .item.capacity.reg3 {
+  background-image: url(/img/regions/3.png),var(--cap-gradient);
+}
+.camp .item.capacity.reg4 {
+  background-image: url(/img/regions/4.png),var(--cap-gradient);
+}
+.camp .item.capacity.reg5 {
+  background-image: url(/img/regions/5.png),var(--cap-gradient);
+}
+
+.camp .item.regen.reg1 {
+  background-image: url(/img/regions/1.png),var(--reg-gradient);
+}
+.camp .item.regen.reg2 {
+  background-image: url(/img/regions/2.png),var(--reg-gradient);
+}
+.camp .item.regen.reg3 {
+  background-image: url(/img/regions/3.png),var(--reg-gradient);
+}
+.camp .item.regen.reg4 {
+  background-image: url(/img/regions/4.png),var(--reg-gradient);
+}
+.camp .item.regen.reg5 {
+  background-image: url(/img/regions/5.png),var(--reg-gradient);
+}
+
+.camp .item.reg1,
+.camp .item.reg2,
+.camp .item.reg3,
+.camp .item.reg4,
+.camp .item.reg5 {
+  background-size: var(--size),auto;
+  background-repeat: no-repeat,repeat;
+  background-position: bottom right,top left;  
 }
 
 .camp .item.block {

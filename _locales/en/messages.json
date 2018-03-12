@@ -1228,6 +1228,14 @@
             }
         }
     },
+    "camp_slot_region": {
+        "message": "Region: $VALUE$",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
     "Top": {
         "message": "Top"
     },

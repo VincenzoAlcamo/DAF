@@ -20,9 +20,13 @@ var guiTabs = (function(self) {
      ** @Private - Initialise the tab
      */
     function onInit(tid, cel) {
-        document.getElementById('camp_card').addEventListener('render', function(event) {
-            onUpdate();
-        });
+        ['camp_self', 'camp_neighbor'].forEach(id => {
+            var div = document.getElementById(id);
+            div.addEventListener('render', function(event) {
+                updateCamp(event.target);
+            });
+            markToBeRendered(div);
+        })
     }
 
     const ONE_HOUR = 60 * 60,
@@ -34,44 +38,68 @@ var guiTabs = (function(self) {
      */
     function onAction(id, action, data) {
         //console.log(id, "onAction", action, data);
-        if (action == 'visit_camp') {
-            var div = document.getElementById('camp_card');
-            div.setAttribute('lazy-render', '');
-            lazyObserver.observe(div);
-        }
+        if (action == 'visit_camp') markToBeRendered(document.getElementById('camp_neighbor'));
+    }
+
+    function markToBeRendered(div) {
+        div.setAttribute('lazy-render', '');
+        lazyObserver.observe(div);
     }
 
     /*
      ** @Private - Update the tab
      */
-    function onUpdate(id, reason) {
-        var camp = bgp.lastVisitedCamp && bgp.lastVisitedCamp.camp,
-            uid = bgp.lastVisitedCamp && bgp.lastVisitedCamp.neigh_id,
-            pal = uid ? bgp.daGame.daUser.neighbours[uid] : null;
-        document.getElementById('camp_rid').setAttribute('src', (camp ? '/img/regions/' + camp.region : '/img/camp') + '.png');
-        document.getElementById('camp_name').textContent = (camp ? guiString('camp_player_name', [pal ? pal.name : '#' + uid]) : guiString('camp_no_player'));
-        document.getElementById('camp_visited').innerHTML = camp ? showCamp(camp) : '';
-        var tbody, row, cell;
-        tbody = document.getElementById('camp_player');
-        tbody.innerHTML = '';
+    function onUpdate(id, reason) {}
+
+    function updateCamp(div, camp, uid, pal) {
+        var info, camp, uid, pal;
+
+        if (div.id == 'camp_neighbor') {
+            info = bgp.lastVisitedCamp;
+            camp = info && info.camp;
+            uid = info && info.neigh_id;
+            pal = uid ? bgp.daGame.getNeighbour(uid) : null;
+        } else {
+            info = bgp.daGame.daUser;
+            camp = info.camp;
+            pal = info.player;
+            uid = pal.uid;
+            ['region', 'windmill_limit', 'windmill_reg', 'stamina_reg', 'max_stamina'].forEach(key => camp[key] = info[key]);
+        }
+
+        function getFirstByClassName(className) {
+            return div.getElementsByClassName(className)[0];
+        }
+
+        getFirstByClassName('camp_rid').setAttribute('src', (camp ? '/img/regions/' + camp.region : '/img/camp') + '.png');
+        getFirstByClassName('camp_name').textContent = (camp ? guiString('camp_player_name', [pal ? pal.name : '#' + uid]) : guiString('camp_no_player'));
+        getFirstByClassName('camp_container').innerHTML = camp ? showCamp(camp) : '';
+
+        var table = getFirstByClassName('camp_tables'),
+            tbody, row;
+        table.innerHTML = '';
+
         if (camp) {
+            row = table.insertRow();
+
+            // table 1
+            table = row.insertCell().appendChild(document.createElement('table'));
+
+            tbody = table.appendChild(document.createElement('tbody'));
             addRowTextValue(tbody, guiString('camp_player_region'), self.regionName(camp.region));
             addRowTextValue(tbody, guiString('camp_player_level'), parseInt(pal.level));
-        }
-        tbody = document.getElementById('camp_data');
-        tbody.innerHTML = '';
-        if (camp) {
+
+            tbody = table.appendChild(document.createElement('tbody'));
             addRowTextValue(tbody, guiString('camp_regen_tot'), parseInt(camp.stamina_reg));
             addRowTextValue(tbody, guiString('camp_capacity_tot'), parseInt(camp.max_stamina));
             addRowTextValue(tbody, guiString('camp_regen_min'), reg_min);
             addRowTextValue(tbody, guiString('camp_regen_max'), reg_max);
-        }
 
-        var wind_count = 0,
-            wind_expiry = Infinity;
-        tbody = document.getElementById('camp_windmills');
-        tbody.innerHTML = '';
-        if (camp) {
+            // table 2
+            table = row.insertCell().appendChild(document.createElement('table'));
+
+            var wind_count = 0,
+                wind_expiry = Infinity;
             if (camp.windmills) {
                 (Array.isArray(camp.windmills) ? camp.windmills : [camp.windmills]).forEach(windmill => {
                     var st = parseInt(windmill.activated),
@@ -80,14 +108,18 @@ var guiTabs = (function(self) {
                     wind_expiry = Math.min(et, wind_expiry);
                 });
             }
+
+            tbody = table.appendChild(document.createElement('tbody'));
             addRowTextValue(tbody, guiString('camp_windmill_max'), parseInt(camp.windmill_limit));
             addRowTextValue(tbody, guiString('camp_windmill_regen'), parseInt(camp.windmill_reg));
             addRowTextValue(tbody, guiString('camp_windmill_num'), wind_count);
+
+            if (wind_count) {
+                tbody = table.appendChild(document.createElement('tbody'));
+                addRowTextValue(tbody, guiString('camp_windmill_expiry', [unixDate(wind_expiry, 'full')]));
+            }
         }
-        tbody = document.getElementById('camp_windmills2');
-        tbody.innerHTML = '';
-        if (wind_count)
-            addRowTextValue(tbody, guiString('camp_windmill_expiry', [unixDate(wind_expiry, 'full')]));
+
         return true;
     }
 
@@ -143,10 +175,12 @@ var guiTabs = (function(self) {
                     if (building) {
                         slots[slot] = {
                             kind: 'building',
+                            bid: bid,
                             capacity: parseInt(building.cap) || 0,
                             regen: parseInt(building.reg) || 0,
                             width: parseInt(building.wid) || 1,
                             height: parseInt(building.hei) || 1,
+                            rid: parseInt(building.rid) || 0,
                             title: bgp.daGame.string(building.nid)
                         }
                     }
@@ -164,6 +198,7 @@ var guiTabs = (function(self) {
                 if (width > 1 && (kind == 'empty' || kind == 'block')) title += ' x ' + width;
                 if (kind == 'building') {
                     title += ' (' + width + 'x' + slot.height + ')';
+                    //title += '\nBID: ' + slot.bid;
                     var colValue = Math.floor((slot.regen || slot.capacity) / width);
                     if (slot.capacity > 0) {
                         title += '\n' + guiString('camp_slot_capacity', [slot.capacity]);
@@ -178,6 +213,10 @@ var guiTabs = (function(self) {
                         reg_tot += slot.regen;
                         if (reg_min == 0 || colValue < reg_min) reg_min = colValue;
                         if (reg_max == 0 || colValue > reg_max) reg_max = colValue;
+                    }
+                    if (slot.rid > 0) {
+                        title += '\n' + guiString('camp_slot_region', [self.regionName(slot.rid)]);
+                        kind += ' reg' + slot.rid;
                     }
                     colValues = ('<div class="value">' + colValue + '</div>').repeat(width);
                 }

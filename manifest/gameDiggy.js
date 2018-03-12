@@ -650,6 +650,13 @@
             }
             return {};
         }
+        __public.getNeighbour = function(uid) {
+            try {
+                return __public.daUser.neighbours[uid];
+            } catch (e) {
+                return null;
+            }
+        }
 
         /*********************************************************************
          ** @Public - Load Game User (generator.php)
@@ -722,6 +729,9 @@
             exp: null,
             camp_set: null,
             windmill_limit: null,
+            windmill_reg: null,
+            stamina_reg: null,
+            max_stamina: null,
             login_count: null,
             dr_time: null,
             dr_tz_offset: null,
@@ -2402,6 +2412,20 @@
             let buildings = xml.getElementsByTagName('building');
             let data = {};
             let def = {};
+            let reRegion = /_(eg|egy|egypt|val|valhalla|ch|chi|china|atl|alt|gre)([12]?|_(L|reg|stor)?\d|_(strong|stor|mid|weak))$/i;
+            let regions = {
+                eg: 1,
+                egy: 1,
+                egypt: 1,
+                val: 2,
+                valhalla: 2,
+                ch: 3,
+                chi: 3,
+                china: 3,
+                atl: 4,
+                alt: 4,
+                gre: 5
+            };
 
             for (var i = 0; i < buildings.length; i++) {
                 let id = parseInt(buildings[i].attributes.id.textContent);
@@ -2419,6 +2443,13 @@
                     gfItemCopy('lim', building, def, info, 'limit');
                     gfItemCopy('cap', building, def, info, 'max_stamina');
                     gfItemCopy('reg', building, def, info, 'stamina_reg');
+
+
+                    var clip = info.gr_clip;
+                    if (typeof clip == 'string') {
+                        var match = clip.match(reRegion);
+                        if (match) building.rid = regions[match[1].toLowerCase()];
+                    }
 
                     data[id] = building;
                 } else {
