@@ -133,7 +133,9 @@ var guiTabs = (function(self) {
                 width: blocked,
                 height: line_height
             };
-            camp.buildings.forEach(building => {
+            var blds = camp.buildings;
+            blds = blds ? (Array.isArray(blds) ? blds : [blds]) : [];
+            blds.forEach(building => {
                 if (parseInt(building.line_id) == lid) {
                     var bid = parseInt(building.def_id),
                         slot = parseInt(building.slot),
@@ -158,20 +160,20 @@ var guiTabs = (function(self) {
                     width = slot.width,
                     kind = slot.kind,
                     colValues = '';
-                while (kind == 'empty' && i + slot.width < NUM_SLOTS && slots[i + width].kind == kind) width++;
+                while (kind == 'empty' && i + width < NUM_SLOTS && slots[i + width].kind == kind) width++;
                 if (width > 1 && (kind == 'empty' || kind == 'block')) title += ' x ' + width;
                 if (kind == 'building') {
                     title += ' (' + width + 'x' + slot.height + ')';
                     var colValue = Math.floor((slot.regen || slot.capacity) / width);
                     if (slot.capacity > 0) {
-                        title += '\nCapacity: ' + slot.capacity;
+                        title += '\n' + guiString('camp_slot_capacity', [slot.capacity]);
                         kind += ' capacity';
                         cap_tot += slot.capacity;
                         if (cap_min == 0 || colValue < cap_min) cap_min = colValue;
                         if (cap_max == 0 || colValue > cap_max) cap_max = colValue;
                     }
                     if (slot.regen > 0) {
-                        title += '\nRegen: ' + slot.regen;
+                        title += '\n' + guiString('camp_slot_regen', [slot.regen]);
                         kind += ' regen';
                         reg_tot += slot.regen;
                         if (reg_min == 0 || colValue < reg_min) reg_min = colValue;
