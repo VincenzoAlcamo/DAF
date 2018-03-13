@@ -1186,6 +1186,9 @@
     "camp_regen_max": {
         "message": "Maximum regeneration"
     },
+    "camp_fill_time": {
+        "message": "Fill time\n(from 0 to max capacity)"
+    },
     "camp_capacity_tot": {
         "message": "Maximum capacity"
     },

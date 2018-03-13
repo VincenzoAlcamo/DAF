@@ -1180,6 +1180,9 @@
     "camp_regen_max": {
         "message": "Rigenerazione massima"
     },
+    "camp_fill_time": {
+        "message": "Tempo di riempimento\n(da 0 a max capacità)"
+    },
     "camp_capacity_tot": {
         "message": "Capacità massima"
     },
