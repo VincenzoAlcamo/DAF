@@ -698,8 +698,13 @@ var guiTabs = (function() {
                 if (materials[key] > 0) data.push(key + '\t' + self.materialName(key) + '\t' + materials[key]);
             });
             var windmillNames = {
+                3: bgp.daGame.string('WINA001'),
+                4: bgp.daGame.string('WINA002'),
+                5: bgp.daGame.string('WINA003'),
                 6: bgp.daGame.string('WINA005'),
                 7: bgp.daGame.string('WINA006'),
+                8: bgp.daGame.string('WINA007'),
+                10: bgp.daGame.string('WINA009'),
                 13: bgp.daGame.string('WINA011'),
                 14: bgp.daGame.string('WINA012'),
                 15: bgp.daGame.string('WINA013')
