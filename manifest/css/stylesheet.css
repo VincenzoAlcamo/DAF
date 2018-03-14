@@ -1457,50 +1457,39 @@ a.rlLink:hover {
 
 .camp .item.building {
   border: 1px solid rgba(0, 0, 0, 0.5);
-  --reg-gradient: -webkit-linear-gradient(top, #C0F644, #607E44);
-  --cap-gradient: -webkit-linear-gradient(top, #5BA4FF, #5B527F);
 }
 
 .camp .item.capacity {
   background-color: #5BA4FF;
-  background: var(--cap-gradient);
+  --gradient: -webkit-linear-gradient(top, #5BA4FF, #5B527F);
+  /* background: var(--gradient); */
 }
 
 .camp .item.regen {
   background-color: #C0F644;
-  background: var(--reg-gradient);
+  --gradient: -webkit-linear-gradient(top, #C0F644, #607E44);
+  /* background: var(--gradient); */
 }
 
-.camp .item.capacity.reg1 {
-  background-image: url(/img/regions/1.png),var(--cap-gradient);
+.camp .item.reg1 {
+  /* background-image: url(/img/regions/1.png),var(--gradient); */
+  background-image: url(/img/regions/1.png);
 }
-.camp .item.capacity.reg2 {
-  background-image: url(/img/regions/2.png),var(--cap-gradient);
+.camp .item.reg2 {
+  /* background-image: url(/img/regions/2.png),var(--gradient); */
+  background-image: url(/img/regions/2.png);
 }
-.camp .item.capacity.reg3 {
-  background-image: url(/img/regions/3.png),var(--cap-gradient);
+.camp .item.reg3 {
+  /* background-image: url(/img/regions/3.png),var(--gradient); */
+  background-image: url(/img/regions/3.png);
 }
-.camp .item.capacity.reg4 {
-  background-image: url(/img/regions/4.png),var(--cap-gradient);
+.camp .item.reg4 {
+  /* background-image: url(/img/regions/4.png),var(--gradient); */
+  background-image: url(/img/regions/4.png);
 }
-.camp .item.capacity.reg5 {
-  background-image: url(/img/regions/5.png),var(--cap-gradient);
-}
-
-.camp .item.regen.reg1 {
-  background-image: url(/img/regions/1.png),var(--reg-gradient);
-}
-.camp .item.regen.reg2 {
-  background-image: url(/img/regions/2.png),var(--reg-gradient);
-}
-.camp .item.regen.reg3 {
-  background-image: url(/img/regions/3.png),var(--reg-gradient);
-}
-.camp .item.regen.reg4 {
-  background-image: url(/img/regions/4.png),var(--reg-gradient);
-}
-.camp .item.regen.reg5 {
-  background-image: url(/img/regions/5.png),var(--reg-gradient);
+.camp .item.reg5 {
+  /* background-image: url(/img/regions/5.png),var(--gradient); */
+  background-image: url(/img/regions/5.png);
 }
 
 .camp .item.reg1,
