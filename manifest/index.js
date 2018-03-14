@@ -684,13 +684,30 @@ var guiTabs = (function() {
 
         document.getElementById('optDownloadMaterial').addEventListener('click', function() {
             var data = [],
-                materials = bgp.daGame.daUser.materials;
-            data.push('LEVEL\t' + bgp.daGame.daUser.level);
-            data.push('REGION\t' + bgp.daGame.daUser.region);
+                user = bgp.daGame.daUser,
+                materials = user.materials;
+            data.push('LEVEL\t' + user.level);
+            data.push('REGION\t' + user.region);
+            data.push('XP\t' + user.exp);
+            data.push('CARAVANS\t' + user.caravans.length);
+            data.push('POTS\t' + user.pots.length);
+            data.push('ANVILS\t' + user.anvils.length);
             data.push('');
             data.push('MAT_ID\tMAT_NAME\tQTY');
             Object.keys(materials).forEach(key => {
                 if (materials[key] > 0) data.push(key + '\t' + self.materialName(key) + '\t' + materials[key]);
+            });
+            var windmillNames = {
+                6: bgp.daGame.string('WINA005'),
+                7: bgp.daGame.string('WINA006'),
+                13: bgp.daGame.string('WINA011'),
+                14: bgp.daGame.string('WINA012'),
+                15: bgp.daGame.string('WINA013')
+            };
+
+            Object.keys(user.stored_windmills).forEach(key => {
+                var name = key in windmillNames ? windmillNames[key] : 'WINDMILL_' + key;
+                data.push('W' + key + '\t' + name + '\t' + user.stored_windmills[key]);
             });
             data = data.join('\n');
             downloadData(data, 'DAF_materials.csv');
