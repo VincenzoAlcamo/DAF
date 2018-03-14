@@ -177,8 +177,10 @@ function downloadData(data, fileName) {
     a.href = url;
     a.download = fileName;
     a.click();
-    window.URL.revokeObjectURL(url);
-    a.parentNode.removeChild(a);
+    setTimeout(function() {
+        window.URL.revokeObjectURL(url);
+        a.parentNode.removeChild(a);
+    }, 2000);
 }
 
 function guiInfo() {
