@@ -14,7 +14,7 @@ var guiTabs = (function(self) {
         onAction: onAction
     };
 
-    var reg_min, reg_max;
+    var reg_min, reg_max, cap_min, cap_max;
 
     /*
      ** @Private - Initialise the tab
@@ -86,7 +86,6 @@ var guiTabs = (function(self) {
 
             // table 1
             table = row.insertCell().appendChild(document.createElement('table'));
-
             tbody = table.appendChild(document.createElement('tbody'));
             addRowTextValue(tbody, guiString('camp_player_region'), self.regionName(camp.region));
             addRowTextValue(tbody, guiString('camp_player_level'), parseInt(pal.level));
@@ -104,12 +103,18 @@ var guiTabs = (function(self) {
                 time.unshift(Math.floor(fillTime / 60));
                 addRowTextValue(tbody, guiString('camp_fill_time'), time.join(':'), 'right');
 
+                // table 2
+                table = row.insertCell().appendChild(document.createElement('table'));
+                tbody = table.appendChild(document.createElement('tbody'));
                 addRowTextValue(tbody, guiString('camp_regen_min'), reg_min);
                 addRowTextValue(tbody, guiString('camp_regen_max'), reg_max);
+                addRowTextValue(tbody, guiString('camp_capacity_min'), cap_min);
+                addRowTextValue(tbody, guiString('camp_capacity_max'), cap_max);
             }
 
-            // table 2
+            // table 3
             table = row.insertCell().appendChild(document.createElement('table'));
+            tbody = table.appendChild(document.createElement('tbody'));
 
             var wind_count = 0,
                 wind_expiry = Infinity;
@@ -122,7 +127,6 @@ var guiTabs = (function(self) {
                 });
             }
 
-            tbody = table.appendChild(document.createElement('tbody'));
             //addRowTextValue(tbody, guiString('camp_windmill_max'), parseInt(camp.windmill_limit));
             addRowTextValue(tbody, guiString('camp_windmill_num'), wind_count + ' / ' + parseInt(camp.windmill_limit), 'right');
             if (isPublic) {
@@ -159,7 +163,7 @@ var guiTabs = (function(self) {
             lines_blocked = camp.lines_blocked.split(','),
             buildings = bgp.daGame.daBuildings,
             html = [];
-        reg_min = reg_max = 0;
+        reg_min = reg_max = cap_min = cap_max = 0;
         html.push('<div class="camp">');
         [1, 2, 3, 5, 7, 9].forEach((lid, index) => {
             line_height = Math.floor(index / 2) + 2;
@@ -218,6 +222,8 @@ var guiTabs = (function(self) {
                     if (slot.capacity > 0) {
                         if (isPublic) title += '\n' + guiString('camp_slot_capacity', [slot.capacity]);
                         kind += ' capacity';
+                        if (cap_min == 0 || colValue < cap_min) cap_min = colValue;
+                        if (cap_max == 0 || colValue > cap_max) cap_max = colValue;
                     }
                     if (slot.regen > 0) {
                         if (isPublic) title += '\n' + guiString('camp_slot_regen', [slot.regen]);

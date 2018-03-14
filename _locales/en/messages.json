@@ -1186,11 +1186,17 @@
     "camp_regen_max": {
         "message": "Maximum regeneration"
     },
+    "camp_capacity_min": {
+        "message": "Minimum capacity"
+    },
+    "camp_capacity_max": {
+        "message": "Maximum capacity"
+    },
     "camp_fill_time": {
         "message": "Fill time\n(from 0 to max capacity)"
     },
     "camp_capacity_tot": {
-        "message": "Maximum capacity"
+        "message": "Total capacity"
     },
     "camp_windmill_max": {
         "message": "Maximum number of windmills"
