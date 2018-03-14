@@ -1154,6 +1154,91 @@
     "rewardsCloseErrorsLabel": {
         "message": "Σφάλματα"
     },
+    "camp_player_name": {
+        "message": "Παίχτης: $PLAYER$",
+        "placeholders": {
+            "player": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_no_player": {
+        "message": "Ακόμα καμμία επίσκεψη σε βάση"
+    },
+    "camp_player_region": {
+        "message": "Περιοχή του παίχτη"
+    },
+    "camp_player_level": {
+        "message": "Επίπεδο του παίχτη"
+    },
+    "camp_regen_tot": {
+        "message": "Ανανέωση ανά ώρα"
+    },
+    "camp_regen_min": {
+        "message": "Μικρότερη ανανέωση"
+    },
+    "camp_regen_max": {
+        "message": "Μεγαλύτερη ανανέωση"
+    },
+    "camp_capacity_min": {
+        "message": "Μικρότερη χωρητικότητα"
+    },
+    "camp_capacity_max": {
+        "message": "Μεγαλύτερη χωρητικότητα"
+    },
+    "camp_fill_time": {
+        "message": "Χρόνος γεμίσματος\n(από 0 μέχρι μαξ χωρητικότητα)"
+    },
+    "camp_capacity_tot": {
+        "message": "Σύνολο Χωρητικότητας"
+    },
+    "camp_windmill_max": {
+        "message": "Μεγαλύτερος αριθμός από ανεμόμυλους"
+    },
+    "camp_windmill_regen": {
+        "message": "Ανανέωση ανεμόμυλων"
+    },
+    "camp_windmill_num": {
+        "message": "Τωρινός αριθμός ανεμόμυλων"
+    },
+    "camp_windmill_expiry": {
+        "message": "Οι ανεμόμυλοι θα λύξουν στις\n$TIME$",
+        "placeholders": {
+            "time": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_slot_empty": {
+        "message": "Κενή υποδοχή"
+    },
+    "camp_slot_blocked": {
+        "message": "Μπλοκαρισμένο κενό"
+    },
+    "camp_slot_capacity": {
+        "message": "Χωρητικότητα: $VALUE$",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_slot_regen": {
+        "message": "Ανανέωση: $VALUE$",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_slot_region": {
+        "message": "Περιοχή: $VALUE$",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
     "Top": {
         "message": "Κορυφή"
     },
