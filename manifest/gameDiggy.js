@@ -2515,7 +2515,7 @@
             var want = [
                 'ABNA', 'ACNA', 'BUNA', 'CAOV', 'COL', 'DENA', 'EVN', 'JOST',
                 'LONA', 'MANA', 'MAP', 'NPCN', 'QINA', 'TRNA', 'USNA', 'WINA',
-                //'GIP', MOB'
+                'CT' //'GIP', MOB'
             ];
             var data = {};
 

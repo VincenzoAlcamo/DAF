@@ -1413,6 +1413,7 @@ a.rlLink:hover {
 .camp_tables>tbody>tr>td {
   border: 0;
   vertical-align: top;
+  padding: 0 6px 12px;
 }
 
 .camp_tables table tbody {

@@ -1160,6 +1160,9 @@
     "rewardsCloseErrorsLabel": {
         "message": "Errors"
     },
+    "camp_your_camp": {
+        "message": "Your camp"
+    },
     "camp_player_name": {
         "message": "$PLAYER$'s camp",
         "placeholders": {
@@ -1170,6 +1173,9 @@
     },
     "camp_no_player": {
         "message": "No camp was visited yet"
+    },
+    "camp_player": {
+        "message": "Player"
     },
     "camp_player_region": {
         "message": "Player's region"
@@ -1244,6 +1250,24 @@
                 "content": "$1"
             }
         }
+    },
+    "camp_regen": {
+        "message": "Regeneration"
+    },
+    "camp_capacity": {
+        "message": "Capacity"
+    },
+    "camp_windmills": {
+        "message": "Windmills"
+    },
+    "camp_min_value": {
+        "message": "Slot minimum"
+    },
+    "camp_max_value": {
+        "message": "Slot maximum"
+    },
+    "camp_theme": {
+        "message": "Theme"
     },
     "Top": {
         "message": "Top"

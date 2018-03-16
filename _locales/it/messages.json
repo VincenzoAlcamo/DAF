@@ -1154,6 +1154,9 @@
     "rewardsCloseErrorsLabel": {
         "message": "Errori"
     },
+    "camp_your_camp": {
+        "message": "Il tuo campo"
+    },
     "camp_player_name": {
         "message": "Campo di $PLAYER$",
         "placeholders": {
@@ -1164,6 +1167,9 @@
     },
     "camp_no_player": {
         "message": "Nessun campo è stato ancora visitato"
+    },
+    "camp_player": {
+        "message": "Giocatore"
     },
     "camp_player_region": {
         "message": "Regione del giocatore"
@@ -1238,6 +1244,24 @@
                 "content": "$1"
             }
         }
+    },
+    "camp_regen": {
+        "message": "Rigenerazione"
+    },
+    "camp_capacity": {
+        "message": "Capacità"
+    },
+    "camp_windmills": {
+        "message": "Mulini a vento"
+    },
+    "camp_min_value": {
+        "message": "Minimo a colonna"
+    },
+    "camp_max_value": {
+        "message": "Massimo a colonna"
+    },
+    "camp_theme": {
+        "message": "Tema"
     },
     "Top": {
         "message": "Inizio"
