@@ -941,16 +941,11 @@ function guiString(message, subs = null) {
  */
 function guiCardToggle(parent = document) {
     parent.querySelectorAll('.clicker > h1:first-child').forEach(function(e) {
-        var img = onToggle(e, false);
-        if (img) {
-            img.onclick = (e) => {
-                onToggle(e.target.parentElement, true);
-                return false;
-            };
-        }
-        e.onclick = (e) => {
-            onToggle(e.target, true);
-            return false;
+        onToggle(e, false);
+        e.onclick = function(e) {
+            onToggle(this, true);
+            e.stopPropagation();
+            e.preventDefault();
         };
     });
 }
@@ -961,31 +956,17 @@ function onToggle(e, toggle = true) {
 
     if (div) {
         var pk = 'toggle_' + div.id;
-
-        if ((!toggle && div.id) && bgp.exPrefs.hasOwnProperty(pk))
-            div.style.display = bgp.exPrefs[pk];
-
-        if (div.style.display == ((toggle) ? 'none' : '')) {
-            e.classList.toggle('clicker-hide', true);
-            e.classList.toggle('clicker-show', false);
-            if (img) {
-                img.src = '/img/card-hide.png';
-                img.title = guiString('clickShrink');
-            }
-            if (toggle)
-                div.style.display = '';
-        } else {
-            e.classList.toggle('clicker-hide', false);
-            e.classList.toggle('clicker-show', true);
-            if (img) {
-                img.src = '/img/card-show.png';
-                img.title = guiString('clickExpand');
-            }
-            if (toggle)
-                div.style.display = 'none';
+        var currentStatus = (!toggle && div.id && bgp.exPrefs.hasOwnProperty(pk)) ? bgp.exPrefs[pk] : div.style.display;
+        if(toggle) currentStatus = currentStatus == 'none' ? '' : 'none';
+        div.style.display = currentStatus;
+        var isHidden = currentStatus == 'none';
+        e.classList.toggle('clicker-hide', !isHidden);
+        e.classList.toggle('clicker-show', isHidden);
+        if(img) {
+            img.src = isHidden ? '/img/card-show.png' : '/img/card-hide.png';
+            img.title = isHidden ? guiString('clickExpand') : guiString('clickShrink');
         }
-
-        guiTabs.setPref(pk, div.style.display);
+        if(div.id && bgp.exPrefs[pk] != currentStatus) guiTabs.setPref(pk, currentStatus);
         div.dispatchEvent(eventToggle);
     }
 
