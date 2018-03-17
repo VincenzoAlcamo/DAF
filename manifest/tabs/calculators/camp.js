@@ -66,6 +66,7 @@ var guiTabs = (function(self) {
         7: bgp.daGame.string('CT013'),
         8: self.regionName(4),
         9: self.regionName(5),
+        10: bgp.daGame.string('CT014'),
         12: bgp.daGame.string('CT016')
     };
 
@@ -178,8 +179,6 @@ var guiTabs = (function(self) {
                 addRowTextValue(tbody, guiString('camp_windmill_expiry', [unixDate(wind_expiry, 'full')]));
             }
         }
-
-        return true;
     }
 
     function addRowTextValue(tbody, text, value, align) {
