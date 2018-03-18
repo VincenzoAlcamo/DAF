@@ -238,7 +238,7 @@
     },
     "cssMidnight": {
         "message": "Midnight Bob"
-    },    
+    },
     "capCrownsLabel": {
         "message": "Cap to Possible"
     },
@@ -1177,35 +1177,8 @@
     "camp_player": {
         "message": "Player"
     },
-    "camp_player_region": {
-        "message": "Player's region"
-    },
-    "camp_player_level": {
-        "message": "Player's level"
-    },
-    "camp_regen_tot": {
-        "message": "Regeneration per hour"
-    },
-    "camp_regen_min": {
-        "message": "Minimum regeneration"
-    },
-    "camp_regen_max": {
-        "message": "Maximum regeneration"
-    },
-    "camp_capacity_min": {
-        "message": "Minimum capacity"
-    },
-    "camp_capacity_max": {
-        "message": "Maximum capacity"
-    },
     "camp_fill_time": {
         "message": "Fill time\n(from 0 to max capacity)"
-    },
-    "camp_capacity_tot": {
-        "message": "Total capacity"
-    },
-    "camp_windmill_max": {
-        "message": "Maximum number of windmills"
     },
     "camp_windmill_regen": {
         "message": "Windmill regeneration"
@@ -1268,6 +1241,28 @@
     },
     "camp_theme": {
         "message": "Theme"
+    },
+    "camp_unlock_materials": {
+        "message": "Materials required to unlock camp"
+    },
+    "camp_unlock_one": {
+        "message": "Unlocking one slot will net $VALUE$ XP",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_unlock_gem": {
+        "message": "One slot can be unlocked with $VALUE$ gems",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_unlock_mat": {
+        "message": "or with these materials:"
     },
     "Top": {
         "message": "Top"

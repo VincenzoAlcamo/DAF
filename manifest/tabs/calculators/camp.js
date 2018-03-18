@@ -14,7 +14,7 @@ var guiTabs = (function(self) {
         onAction: onAction
     };
 
-    var reg_min, reg_max, cap_min, cap_max, reg_tot, cap_top;
+    const NUM_SLOTS = 24;
 
     /*
      ** @Private - Initialise the tab
@@ -94,45 +94,33 @@ var guiTabs = (function(self) {
             isPublic = true;
         }
 
-        function getFirstByClassName(className) {
-            return div.getElementsByClassName(className)[0];
+        function value(value) {
+            return Dialog.escapeHtmlBr(typeof value == 'number' ? numberWithCommas(value, 0) : value);
         }
 
-        getFirstByClassName('camp_rid').setAttribute('src', (camp ? '/img/regions/' + camp.region : '/img/camp') + '.png');
-        getFirstByClassName('camp_name').textContent = campName;
-        if (flagHeaderOnly) return;
+        var html = [];
 
-        getFirstByClassName('camp_container').innerHTML = camp ? showCamp(camp, isPublic) : '';
+        div.querySelector('img').setAttribute('src', (camp ? '/img/regions/' + camp.region : '/img/camp') + '.png');
+        div.querySelector('span').textContent = campName;
 
-        var table = getFirstByClassName('camp_tables'),
-            tbody, row;
-        table.innerHTML = '';
+        if (!flagHeaderOnly && camp) {
+            var campResult = calculateCamp(camp, isPublic);
 
-        function newTable(title) {
-            table = row.insertCell().appendChild(document.createElement('table'));
-            newTBody(title);
-        }
-
-        function newTBody(title) {
-            tbody = table.appendChild(document.createElement(title ? 'thead' : 'tbody'));
-            if (title) {
-                addRowTextValue(tbody, title);
-                newTBody();
-            }
-        }
-
-        if (camp) {
-            row = table.insertRow();
+            html.push('<table class="camp_tables"><tr>');
 
             // table Player
-            newTable(guiString('camp_player'));
-            addRowTextValue(tbody, guiString('Region'), self.regionName(camp.region));
-            addRowTextValue(tbody, guiString('Level'), parseInt(pal.level));
-            addRowTextValue(tbody, guiString('camp_theme'), getThemeName(camp.skin));
+            html.push('<td><table class="camp_data">');
+            html.push('<thead><tr><th colspan="2">', value(guiString('camp_player')), '</th></tr></thead>');
+            html.push('<tbody>');
+            html.push('<tr><td>', value(guiString('Region')), '</td><td>', value(self.regionName(camp.region)), '</td></tr>');
+            html.push('<tr><td>', value(guiString('Level')), '</td><td>', value(parseInt(pal.level)), '</td></tr>');
+            html.push('<tr><td>', value(guiString('camp_theme')), '</td><td>', value(getThemeName(camp.skin)), '</td></tr>');
+            html.push('</tbody>');
+            html.push('</table></td>');
 
             if (isPublic) {
-                var cap_total = parseInt(camp.max_stamina) || cap_tot,
-                    reg_total = parseInt(camp.stamina_reg) || reg_tot,
+                var cap_total = parseInt(camp.max_stamina) || campResult.cap_tot,
+                    reg_total = parseInt(camp.stamina_reg) || campResult.reg_tot,
                     fillTime = Math.ceil(cap_total / reg_total * 3600),
                     time = [];
                 time.unshift(String(fillTime % 60).padStart(2, '0'));
@@ -141,79 +129,100 @@ var guiTabs = (function(self) {
                 time.unshift(Math.floor(fillTime / 60));
 
                 // table Regeneration
-                newTable(guiString('camp_regen'));
-                addRowTextValue(tbody, guiString('camp_regen_tot'), reg_total);
-                addRowTextValue(tbody, guiString('camp_fill_time'), time.join(':'), 'right');
-                addRowTextValue(tbody, guiString('camp_min_value'), reg_min);
-                addRowTextValue(tbody, guiString('camp_max_value'), reg_max);
-
-                // table Capacity
-                newTable(guiString('camp_capacity'));
-                addRowTextValue(tbody, guiString('camp_capacity_tot'), cap_total);
-                addRowTextValue(tbody, guiString('camp_min_value'), cap_min);
-                addRowTextValue(tbody, guiString('camp_max_value'), cap_max);
+                html.push('<td><table class="camp_data">');
+                html.push('<thead><tr class="energy_capacity"><th></th><th><img src="/img/energy.png" title="', value(guiString('camp_regen')), '"></th><th><img src="/img/capacity.png" title="', value(guiString('camp_capacity')), '"></th></tr></thead>');
+                html.push('<tbody>');
+                html.push('<tr><td>Total</td><td>', value(reg_total), '</td><td>', value(cap_total), '</td></tr>');
+                html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
+                html.push('<tr><td>', value(guiString('camp_min_value')), '</td><td>', value(campResult.reg_min), '</td><td>', value(campResult.cap_min), '</td></tr>');
+                html.push('<tr><td>', value(guiString('camp_max_value')), '</td><td>', value(campResult.reg_max), '</td><td>', value(campResult.cap_max), '</td></tr>');
+                html.push('</tbody>');
+                html.push('</table></td>');
             }
 
-            // table Windmills
-            newTable(guiString('camp_windmills'));
+            if (true) {
+                var wind_count = 0,
+                    wind_expiry = Infinity;
+                if (camp.windmills) {
+                    (Array.isArray(camp.windmills) ? camp.windmills : [camp.windmills]).forEach(windmill => {
+                        var st = parseInt(windmill.activated),
+                            et = st + WINDMILL_EXPIRY_TIME;
+                        wind_count++;
+                        wind_expiry = Math.min(et, wind_expiry);
+                    });
+                }
+                // table Windmills
+                html.push('<td><table class="camp_data">');
+                html.push('<thead><tr><th colspan="2">', value(guiString('camp_windmills')), '</th></tr></thead>');
+                html.push('<tbody>');
+                html.push('<tr><td>', value(guiString('camp_windmill_num')), '</td><td>', value(wind_count + ' / ' + parseInt(camp.windmill_limit)), '</td></tr>');
+                if (isPublic) {
+                    html.push('<tr><td>', value(guiString('camp_windmill_regen')), '</td><td>', value(parseInt(camp.windmill_reg)), '</td></tr>');
+                }
+                html.push('</tbody>');
+                if (wind_count) {
+                    html.push('<tbody>');
+                    html.push('<tr><td colspan="2">', value(guiString('camp_windmill_expiry', [unixDate(wind_expiry, 'full')])), '</td></tr>');
+                    html.push('</tbody>');
+                }
+                html.push('</table></td>');
+            }
 
-            var wind_count = 0,
-                wind_expiry = Infinity;
-            if (camp.windmills) {
-                (Array.isArray(camp.windmills) ? camp.windmills : [camp.windmills]).forEach(windmill => {
-                    var st = parseInt(windmill.activated),
-                        et = st + WINDMILL_EXPIRY_TIME;
-                    wind_count++;
-                    wind_expiry = Math.min(et, wind_expiry);
+            if (campResult.blocks[2].blocked || campResult.blocks[3].blocked || campResult.blocks[4].blocked) {
+                var mat = {};
+                Object.values(campResult.blocks).forEach(block => {
+                    for (var i = NUM_SLOTS * 2 - block.blocked; i < NUM_SLOTS * 2; i++) {
+                        let req = block.slots[i] && block.slots[i].req;
+                        if (req) Object.keys(req).forEach(key => mat[key] = (mat[key] || 0) + parseInt(req[key]));
+                    }
                 });
+                html.push('<td><table class="camp_data">');
+                html.push('<thead><tr><th colspan="3">', value(guiString('camp_unlock_materials')), '</th></tr></thead>');
+                sortMaterials(mat).forEach(item => {
+                    html.push('<tr class="material"><td>', self.objectImage('material', item[0], 24), '</td><td>', value(self.materialName(item[0])), '</td><td>', value(item[1], 0), '</td></tr>');
+                });
+                html.push('<tbody>');
+                html.push('</table></td>');
             }
 
-            //addRowTextValue(tbody, guiString('camp_windmill_max'), parseInt(camp.windmill_limit));
-            addRowTextValue(tbody, guiString('camp_windmill_num'), wind_count + ' / ' + parseInt(camp.windmill_limit), 'right');
-            if (isPublic) {
-                addRowTextValue(tbody, guiString('camp_windmill_regen'), parseInt(camp.windmill_reg));
-            }
-
-            if (wind_count) {
-                tbody = table.appendChild(document.createElement('tbody'));
-                addRowTextValue(tbody, guiString('camp_windmill_expiry', [unixDate(wind_expiry, 'full')]));
-            }
+            html.push('</tr></table>');
+            html.push(campResult.html);
         }
+        div.querySelector('div').innerHTML = html.join('');
     }
 
-    function addRowTextValue(tbody, text, value, align) {
-        var row = tbody.insertRow(),
-            cell = row.insertCell();
-        cell.innerHTML = Dialog.escapeHtmlBr(text);
-        cell.style.textAlign = 'left';
-        if (value === undefined) {
-            cell.colSpan = 2;
-            cell.style.textAlign = align || 'center';
-        } else {
-            cell = row.insertCell();
-            cell.innerText = typeof value == 'number' ? numberWithCommas(value, 0) : value;
-            cell.style.textAlign = align || 'right';
-        }
-    }
-
-    function showCamp(camp, isPublic) {
-        const NUM_SLOTS = 24;
+    function calculateCamp(camp, isPublic) {
         var lines_ids = camp.lines_ids.split(','),
             lines_blocked = camp.lines_blocked.split(','),
             buildings = bgp.daGame.daBuildings,
-            html = [];
-        reg_min = reg_max = cap_min = cap_max = reg_tot = cap_tot = 0;
-        reg_tot += 60 + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (camp.windmill_reg || 5);
-        cap_tot += 200;
-        html.push('<div class="camp">');
+            html = [],
+            lines = {},
+            blocks = {},
+            reg_min, reg_max, cap_min, cap_max, reg_tot, cap_top;
+
+        // setup blocks
+        [2, 3, 4].forEach(height => {
+            blocks[height] = {
+                blocked: 0,
+                slots: []
+            };
+        });
+        Object.values(bgp.daGame.daLines).forEach(line => {
+            var height = parseInt(line.hei),
+                order = parseInt(line.ord) + (height == 2 ? 3 : 0);
+            if (height >= 2 && height <= 4 && order >= 1 && order <= NUM_SLOTS * 2)
+                blocks[height].slots[order - 1] = line;
+        });
+
+        // setup lines
         [1, 2, 3, 5, 7, 9].forEach((lid, index) => {
-            line_height = Math.floor(index / 2) + 2;
-            var slots = [],
+            var height = Math.floor(index / 2) + 2,
+                slots = [],
                 emptySlot = {
                     kind: 'empty',
-                    title: 'Empty slot',
+                    title: guiString('camp_slot_empty'),
                     width: 1,
-                    height: line_height
+                    height: height
                 },
                 blocked, i;
             i = lines_ids.indexOf(String(lid));
@@ -221,33 +230,53 @@ var guiTabs = (function(self) {
             for (i = 0; i < NUM_SLOTS; i++) slots[i] = emptySlot;
             if (blocked > 0) slots[index % 2 ? NUM_SLOTS - blocked : 0] = {
                 kind: 'block',
-                title: 'Blocked space',
+                title: guiString('camp_slot_blocked'),
                 width: blocked,
-                height: line_height
+                height: height
             };
-            var blds = camp.buildings;
-            blds = blds ? (Array.isArray(blds) ? blds : [blds]) : [];
-            blds.forEach(building => {
-                if (parseInt(building.line_id) == lid) {
-                    var bid = parseInt(building.def_id),
-                        slot = parseInt(building.slot),
-                        building = buildings[bid];
-                    if (building) {
-                        slots[slot] = {
-                            kind: 'building',
-                            bid: bid,
-                            capacity: parseInt(building.cap) || 0,
-                            regen: parseInt(building.reg) || 0,
-                            width: parseInt(building.wid) || 1,
-                            height: parseInt(building.hei) || 1,
-                            rid: parseInt(building.rid) || 0,
-                            title: bgp.daGame.string(building.nid)
-                        }
+            lines[lid] = {
+                lid: lid,
+                height: height,
+                slots: slots,
+                blocked: blocked
+            };
+            blocks[height].blocked += blocked;
+        });
+
+        // position buildings
+        var blds = camp.buildings;
+        blds = blds ? (Array.isArray(blds) ? blds : [blds]) : [];
+        blds.forEach(building => {
+            var lid = parseInt(building.line_id),
+                line = lines[lid];
+            if (line) {
+                var bid = parseInt(building.def_id),
+                    slot = parseInt(building.slot),
+                    building = buildings[bid];
+                if (building) {
+                    line.slots[slot] = {
+                        kind: 'building',
+                        bid: bid,
+                        capacity: parseInt(building.cap) || 0,
+                        regen: parseInt(building.reg) || 0,
+                        width: parseInt(building.wid) || 1,
+                        height: parseInt(building.hei) || 1,
+                        rid: parseInt(building.rid) || 0,
+                        title: bgp.daGame.string(building.nid)
                     }
                 }
-            });
+            }
+        });
 
-            html.push('<div class="line" style="--lw:24;--lh:', line_height, '">');
+        // render the camp and calculate some values
+        reg_min = reg_max = cap_min = cap_max = reg_tot = cap_tot = 0;
+        reg_tot += 60 + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (camp.windmill_reg || 5);
+        cap_tot += 200;
+        html.push('<div class="camp">');
+        [1, 2, 3, 5, 7, 9].forEach((lid, index) => {
+            var line = lines[lid],
+                slots = line.slots;
+            html.push('<div class="line" style="--lw:24;--lh:', line.height, '">');
             for (i = 0; i < NUM_SLOTS;) {
                 var slot = slots[i],
                     title = slot.title,
@@ -256,8 +285,21 @@ var guiTabs = (function(self) {
                     colValues = '';
                 while (kind == 'empty' && i + width < NUM_SLOTS && slots[i + width].kind == kind) width++;
                 if (width > 1 && (kind == 'empty' || kind == 'block')) title += ' x ' + width;
+                if (kind == 'block') {
+                    var block = blocks[line.height].slots[NUM_SLOTS * 2 - blocks[line.height].blocked];
+                    if (block) {
+                        title += '\n' + guiString('camp_unlock_one', [block.exp]);
+                        title += '\n' + guiString('camp_unlock_gem', [block.gem]);
+                        if (block.req) {
+                            title += '\n' + guiString('camp_unlock_mat');
+                            Object.keys(block.req).forEach(key => {
+                                title += '\n    ' + self.materialName(key) + ' × ' + numberWithCommas(block.req[key], 0);
+                            });
+                        }
+                    }
+                }
                 if (kind == 'building') {
-                    title += ' (' + width + 'x' + slot.height + ')';
+                    title += ' (' + width + '×' + slot.height + ')';
                     //title += '\nBID: ' + slot.bid;
                     var colValue = Math.floor((slot.regen || slot.capacity) / width);
                     if (slot.capacity > 0) {
@@ -286,7 +328,23 @@ var guiTabs = (function(self) {
             html.push('</div>');
         });
         html.push('</div>');
-        return html.join('');
+        return {
+            html: html.join(''),
+            blocks: blocks,
+            reg_min: reg_min,
+            reg_max: reg_max,
+            cap_min: cap_min,
+            cap_max: cap_max,
+            reg_tot: reg_tot,
+            cap_top: cap_top
+        };
+    }
+
+    function sortMaterials(obj) {
+        var matOrder = '1,7,22,32,8'.split(',');
+        var mat = Object.keys(obj).map(key => [key, obj[key], matOrder.indexOf(key)]);
+        mat.sort((a, b) => a[2] - b[2]);
+        return mat;
     }
 
     return self;

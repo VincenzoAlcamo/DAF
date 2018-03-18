@@ -1071,16 +1071,11 @@
         handlers['__gameUser_stored_decorations'] = __itemQtys;
 
         function __itemQtys(tag, node) {
-            var data = {};
-
-            if ((node = XML2jsobj(node)) !== null) {
-                if ((typeof node === 'object') && node.hasOwnProperty('item')) {
-                    for (var i = 0; i < node.item.length; i++) {
-                        data[node.item[i].def_id] = node.item[i].amount;
-                    }
-                }
-            }
-
+            var data = mapXML(node.getElementsByTagName('item'), {
+                'def_id': 'id',
+                'amount': 'amount'
+            }, 'id');
+            Object.keys(data).forEach(key => data[key] = parseInt(data[key].amount) || 0);
             return data;
         }
 
@@ -1528,6 +1523,7 @@
             daArtifacts: "xml/artifacts.xml",
             daMaterials: "xml/materials.xml",
             daBuildings: "xml/buildings.xml",
+            daLines: "xml/lines.xml",
 
             //daRecipes: "xml/recipes.xml",             // Not Needed?
         };
@@ -1746,11 +1742,13 @@
                     callback.call(this, 'dataParsing', 'gameParsing', url);
 
                     if (typeof handlers[dataFunc] === "function") {
+                        var sw = new StopWatch();
                         try {
                             data = handlers[dataFunc].call(this, key, xml);
                         } catch (e) {
                             throw Error(dataFunc + '() ' + e.message);
                         }
+                        sw.total('Execution of ' + dataFunc);
                     } else if (typeof xml === 'object') {
                         data = XML2jsobj(xml.firstElementChild);
                         xml = null;
@@ -2293,42 +2291,21 @@
          ** Extract Game Tile Information
          */
         handlers['__gameFile_daTiles'] = function(key, xml) {
-            let tiles = xml.getElementsByTagName('tile');
-            let data = {};
-            let def = {};
-
-            for (var i = 0; i < tiles.length; i++) {
-                let id = parseInt(tiles[i].attributes.id.textContent);
-                let info = XML2jsobj(tiles[i]);
-
-                if (id != 0) {
-                    let tile = {
-                        tid: info.def_id
-                    };
-
-                    tile = gfItemCopy('evt', tile, def, info, 'event');
-                    tile = gfItemCopy('egy', tile, def, info, 'stamina');
-                    tile = gfItemCopy('hdn', tile, def, info, 'hidden');
-                    tile = gfItemCopy('sdw', tile, def, info, 'shadow');
-
-                    // Segmented overrides
-                    if (info.hasOwnProperty('overrides')) {
-                        let overs = info.overrides.override;
-                        if (!Array.isArray(overs))
-                            overs = [overs];
-                        tile.ovr = overs;
-                    }
-
-                    //console.log('Tile', id, tile, info);
-                    data[id] = tile;
-                } else {
-                    def = info;
-                    // Useful to check for changes in structure!
-                    if (exPrefs.debug) console.log('Default Tile:', def);
+            var overrideMappings = {
+                'region_id': 'rid',
+                'override_tile_id': 'tid'
+            };
+            return mapXML(xml.getElementsByTagName('tile'), {
+                'def_id': 'tid',
+                'event': 'evt',
+                'stamina': 'egy',
+                'hidden': 'hdn',
+                'shadow': 'sdw',
+                'overrides': function(item, child) {
+                    if (item.tid != '0')
+                        item.ovr = mapXML(child.getElementsByTagName('override'), overrideMappings, 'rid');
                 }
-            }
-
-            return data;
+            }, 'tid');
         };
 
         /*
@@ -2348,35 +2325,14 @@
         };
 
         function __gameFile_daResources(key, xml, node) {
-            let items = xml.getElementsByTagName(node);
-            let data = {};
-            let def = {};
-
-            for (var i = 0; i < items.length; i++) {
-                let id = parseInt(items[i].attributes.id.textContent);
-                let info = XML2jsobj(items[i]);
-
-                if (id != 0) {
-                    let item = {
-                        id: info.def_id
-                    };
-
-                    item = gfItemCopy('nid', item, def, info, 'name_loc');
-                    item = gfItemCopy('dsc', item, def, info, 'desc');
-                    item = gfItemCopy('ord', item, def, info, 'order_id');
-                    item = gfItemCopy('eid', item, def, info, 'event_id');
-                    item = gfItemCopy('lid', item, def, info, 'location_id');
-
-                    //console.log('Resource', id, item, info);
-                    data[id] = item;
-                } else {
-                    def = info;
-                    // Useful to check for changes in structure!
-                    if (exPrefs.debug) console.log('Default', key, def);
-                }
-            }
-
-            return data;
+            return mapXML(xml.getElementsByTagName(node), {
+                'def_id': 'id',
+                'name_loc': 'nid',
+                'desc': 'dsc',
+                'order_id': 'ord',
+                'event_id': 'eid',
+                'location_id': 'lid'
+            }, 'id');
         }
 
         /*
@@ -2409,57 +2365,65 @@
          ** Extract Game Buildings
          */
         handlers['__gameFile_daBuildings'] = function(key, xml) {
-            let buildings = xml.getElementsByTagName('building');
-            let data = {};
-            let def = {};
-            let reRegion = /_(eg|egy|egypt|val|valhalla|ch|chi|china|atl|alt|gre)([12]?|_(L|reg|stor)?\d|_(strong|stor|mid|weak))$/i;
-            let regions = {
-                eg: 1,
-                egy: 1,
-                egypt: 1,
-                val: 2,
-                valhalla: 2,
-                ch: 3,
-                chi: 3,
-                china: 3,
-                atl: 4,
-                alt: 4,
-                gre: 5
-            };
-
-            for (var i = 0; i < buildings.length; i++) {
-                let id = parseInt(buildings[i].attributes.id.textContent);
-                let info = XML2jsobj(buildings[i]);
-
-                if (id != 0) {
-                    let building = {
-                        bid: info.def_id
-                    };
-
-                    gfItemCopy('nid', building, def, info, 'name_loc');
-                    gfItemCopy('hei', building, def, info, 'rows');
-                    gfItemCopy('wid', building, def, info, 'columns');
-                    gfItemCopy('spr', building, def, info, 'sell_price');
-                    gfItemCopy('lim', building, def, info, 'limit');
-                    gfItemCopy('cap', building, def, info, 'max_stamina');
-                    gfItemCopy('reg', building, def, info, 'stamina_reg');
-
-
-                    var clip = info.gr_clip;
-                    if (typeof clip == 'string') {
-                        var match = clip.match(reRegion);
-                        if (match) building.rid = regions[match[1].toLowerCase()];
-                    }
-
-                    data[id] = building;
-                } else {
-                    def = info;
-                    // Useful to check for changes in structure!
-                    if (exPrefs.debug) console.log('Default Building:', def);
+            var regPrefixes = ['eg|egy|egypt', 'val|valhalla', 'ch|chi|china', 'atl|alt', 'gre'],
+                reRegion = new RegExp('_(' + regPrefixes.join('|') + ')([12]?|_(L|reg|stor)?\\d|_(strong|stor|mid|weak))$', 'i'),
+                regions = {},
+                dictByNId = {},
+                lastClip;
+            regPrefixes.forEach((list, index) => {
+                list.split('|').forEach(prefix => regions[prefix] = index + 1);
+            })
+            return mapXML(xml.getElementsByTagName('building'), {
+                'def_id': 'bid',
+                'name_loc': 'nid',
+                'rows': 'hei',
+                'columns': 'wid',
+                'sell_price': 'spr',
+                'limit': 'lim',
+                'max_stamina': 'cap',
+                'stamina_reg': 'reg',
+                'gr_clip': function(item, child) {
+                    lastClip = child.textContent;
                 }
-            }
+            }, 'bid', function(building) {
+                var nid = building.nid,
+                    old = nid && dictByNId[nid];
+                if (old) {
+                    // multiple instances of the same name
+                    if (old[1]) {
+                        let match = old[0].match(reRegion);
+                        if (match) old[1].rid = regions[match[1].toLowerCase()];
+                        old[1] = null;
+                    }
+                    let match = lastClip.match(reRegion);
+                    if (match) building.rid = regions[match[1].toLowerCase()];
+                } else {
+                    dictByNId[nid] = [lastClip, building];
+                }
+                lastClip = '';
+            })
+        };
 
-            return data;
+        /*
+         ** Extract Game Lines
+         */
+        handlers['__gameFile_daLines'] = function(key, xml) {
+            return mapXML(xml.getElementsByTagName('line'), {
+                'def_id': 'id',
+                'height': 'hei',
+                'order': 'ord',
+                'gems': 'gem',
+                'exp': 'exp',
+                'requirements': function(item, child) {
+                    if(item.id == '0') return;
+                    var data = mapXML(child.getElementsByTagName('cost'), {
+                        'material_id': 'id',
+                        'amount': 'amount'
+                    }, 'id');
+                    Object.keys(data).forEach(key => data[key] = parseInt(data[key].amount) || 0);
+                    item.req = data;
+                }
+            }, 'id');
         };
 
         /*
@@ -2513,38 +2477,39 @@
          */
         handlers['__gameFile_daLang'] = function(key, xml) {
             var want = [
-                'ABNA', 'ACNA', 'BUNA', 'CAOV', 'COL', 'DENA', 'EVN', 'JOST',
-                'LONA', 'MANA', 'MAP', 'NPCN', 'QINA', 'TRNA', 'USNA', 'WINA',
-                'CT' //'GIP', MOB'
-            ];
-            var data = {};
-
+                    'ABNA', 'ACNA', 'BUNA', 'CAOV', 'COL', 'DENA', 'EVN', 'JOST',
+                    'LONA', 'MANA', 'MAP', 'NPCN', 'QINA', 'TRNA', 'USNA', 'WINA',
+                    'CT' //'GIP', MOB'
+                ],
+                data = {},
+                reFirstNonAlpha = /[^A-Za-z]/,
+                reReplace = /@@@/g;
             // XML Format
             if (typeof xml !== 'string') {
-                var items = xml.getElementsByTagName('item');
-                for (var i = 0; i < items.length; i++) {
-                    if (items[i].attributes.length != 1)
-                        continue;
-                    var id = items[i].attributes.index.textContent;
-                    var c = id.substr(0, id.substring(0).search(/[^A-Za-z]/));
-                    if (want.indexOf(c) !== -1)
-                        data[id] = items[i].textContent.replace('@@@', ' ');
+                var nodes = xml.getElementsByTagName('category');
+                for (var i = 0, len = nodes.length; i < len; i++) {
+                    var child = nodes[i].firstElementChild,
+                        s = (child && child.getAttribute('index')) || '',
+                        c = s.substr(0, s.substring(0).search(reFirstNonAlpha));
+                    if (want.indexOf(c) !== -1) {
+                        while (child) {
+                            var id = child.getAttribute('index');
+                            if (id) data[id] = child.textContent.replace(reReplace, ' ');
+                            child = child.nextElementSibling;
+                        }
+                    }
                 }
-                items = xml = null;
-                return data;
+            } else {
+                // CSV format?
+                xml = xml.split(/[\n\u0085\u2028\u2029]|\r\n?/g);
+                xml.forEach(function(v, i, a) {
+                    var s = v.indexOf('*#*'),
+                        n = v.substr(0, s),
+                        c = n.substr(0, v.substring(0).search(reFirstNonAlpha));
+                    if (want.indexOf(c) !== -1)
+                        data[n] = v.substr(s + 3);
+                });
             }
-
-            // CSV format?
-            xml = xml.split(/[\n\u0085\u2028\u2029]|\r\n?/g);
-            xml.forEach(function(v, i, a) {
-                var s = v.indexOf('*#*');
-                var n = v.substr(0, s);
-                var c = n.substr(0, v.substring(0).search(/[^A-Za-z]/));
-
-                if (want.indexOf(c) !== -1)
-                    data[n] = v.substr(s + 3);
-            });
-
             return data;
         }
 
@@ -2898,6 +2863,33 @@
                 }
                 return mine;
             });
+        }
+
+        function mapXML(nodes, mappings, key, beforeInsert) {
+            var data = {},
+                def = {};
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                var node = nodes[i],
+                    item = Object.assign({}, def);
+                for (var child = node.firstElementChild; child; child = child.nextElementSibling) {
+                    var mapping = mappings[child.nodeName];
+                    if (mapping) {
+                        if (mapping instanceof Function) mapping(item, child);
+                        else item[mapping] = child.textContent;
+                    }
+                }
+                var id = item[key];
+                if (beforeInsert) beforeInsert(item);
+                if (id == '0') {
+                    def = item;
+                    delete def[key];
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default:', node.outerHTML);
+                } else {
+                    data[id] = item;
+                }
+            }
+            return data;
         }
 
         /*********************************************************************

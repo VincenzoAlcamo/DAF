@@ -623,7 +623,7 @@ var guiTabs = (function(self) {
         let max = bgp.daGame.maxRegions();
         let min = Math.max(1, bgp.daGame.daUser.region);
         if (!self.isDev())
-            max = Math.min(min , max);
+            max = Math.min(min, max);
         let select1 = document.getElementById('cminesMRID');
         let select2 = document.getElementById('cminesURID');
         select2.parentElement.style.display = (showEvents ? '' : 'none');
@@ -797,8 +797,8 @@ var guiTabs = (function(self) {
             return ["// No mines?"];
         }
         unrecognizedMaterials = {};
-        let now = new Date(parseInt(bgp.daGame.daUser.time)*1000);
-        let data = [ '&lt;!-- DO NOT EDIT, AUTO-GENERATED ON ' + now.toDateString() + ' --&gt;'];
+        let now = new Date(parseInt(bgp.daGame.daUser.time) * 1000);
+        let data = ['&lt;!-- DO NOT EDIT, AUTO-GENERATED ON ' + now.toDateString() + ' --&gt;'];
         if (parseInt(mines[mineIdx[0]].cdn)) {
             while (mineIdx.length > 0 && parseInt(mines[mineIdx[0]].cdn)) {
                 data.push(wikiRepeatable(mines[mineIdx[0]], mapLoot[mineIdx[0]]));
@@ -1123,7 +1123,7 @@ var guiTabs = (function(self) {
         }
         return '* Unrecognized materials: ' + data.join(', ') + '\n';
     }
-    
+
     /*
      ** @Public - Calculate Mine Loot
      */
@@ -1362,21 +1362,16 @@ var guiTabs = (function(self) {
      ** @Private - Total Energy Tiles
      */
     function energySummary(tiles, uidRegion, uidLevel) {
-        let energy = 0;
+        let energy = 0,
+            daTiles = bgp.daGame.daTiles;
         if (typeof tiles === 'string')
             tiles = tiles.split(',');
 
         tiles.forEach(function(tid) {
-            let tile = bgp.daGame.daTiles[tid];
+            let tile = daTiles[tid];
 
             if (tile) {
-                if (tile.hasOwnProperty('ovr')) {
-                    tile.ovr.forEach(function(ovr) {
-                        if (ovr.region_id == uidRegion)
-                            tile = bgp.daGame.daTiles[ovr.override_tile_id];
-                    });
-                }
-
+                if (tile.ovr && uidRegion in tile.ovr) tile = daTiles[tile.ovr[uidRegion].tid];
                 energy += parseInt(tile.egy);
             }
         });

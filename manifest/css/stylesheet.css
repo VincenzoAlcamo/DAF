@@ -391,7 +391,6 @@ span.bad-gift {
   background-color: #ff9999;
 }
 
-
 /*
 tr.high-level td {
 }
@@ -707,7 +706,6 @@ form select {
   padding: 0;
 }
 
-
 /*
 form input[type="text"]:focus,
 form input[type="date"]:focus,
@@ -773,7 +771,6 @@ form li>section div label {
   padding: 4px;
 }
 
-
 /*Setup all boxes*/
 
 .info,
@@ -793,7 +790,6 @@ form li>section div label {
   -webkit-box-shadow: 7px 7px #dfe1d8;
 }
 
-
 /*Styling for text inside boxes*/
 
 div.box h4,
@@ -809,7 +805,6 @@ p {
   color: #000;
   margin: 5px 5px 5px 80px;
 }
-
 
 /*Boxes*/
 
@@ -924,7 +919,7 @@ a.gallery:link,
 a.gallery:hover,
 a.gallery:active,
 a.gallery:visited,
-{
+  {
   text-decoration: none;
 }
 
@@ -1018,7 +1013,7 @@ tr.f-disabled td:nth-child(2):after {
 }
 
 tr.f-ignored td {
-  background-color: rgba(255,192,192,0.6);
+  background-color: rgba(255, 192, 192, 0.6);
 }
 
 #fMatchPlayer {
@@ -1096,7 +1091,6 @@ span.nowrap {
   white-space: nowrap;
 }
 
-
 /* TRICK: a space is inserted *after* the element, if there is a following element that wraps on another line, the space is ignored */
 
 span.nowrap:after {
@@ -1129,7 +1123,6 @@ th.DAF-sort-ascending {
   background: darkorange;
   background-image: -webkit-linear-gradient(top, darkorange, #FFDB99);
 }
-
 
 /** Vertical Menus **/
 
@@ -1181,7 +1174,6 @@ th.DAF-sort-ascending {
 .v-menu-wrapper {
   min-height: 400px;
 }
-
 
 /* Help Page */
 
@@ -1402,6 +1394,7 @@ a.rlLink:hover {
 /* 
  * CAMP 
  */
+
 .camp_tables {
   border: 0;
 }
@@ -1420,6 +1413,32 @@ a.rlLink:hover {
   border: 2px solid #36648b;
 }
 
+.camp_data td {
+  text-align: right !important;
+}
+
+.camp_data td:first-child,
+.camp_data tr.material td:nth-child(2) {
+  text-align: left !important;
+}
+
+.camp_data td[colspan="2"] {
+  text-align: center !important;
+}
+
+.camp_data tr.material td:first-child {
+  padding: 0;
+}
+
+.camp_data tr.energy_capacity th {
+  padding: 0 4px;
+}
+
+.camp_data tr.energy_capacity img {
+  height: 26px;
+  width: auto;
+}
+
 .camp {
   --size: 20px;
   width: calc(var(--size) * 49);
@@ -1427,7 +1446,7 @@ a.rlLink:hover {
   margin: auto;
   background-color: #F5F5F5;
   border: 2px solid #36648b;
-  padding: 8px;  
+  padding: 8px;
 }
 
 .camp div {
@@ -1456,40 +1475,45 @@ a.rlLink:hover {
   float: left;
 }
 
+.camp .item.empty {
+  border: 1px solid #F00;
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.camp .item.block {
+  border: 1px solid #310;
+  background-color: rgba(48, 16, 0, 0.6);
+}
+
 .camp .item.building {
   border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 .camp .item.capacity {
   background-color: #5BA4FF;
-  --gradient: -webkit-linear-gradient(top, #5BA4FF, #5B527F);
-  /* background: var(--gradient); */
 }
 
 .camp .item.regen {
   background-color: #C0F644;
-  --gradient: -webkit-linear-gradient(top, #C0F644, #607E44);
-  /* background: var(--gradient); */
 }
 
 .camp .item.reg1 {
-  /* background-image: url(/img/regions/1.png),var(--gradient); */
   background-image: url(/img/regions/1.png);
 }
+
 .camp .item.reg2 {
-  /* background-image: url(/img/regions/2.png),var(--gradient); */
   background-image: url(/img/regions/2.png);
 }
+
 .camp .item.reg3 {
-  /* background-image: url(/img/regions/3.png),var(--gradient); */
   background-image: url(/img/regions/3.png);
 }
+
 .camp .item.reg4 {
-  /* background-image: url(/img/regions/4.png),var(--gradient); */
   background-image: url(/img/regions/4.png);
 }
+
 .camp .item.reg5 {
-  /* background-image: url(/img/regions/5.png),var(--gradient); */
   background-image: url(/img/regions/5.png);
 }
 
@@ -1498,13 +1522,9 @@ a.rlLink:hover {
 .camp .item.reg3,
 .camp .item.reg4,
 .camp .item.reg5 {
-  background-size: var(--size),auto;
-  background-repeat: no-repeat,repeat;
-  background-position: bottom right,top left;  
-}
-
-.camp .item.block {
-  background-color: #333;
+  background-size: var(--size), auto;
+  background-repeat: no-repeat, repeat;
+  background-position: bottom right, top left;
 }
 
 .camp .value {

@@ -1165,35 +1165,8 @@
     "camp_no_player": {
         "message": "Ακόμα καμμία επίσκεψη σε βάση"
     },
-    "camp_player_region": {
-        "message": "Περιοχή του παίχτη"
-    },
-    "camp_player_level": {
-        "message": "Επίπεδο του παίχτη"
-    },
-    "camp_regen_tot": {
-        "message": "Ανανέωση ανά ώρα"
-    },
-    "camp_regen_min": {
-        "message": "Μικρότερη ανανέωση"
-    },
-    "camp_regen_max": {
-        "message": "Μεγαλύτερη ανανέωση"
-    },
-    "camp_capacity_min": {
-        "message": "Μικρότερη χωρητικότητα"
-    },
-    "camp_capacity_max": {
-        "message": "Μεγαλύτερη χωρητικότητα"
-    },
     "camp_fill_time": {
         "message": "Χρόνος γεμίσματος\n(από 0 μέχρι μαξ χωρητικότητα)"
-    },
-    "camp_capacity_tot": {
-        "message": "Σύνολο Χωρητικότητας"
-    },
-    "camp_windmill_max": {
-        "message": "Μεγαλύτερος αριθμός από ανεμόμυλους"
     },
     "camp_windmill_regen": {
         "message": "Ανανέωση ανεμόμυλων"
