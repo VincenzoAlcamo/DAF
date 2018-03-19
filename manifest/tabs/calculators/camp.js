@@ -132,7 +132,7 @@ var guiTabs = (function(self) {
                 html.push('<td><table class="camp_data">');
                 html.push('<thead><tr class="energy_capacity"><th></th><th><img src="/img/energy.png" title="', value(guiString('camp_regen')), '"></th><th><img src="/img/capacity.png" title="', value(guiString('camp_capacity')), '"></th></tr></thead>');
                 html.push('<tbody>');
-                html.push('<tr><td>Total</td><td>', value(reg_total), '</td><td>', value(cap_total), '</td></tr>');
+                html.push('<tr><td>', value(guiString('Total')), '</td><td>', value(reg_total), '</td><td>', value(cap_total), '</td></tr>');
                 html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
                 html.push('<tr><td>', value(guiString('camp_min_value')), '</td><td>', value(campResult.reg_min), '</td><td>', value(campResult.cap_min), '</td></tr>');
                 html.push('<tr><td>', value(guiString('camp_max_value')), '</td><td>', value(campResult.reg_max), '</td><td>', value(campResult.cap_max), '</td></tr>');
@@ -244,6 +244,10 @@ var guiTabs = (function(self) {
         });
 
         // position buildings
+        reg_min = reg_max = cap_min = cap_max = reg_tot = cap_tot = 0;
+        reg_tot += 60 + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (camp.windmill_reg || 5);
+        cap_tot += 200;
+
         var blds = camp.buildings;
         blds = blds ? (Array.isArray(blds) ? blds : [blds]) : [];
         blds.forEach(building => {
@@ -254,11 +258,26 @@ var guiTabs = (function(self) {
                     slot = parseInt(building.slot),
                     building = buildings[bid];
                 if (building) {
+                    var regen = parseInt(building.reg) || 0,
+                        capacity = parseInt(building.cap) || 0,
+                        width = parseInt(building.wid) || 1,
+                        value = Math.floor((regen || capacity) / width);
+                    cap_tot += slot.capacity;
+                    reg_tot += slot.regen;
+                    if (capacity > 0) {
+                        if (cap_min == 0 || value < cap_min) cap_min = value;
+                        if (cap_max == 0 || value > cap_max) cap_max = value;
+                    }
+                    if (regen > 0) {
+                        if (reg_min == 0 || value < reg_min) reg_min = value;
+                        if (reg_max == 0 || value > reg_max) reg_max = value;
+                    }
                     line.slots[slot] = {
                         kind: 'building',
                         bid: bid,
                         capacity: parseInt(building.cap) || 0,
                         regen: parseInt(building.reg) || 0,
+                        value: value,
                         width: parseInt(building.wid) || 1,
                         height: parseInt(building.hei) || 1,
                         rid: parseInt(building.rid) || 0,
@@ -269,10 +288,15 @@ var guiTabs = (function(self) {
         });
 
         // render the camp and calculate some values
-        reg_min = reg_max = cap_min = cap_max = reg_tot = cap_tot = 0;
-        reg_tot += 60 + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (camp.windmill_reg || 5);
-        cap_tot += 200;
+        var reg_range = reg_max - reg_min,
+            cap_range = cap_max - cap_min,
+            opacity_min = 0.4,
+            opacity_range = 1 - opacity_min;
         html.push('<div class="camp">');
+
+        function getStrength(value, min, range) {
+            return range ? (value - min) / range * opacity_range + opacity_min : 1;
+        }
         [1, 2, 3, 5, 7, 9].forEach((lid, index) => {
             var line = lines[lid],
                 slots = line.slots;
@@ -282,7 +306,8 @@ var guiTabs = (function(self) {
                     title = slot.title,
                     width = slot.width,
                     kind = slot.kind,
-                    colValues = '';
+                    colValues = '',
+                    strength = 0;
                 while (kind == 'empty' && i + width < NUM_SLOTS && slots[i + width].kind == kind) width++;
                 if (width > 1 && (kind == 'empty' || kind == 'block')) title += ' x ' + width;
                 if (kind == 'block') {
@@ -301,28 +326,24 @@ var guiTabs = (function(self) {
                 if (kind == 'building') {
                     title += ' (' + width + '×' + slot.height + ')';
                     //title += '\nBID: ' + slot.bid;
-                    var colValue = Math.floor((slot.regen || slot.capacity) / width);
                     if (slot.capacity > 0) {
-                        if (isPublic) title += '\n' + guiString('camp_slot_capacity', [slot.capacity]);
                         kind += ' capacity';
-                        if (cap_min == 0 || colValue < cap_min) cap_min = colValue;
-                        if (cap_max == 0 || colValue > cap_max) cap_max = colValue;
-                        cap_tot += slot.capacity;
+                        if (isPublic) title += '\n' + guiString('camp_slot_capacity', [slot.capacity]);
+                        strength = getStrength(slot.value, cap_min, cap_range);
                     }
                     if (slot.regen > 0) {
-                        if (isPublic) title += '\n' + guiString('camp_slot_regen', [slot.regen]);
                         kind += ' regen';
-                        if (reg_min == 0 || colValue < reg_min) reg_min = colValue;
-                        if (reg_max == 0 || colValue > reg_max) reg_max = colValue;
-                        reg_tot += slot.regen;
+                        if (isPublic) title += '\n' + guiString('camp_slot_regen', [slot.regen]);
+                        strength = getStrength(slot.value, reg_min, reg_range);
                     }
                     if (slot.rid > 0) {
-                        title += '\n' + guiString('camp_slot_region', [self.regionName(slot.rid)]);
                         kind += ' reg' + slot.rid;
+                        title += '\n' + guiString('camp_slot_region', [self.regionName(slot.rid)]);
                     }
-                    colValues = isPublic ? ('<div class="value">' + colValue + '</div>').repeat(width) : '';
+                    colValues = isPublic ? ('<div class="value">' + slot.value + '</div>').repeat(width) : '';
+                    strength = Math.round(strength * 1000) / 1000;
                 }
-                html.push('<div class="item ', kind, '" style="--w:', width, ';--h:', slot.height, '" title="', Dialog.escapeHtml(title) + '">', colValues, '</div>');
+                html.push('<div class="item ', kind, '" style="--w:', width, ';--h:', slot.height, ';--v:', strength, '" title="', Dialog.escapeHtml(title) + '">', colValues, '</div>');
                 i += width;
             }
             html.push('</div>');
