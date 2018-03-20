@@ -29,10 +29,6 @@ var guiTabs = (function(self) {
         })
     }
 
-    const ONE_HOUR = 60 * 60,
-        ONE_DAY = ONE_HOUR * 24,
-        WINDMILL_EXPIRY_TIME = 7 * ONE_DAY;
-
     /*
      ** @Private - Sync Action
      */
@@ -74,6 +70,16 @@ var guiTabs = (function(self) {
         return id in themeNames ? themeNames[id] : 'THEME-' + id;
     }
 
+    function getConfigValue(name, defaultValue) {
+        var result = NaN;
+        try {
+            result = parseInt(bgp.daGame.daConfig[name]);
+        } catch (e) {
+            result = NaN;
+        }
+        return isNaN(result) ? defaultValue : result;
+    }
+
     function updateCamp(div, flagHeaderOnly = false) {
         var info, camp, uid, pal, isPublic, campName;
 
@@ -97,6 +103,8 @@ var guiTabs = (function(self) {
         function value(value) {
             return Dialog.escapeHtmlBr(typeof value == 'number' ? numberWithCommas(value, 0) : value);
         }
+
+        var windmillExpiryTime = getConfigValue('windmill_lifespan', 7 * 86400);
 
         var html = [];
 
@@ -146,7 +154,7 @@ var guiTabs = (function(self) {
                 if (camp.windmills) {
                     (Array.isArray(camp.windmills) ? camp.windmills : [camp.windmills]).forEach(windmill => {
                         var st = parseInt(windmill.activated),
-                            et = st + WINDMILL_EXPIRY_TIME;
+                            et = st + windmillExpiryTime;
                         wind_count++;
                         wind_expiry = Math.min(et, wind_expiry);
                     });
@@ -245,8 +253,8 @@ var guiTabs = (function(self) {
 
         // position buildings
         reg_min = reg_max = cap_min = cap_max = reg_tot = cap_tot = 0;
-        reg_tot += 60 + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (camp.windmill_reg || 5);
-        cap_tot += 200;
+        reg_tot += getConfigValue('stamina_reg', 60) + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (camp.windmill_reg || 5);
+        cap_tot += getConfigValue('starting_stamina', 200);
 
         var blds = camp.buildings;
         blds = blds ? (Array.isArray(blds) ? blds : [blds]) : [];
