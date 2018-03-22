@@ -26,6 +26,20 @@ var guiTabs = (function(self) {
                 updateCamp(this);
             });
             markToBeRendered(div);
+            div = div.querySelector('div');
+            div.addEventListener('mouseover', onmousemove);
+            div.addEventListener('mouseout', onmousemove);
+        })
+    }
+
+    function onmousemove(event) {
+        var el = event.target, isOut = event.type == 'mouseout', bid = 0;
+        while(!el.classList.contains('card')) {
+            if(el.hasAttribute('bid')) bid = el.getAttribute('bid');
+            el = el.parentNode;
+        }
+        el.querySelectorAll('.item.building').forEach(el => {
+            el.classList.toggle('selected', el.getAttribute('bid') === bid);
         })
     }
 
@@ -141,9 +155,11 @@ var guiTabs = (function(self) {
                 html.push('<thead><tr class="energy_capacity"><th></th><th><img src="/img/energy.png" title="', value(guiString('camp_regen')), '"></th><th><img src="/img/capacity.png" title="', value(guiString('camp_capacity')), '"></th></tr></thead>');
                 html.push('<tbody>');
                 html.push('<tr><td>', value(guiString('Total')), '</td><td>', value(reg_total), '</td><td>', value(cap_total), '</td></tr>');
-                html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
                 html.push('<tr><td>', value(guiString('camp_min_value')), '</td><td>', value(campResult.reg_min), '</td><td>', value(campResult.cap_min), '</td></tr>');
                 html.push('<tr><td>', value(guiString('camp_max_value')), '</td><td>', value(campResult.reg_max), '</td><td>', value(campResult.cap_max), '</td></tr>');
+                html.push('</tbody>');
+                html.push('<tbody>');
+                html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
                 html.push('</tbody>');
                 html.push('</table></td>');
             }
@@ -315,7 +331,8 @@ var guiTabs = (function(self) {
                     width = slot.width,
                     kind = slot.kind,
                     colValues = '',
-                    strength = 0;
+                    strength = 0,
+                    bid = 0;
                 while (kind == 'empty' && i + width < NUM_SLOTS && slots[i + width].kind == kind) width++;
                 if (width > 1 && (kind == 'empty' || kind == 'block')) title += ' x ' + width;
                 if (kind == 'block') {
@@ -333,7 +350,7 @@ var guiTabs = (function(self) {
                 }
                 if (kind == 'building') {
                     title += ' (' + width + '×' + slot.height + ')';
-                    //title += '\nBID: ' + slot.bid;
+                    bid = slot.bid;
                     if (slot.capacity > 0) {
                         kind += ' capacity';
                         if (isPublic) title += '\n' + guiString('camp_slot_capacity', [slot.capacity]);
@@ -351,7 +368,7 @@ var guiTabs = (function(self) {
                     colValues = isPublic ? ('<div class="value">' + slot.value + '</div>').repeat(width) : '';
                     strength = Math.round(strength * 1000) / 1000;
                 }
-                html.push('<div class="item ', kind, '" style="--w:', width, ';--h:', slot.height, ';--v:', strength, '" title="', Dialog.escapeHtml(title) + '">', colValues, '</div>');
+                html.push('<div class="item ', kind, '" style="--w:', width, ';--h:', slot.height, ';--v:', strength, '" title="', Dialog.escapeHtml(title), bid ? '" bid="' + bid : '', '">', colValues, '</div>');
                 i += width;
             }
             html.push('</div>');

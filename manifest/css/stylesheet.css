@@ -1494,9 +1494,17 @@ a.rlLink:hover {
   background-color: rgba(91, 164, 255, var(--v));
 }
 
+.camp .item.capacity.selected {
+  background-color: #00FFFF;
+}
+
 .camp .item.regen {
   background-color: #C0F644;
   background-color: rgba(192, 246, 68, var(--v));
+}
+
+.camp .item.regen.selected {
+  background-color: #FFFF00;
 }
 
 .camp .item.reg1 {
