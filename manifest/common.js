@@ -603,28 +603,45 @@ function XML2jsobj(node, skipAttributes = true) {
 }
 
 /*
+ ** Check if the given parameters is an XML Document/Element
+ */
+function isXmlElement(value) {
+    if (!value) return false;
+    var nodeType = value.nodeType;
+    if (nodeType !== 1 && nodeType !== 9) return false;
+    var kind = Object.prototype.toString.call(value);
+    return kind == '[object XMLDocument]' || kind == '[object Element]';
+}
+
+/*
  ** Parse XML String - Creates XML Parser object when needed
  */
-function parseXml(str) {
-    if (typeof parseXml.parser === 'undefined') {
+const parseXml_parser = new DOMParser();
 
-        if (typeof window.DOMParser != "undefined") {
-            parseXml.parser = function(xmlStr) {
-                return (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
-            };
-        } else if (typeof window.ActiveXObject != "undefined" &&
-            new window.ActiveXObject("Microsoft.XMLDOM")) {
-            parseXml.parser = function(xmlStr) {
-                var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
-                xmlDoc.async = "false";
-                xmlDoc.loadXML(xmlStr);
-                return xmlDoc;
-            };
-        } else {
-            throw new Error("No XML parser found");
-        }
-    }
-    return parseXml.parser(str);
+function parseXml(str) {
+    return str ? (isXmlElement(str) ? str : parseXml_parser.parseFromString(str, 'text/xml')) : null;
+}
+
+/*
+ ** Returns the first direct child, with the given name, of the given parent
+ */
+function getXmlChild(parent, name) {
+    return parent && parent.querySelector(':scope>' + name);
+}
+
+/*
+ ** Returns all the direct children, with the given name, of the given parent
+ */
+function getXmlChildren(parent, name) {
+    return parent && parent.querySelectorAll(':scope>' + name);
+}
+
+/*
+ ** Returns the text content of the first direct child, with the given name, of the given parent
+ */
+function getXmlChildValue(parent, name) {
+    var node = getXmlChild(parent, name);
+    return node ? node.textContent : '';
 }
 
 /*

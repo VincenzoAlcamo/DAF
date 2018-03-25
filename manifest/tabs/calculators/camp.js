@@ -101,6 +101,17 @@ var guiTabs = (function(self) {
 
         if (div.id == 'camp2') {
             info = bgp.lastVisitedCamp;
+            // not yet processed and we need the full data?
+            if (info && info.processed === false && !flagHeaderOnly) {
+                let node;
+                if (info.xml) node = info.xml;
+                else {
+                    let xml = parseXml(info.text);
+                    node = getXmlChild(xml && xml.documentElement, info.taskName);
+                }
+                info = bgp.lastVisitedCamp = XML2jsobj(node);
+                info.processed = true;
+            }
             camp = info && info.camp;
             uid = info && info.neigh_id;
             pal = uid ? bgp.daGame.getNeighbour(uid) : null;

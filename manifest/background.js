@@ -575,7 +575,7 @@ function onWebRequest(action, request) {
                 }
                 if (!exPrefs.syncDebug) {
                     debuggerDetach(); // Just in case!
-                    daGame.syncData(request.tabId, parseXml(webData.requestForm.xml[0]));
+                    daGame.syncData(request.tabId, webData.requestForm.xml[0]);
                 }
             } else if (url.pathname.indexOf('/dialog/apprequests') >= 0 && url.search.indexOf('app_id=470178856367913&') >= 0) {
                 console.log(url.pathname, exPrefs.autoClick);
@@ -831,7 +831,7 @@ function debuggerEvent(bugId, message, params) {
                                 //
                                 // For now, this gets us going :-)
                                 //
-                                daGame.syncData(webData.tabId, parseXml(webData.requestForm.xml[0]), parseXml(response.body));
+                                daGame.syncData(webData.tabId, webData.requestForm.xml[0], response.body);
                             } catch (e) {
                                 console.error(e);
                             }

@@ -3,7 +3,24 @@
  */
 (function() {
     'use strict';
-    var handlers = {};
+
+    // REMEMBER: define only the handlers that are effectively in use, so we don't parse the result unnecessarily
+    var handlers = {},
+        signalAction, signalTabId;
+
+    // This function must be used in handler to send data to the GUI/Tabs
+    const SIGNAL_GUI = 1,
+        SIGNAL_TAB = 2;
+
+    function signal(signalType, data) {
+        var message = {
+            cmd: 'gameSync',
+            action: signalAction,
+            data: data
+        };
+        if (signalType & SIGNAL_GUI) chrome.extension.sendMessage(message);
+        if (signalType & SIGNAL_TAB) chrome.tabs.sendMessage(signalTabId, message);
+    }
 
     var syncDiggy = function(__public) {
         /*********************************************************************
@@ -11,171 +28,108 @@
          */
         __public.syncData = function(tabId, xml, syncData = null) {
             // Only sync on good game data (also means we ignore if cached data too)
-            if (__public.daUser.result != "OK")
-                return;
+            if (__public.daUser.result != "OK" || !(xml = parseXml(xml))) return;
+            // we get only the task nodes
+            var nodes = getXmlChildren(xml.documentElement, 'task'),
+                taskResult = null,
+                didSomething = false;
+            signalTabId = tabId;
 
-            if ((xml = XML2jsobj(xml)) && xml.hasOwnProperty('xml')) {
-                let didSomething = false;
-                let data = null;
-                xml = xml.xml;
+            // We could process the "global" and "un_gift" sections in a future release
 
-                if (syncData !== null)
-                    syncData = XML2jsobj(syncData).xml;
-
-                if ((syncData) && syncData.hasOwnProperty('global')) {
-                    globalTask(tabId, syncData.global);
-                }
-
-                if (!Array.isArray(xml.task)) {
-                    if ((syncData) && syncData.hasOwnProperty('task_0'))
-                        data = syncData['task_0'];
-                    didSomething = action(tabId, xml.task, data);
-                } else
-                    for (key in xml.task) {
-                        let tkey = 'task_' + key;
-
-                        if ((syncData) && syncData.hasOwnProperty(tkey))
-                            data = syncData[tkey];
-
-                        if (action(tabId, xml.task[key], data))
-                            didSomething = true;
+            for (var taskIndex = 0, len = nodes.length; taskIndex < len; taskIndex++) {
+                var task = nodes[taskIndex];
+                signalAction = getXmlChildValue(task, 'action');
+                var taskFunc = '__gameSync_' + signalAction,
+                    fn = handlers[taskFunc];
+                if (fn instanceof Function) {
+                    if (!taskResult) {
+                        taskResult = {
+                            text: syncData,
+                            isParsed: false,
+                            xml: null,
+                            taskName: '',
+                            getTaskNode: function() {
+                                if (!this.isParsed) {
+                                    this.isParsed = true;
+                                    this.xml = parseXml(this.text);
+                                }
+                                return getXmlChild(this.xml && this.xml.documentElement, this.taskName);
+                            }
+                        }
                     }
-
-                if (didSomething) {
-                    badgeFlasher(__public.i18n('Sync'), 2, 250, 'green');
-                    badgeStatus();
-
-                    // Should get each handler to call this as and when required
-                    // but OK here for now
-
-                    // TODO: FIXME:
-                    //
-                    // Disabled for now as causing lag and the gifting data to error
-                    // Will need to look at how the data is set out, i.e. moving
-                    // the neighbours field out of daUser and/or maybe a seperate
-                    // entry for each neighbour so updates can be quick and small
-                    //
-                    //__public.cacheSync();
+                    taskResult.taskName = 'task_' + taskIndex;
+                    try {
+                        // DO NOT STORE THE TASKRESULT OBJECT
+                        if (fn.call(this, task, taskResult)) didSomething = true;
+                    } catch (e) {
+                        console.error(taskFunc + '() ' + e.message);
+                    }
                 }
             }
+            if (didSomething) {
+                badgeFlasher(__public.i18n('Sync'), 2, 250, 'green');
+                badgeStatus();
+
+                // Should get each handler to call this as and when required
+                // but OK here for now
+
+                // TODO: FIXME:
+                //
+                // Disabled for now as causing lag and the gifting data to error
+                // Will need to look at how the data is set out, i.e. moving
+                // the neighbours field out of daUser and/or maybe a seperate
+                // entry for each neighbour so updates can be quick and small
+                //
+                //__public.cacheSync();
+            }
         }
 
         /*
-         ** @Private - Call sync action
+         ** visit_camp
          */
-        function action(tab, task, data) {
-            var msg = null,
-                taskFunc = '__gameSync_' + task.action;
-            if (typeof handlers[taskFunc] === "function") {
-                try {
-                    msg = handlers[taskFunc].call(this, task, data);
-                } catch (e) {
-                    console.error(taskFunc + '() ' + e.message);
-                    return false;
+        handlers['__gameSync_visit_camp'] = function(task, taskResult) {
+            if (taskResult) {
+                // store reference to the result
+                if (taskResult.isParsed) {
+                    // parsed? we can get the node
+                    lastVisitedCamp = {
+                        xml: taskResult.getTaskNode()
+                    };
+                } else {
+                    // not parsed? we avoid parsing and store the xml text and the node name
+                    // parsing will be performed in camp.js
+                    lastVisitedCamp = {
+                        text: taskResult.text,
+                        taskName: taskResult.taskName
+                    };
                 }
-            } else {
-                if (exPrefs.debug) console.log(taskFunc, task, data);
-                return false;
+                lastVisitedCamp.processed = false;
+                lastVisitedCamp.neigh_id = getXmlChildValue(task, 'neigh_id');
+                signal(SIGNAL_GUI);
             }
-
-            if (msg) {
-                if (exPrefs.debug) console.log("action message: ", task.action, msg);
-
-                // May want to make theses sendMessage calls async, slowing down
-                // the game a bit!
-
-                // Message the GUI
-                chrome.extension.sendMessage({
-                    cmd: 'gameSync',
-                    action: task.action,
-                    data: msg
-                });
-                // Message the content script(s)
-                chrome.tabs.sendMessage(tab, {
-                    cmd: 'gameSync',
-                    action: task.action,
-                    data: msg
-                });
-
-                return true;
-            }
-
-            return false;
-        }
-        
-        /*
-         ** @Private - Global Task
-         */
-        function globalTask(tab, task) {
-            if (exPrefs.debug) console.log("Global", task);
-        }
-        
-        /*
-         ** __gameSync_leave_mine
-         */
-        handlers['__gameSync_leave_mine'] = function(action, result) {
-            if (result) {
-                return result;
-            }
-            return null;
-        }
-
-        /*
-         ** __gameSync_enter_mine
-         */
-        handlers['__gameSync_enter_mine'] = function(action, result) {
-            if (result) {
-                return result;
-            }
-            return null;
-        }
-
-        /*
-         ** __gameSync_change_level
-         */
-        handlers['__gameSync_change_level'] = function(action, result) {
-            if (result) {
-                return result;
-            }
-            return null;
-        }
-
-        /*
-         ** __gameSync_mine
-         */
-        handlers['__gameSync_mine'] = function(action, result) {
-            if (result) {
-                return Object.assign(action, result);
-            }
-            return null;
-        }
-
-        handlers['__gameSync_visit_camp'] = function(action, result) {
-            if(result) lastVisitedCamp = result;
-            return !!result;
         };
 
         /*
          ** friend_child_charge
          */
-        handlers['__gameSync_friend_child_charge'] = function(action, result) {
-            var uid = action.neigh_id;
-            if (__public.daUser.neighbours.hasOwnProperty(uid)) {
-                if (__public.daUser.neighbours[uid].spawned != "0") {
-                    if (!__public.daUser.neighbours[uid].hasOwnProperty('gcCount'))
-                        __public.daUser.neighbours[uid].gcCount = parseInt(__public.daConfig.child_count);
-                    if ((--__public.daUser.neighbours[uid].gcCount) <= 0) {
+        handlers['__gameSync_friend_child_charge'] = function(task, taskResult) {
+            var uid = getXmlChildValue(task, 'neigh_id'),
+                neighbour = __public.daUser.neighbours[uid];
+            if (neighbour) {
+                if (neighbour.spawned != '0') {
+                    if (!neighbour.hasOwnProperty('gcCount')) neighbour.gcCount = parseInt(__public.daConfig.child_count);
+                    if ((--neighbour.gcCount) <= 0) {
                         // Collected all of them!
-                        __public.daUser.neighbours[uid].spawned = "0";
-
-                        return {
+                        neighbour.spawned = '0';
+                        signal(SIGNAL_GUI + SIGNAL_TAB, {
                             uid: uid
-                        };
+                        });
                     }
                 }
-            } else if (exPrefs.debug)
-                console.log("friend_child_charge", uid, "cannot find neighbour?");
-            return null;
+            } else {
+                if (exPrefs.debug) console.log(signalAction, uid, "cannot find neighbour?");
+            }
         }
 
         /*********************************************************************
