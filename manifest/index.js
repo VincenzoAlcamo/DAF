@@ -697,6 +697,7 @@ var guiTabs = (function() {
             Object.keys(materials).forEach(key => {
                 if (materials[key] > 0) data.push(key + '\t' + self.materialName(key) + '\t' + materials[key]);
             });
+            // this info is in windmills.xml
             var windmillNames = {
                 3: bgp.daGame.string('WINA001'),
                 4: bgp.daGame.string('WINA002'),
@@ -704,10 +705,14 @@ var guiTabs = (function() {
                 6: bgp.daGame.string('WINA005'),
                 7: bgp.daGame.string('WINA006'),
                 8: bgp.daGame.string('WINA007'),
+                9: bgp.daGame.string('WINA008'),
                 10: bgp.daGame.string('WINA009'),
+                11: bgp.daGame.string('WINA010'),
+                12: bgp.daGame.string('WINA005'),
                 13: bgp.daGame.string('WINA011'),
                 14: bgp.daGame.string('WINA012'),
-                15: bgp.daGame.string('WINA013')
+                15: bgp.daGame.string('WINA013'),
+                16: bgp.daGame.string('WINA014')
             };
 
             Object.keys(user.stored_windmills).forEach(key => {
