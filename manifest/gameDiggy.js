@@ -297,7 +297,10 @@
          ** @Public - Get Cached Game User Data
          */
         __public.cachedData = function(reloadFiles = false) {
-            if (exPrefs.debug) console.groupCollapsed("Data Cache");
+            if (exPrefs.debug) {
+                console.groupCollapsed("Data Cache");
+                console.time('Data Cache');
+            }
             if (exPrefs.debug) console.log("Load Cached Data");
 
             callback.call(this, 'dataStart', 'gameGetData');
@@ -408,6 +411,7 @@
                             info = numberWithCommas(info);
                             console.log("Storage Used", info, "out of", storageSpace);
                             console.groupEnd("Data Cache");
+                            console.timeEnd('Data Cache');
                         });
                     }
 
@@ -1742,13 +1746,13 @@
                     callback.call(this, 'dataParsing', 'gameParsing', url);
 
                     if (typeof handlers[dataFunc] === "function") {
-                        var sw = new StopWatch();
+                        console.time(dataFunc);
                         try {
                             data = handlers[dataFunc].call(this, key, xml);
                         } catch (e) {
                             throw Error(dataFunc + '() ' + e.message);
                         }
-                        sw.total('Execution of ' + dataFunc);
+                        console.timeEnd(dataFunc);
                     } else if (typeof xml === 'object') {
                         data = XML2jsobj(xml.firstElementChild);
                         xml = null;
