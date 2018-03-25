@@ -686,7 +686,7 @@ function onRewardNavigation(info) {
 }
 
 /*
- ** Debugger Detatch
+ ** Debugger Detach
  */
 function debuggerAttach(tabId = webData.tabId) {
     chrome.debugger.attach({
@@ -698,7 +698,7 @@ function debuggerAttach(tabId = webData.tabId) {
             return;
         }
         chrome.debugger.onEvent.addListener(debuggerEvent);
-        chrome.debugger.onDetach.addListener(debuggerDetatched);
+        chrome.debugger.onDetach.addListener(debuggerDetached);
         chrome.debugger.sendCommand({
             tabId: webData.tabId
         }, "Network.enable", function(result) {
@@ -713,7 +713,7 @@ function debuggerAttach(tabId = webData.tabId) {
 }
 
 /*
- ** Debugger Detatch
+ ** Debugger Detach
  */
 function debuggerDetach() {
     if (webData.bugId) {
@@ -721,26 +721,26 @@ function debuggerDetach() {
             tabId: webData.bugId
         }, function() {
             webData.bugId = 0;
-            if (exPrefs.debug) console.log("debugger.detatch");
+            if (exPrefs.debug) console.log("debugger.detach");
             if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError.message);
                 return;
             }
         });
         webData.bugId = 0;
-        chrome.debugger.onDetach.removeListener(debuggerDetatched);
+        chrome.debugger.onDetach.removeListener(debuggerDetached);
         chrome.debugger.onEvent.removeListener(debuggerEvent);
     }
 }
 
 /*
- ** Debugger "Detatched" Handler
+ ** Debugger "Detached" Handler
  */
-function debuggerDetatched(bugId, reason) {
-    if (exPrefs.debug) console.log("debuggerDetatched", bugId, reason);
+function debuggerDetached(bugId, reason) {
+    if (exPrefs.debug) console.log("debuggerDetached", bugId, reason);
     if (bugId.tabId == webData.tabId) {
         webData.bugId = 0;
-        errorOnWebRequest('debugger.detatched', -2, reason);
+        errorOnWebRequest('debugger.detached', -2, reason);
         /*
         if (exPrefs.syncDebug) {
             exPrefs.syncDebug = false;
