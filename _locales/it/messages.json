@@ -1247,16 +1247,21 @@
             }
         }
     },
-    "camp_unlock_gem": {
-        "message": "Una colonna si può sbloccare per $VALUE$ gemme",
+    "camp_unlock_cost": {
+        "message": "Una colonna si può sbloccare per $VALUE$ gemme\noppure con questi materiali:",
         "placeholders": {
             "value": {
                 "content": "$1"
             }
         }
     },
-    "camp_unlock_mat": {
-        "message": "oppure con questi materiali:"
+    "camp_start_date": {
+        "message": "Hai iniziato a giocare:\n$STARTED$",
+        "placeholders": {
+            "started": {
+                "content": "$1"
+            }
+        }
     },
     "Top": {
         "message": "Inizio"

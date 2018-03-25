@@ -1253,16 +1253,21 @@
             }
         }
     },
-    "camp_unlock_gem": {
-        "message": "One slot can be unlocked with $VALUE$ gems",
+    "camp_unlock_cost": {
+        "message": "One slot can be unlocked with $VALUE$ gems\nor with these materials:",
         "placeholders": {
             "value": {
                 "content": "$1"
             }
         }
     },
-    "camp_unlock_mat": {
-        "message": "or with these materials:"
+    "camp_start_date": {
+        "message": "You started playing:\n$STARTED$",
+        "placeholders": {
+            "started": {
+                "content": "$1"
+            }
+        }
     },
     "Top": {
         "message": "Top"
