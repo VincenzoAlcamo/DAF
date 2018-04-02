@@ -463,6 +463,7 @@
                     friend.score = oldFriend.score;
                     friend.uid = oldFriend.uid;
                     if (oldFriend.adt) friend.adt = oldFriend.adt;
+                    if (oldFriend.note) friend.note = oldFriend.note;
                 }
                 delete oldFriends[friend.fb_id];
                 friends[friend.fb_id] = friend;
@@ -2419,7 +2420,7 @@
                 'gems': 'gem',
                 'exp': 'exp',
                 'requirements': function(item, child) {
-                    if(item.id == '0') return;
+                    if (item.id == '0') return;
                     var data = mapXML(child.getElementsByTagName('cost'), {
                         'material_id': 'id',
                         'amount': 'amount'
