@@ -72,7 +72,7 @@ var guiTabs = (function(self) {
                 fullName = player + ((!pal.surname) ? '' : ' ' + pal.surname);
 
                 if (uid > 1) {
-                    html += '<a class="gallery" href="https://www.facebook.com/' + fid + '"';
+                    html += '<a class="gallery" target="_blank" href="https://www.facebook.com/' + fid + '"';
                     html += ' title="' + fullName + '"';
                 } else
                     html += '<div class="gallery"';
@@ -87,7 +87,6 @@ var guiTabs = (function(self) {
         });
 
         grid.style.display = (counter == 0) ? 'none' : '';
-        self.linkTabs(grid);
 
         var realNeighbours = neighbours - 1;
 

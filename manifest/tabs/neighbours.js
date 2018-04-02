@@ -262,7 +262,7 @@ var guiTabs = (function(self) {
                 html.push('<tr id="pal-', uid, '"', badGift ? ' class="bad-gift"' : '', '>');
 
                 if (uid > 1) {
-                    var a = '<a ' + (pal.hasOwnProperty('realFBname') ? ' title="' + pal.realFBname + '"' : '') + ' href="https://www.facebook.com/';
+                    var a = '<a ' + (pal.hasOwnProperty('realFBname') ? ' title="' + pal.realFBname + '"' : '') + ' target="_blank" href="https://www.facebook.com/';
 
                     html.push('<td>', a, fb_id, '"><img height="50" width="50" lazy-src="', pal.pic_square, '" /></a></td>');
                     html.push('<td sorttable_customkey="', player, '">');
@@ -322,7 +322,6 @@ var guiTabs = (function(self) {
                 guiString("inStatNew", [numberWithCommas(bgp.daGame.daUser.newNeighbours)]) +
                 ')';
 
-            self.linkTabs(inTable);
             sorttable.sortTable(inTable.tHead.rows[0].cells[sort_th]);
             sw.elapsed('Table sort');
         } else {

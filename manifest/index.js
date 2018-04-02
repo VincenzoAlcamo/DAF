@@ -411,27 +411,6 @@ var guiTabs = (function() {
     }
 
     /*
-     ** @Public - Update links to open in a new tab
-     */
-    self.linkTabs = function(parent) {
-        var links = parent.getElementsByTagName("a");
-
-        for (var i = 0; i < links.length; i++) {
-            (function() {
-                var ln = links[i];
-                var location = ln.href;
-                ln.onclick = function() {
-                    chrome.tabs.create({
-                        active: true,
-                        url: location
-                    });
-                    return false;
-                };
-            })();
-        }
-    }
-
-    /*
      ** @Public - Update preference value
      */
     self.setPref = function(name, value) {
