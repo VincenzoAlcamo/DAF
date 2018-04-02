@@ -1154,6 +1154,9 @@
     "rewardsCloseErrorsLabel": {
         "message": "Σφάλματα"
     },
+    "camp_your_camp": {
+        "message": "Η βάση σας"
+    },
     "camp_player_name": {
         "message": "Παίχτης: $PLAYER$",
         "placeholders": {
@@ -1164,6 +1167,9 @@
     },
     "camp_no_player": {
         "message": "Ακόμα καμμία επίσκεψη σε βάση"
+    },
+    "camp_player": {
+        "message": "Παίχτης"
     },
     "camp_fill_time": {
         "message": "Χρόνος γεμίσματος\n(από 0 μέχρι μαξ χωρητικότητα)"
@@ -1208,6 +1214,51 @@
         "message": "Περιοχή: $VALUE$",
         "placeholders": {
             "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_regen": {
+        "message": "Ανανέωση"
+    },
+    "camp_capacity": {
+        "message": "Χωρητικότητα"
+    },
+    "camp_windmills": {
+        "message": "Ανεμόμυλοι"
+    },
+    "camp_min_value": {
+        "message": "Μέγιστες Θέσεις"
+    },
+    "camp_max_value": {
+        "message": "Ελάχιστες Θέσεις"
+    },
+    "camp_theme": {
+        "message": "Θέμα"
+    },
+    "camp_unlock_materials": {
+        "message": "Υλικά για ξεκλείδωμα βάσης"
+    },
+    "camp_unlock_one": {
+        "message": "Το ξεκλείδωμα μιας θέσης προσφέρει $VALUE$ Εμπειρία",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_unlock_cost": {
+        "message": "Μια θέση ξεκλειδώνεται με $VALUE$ πετράδια\nή με αυτά τα υλικά:",
+        "placeholders": {
+            "value": {
+                "content": "$1"
+            }
+        }
+    },
+    "camp_start_date": {
+        "message": "Αρχίσατε να παίζεται στις:\n$STARTED$",
+        "placeholders": {
+            "started": {
                 "content": "$1"
             }
         }
