@@ -787,6 +787,9 @@
     "ManualMatchHelp": {
         "message": "To match this neighbour you have to find a non matched friend and click on the cell where the symbol \u2b50 is."
     },
+    "fNoNote": {
+        "message": "No note"
+    },
     "GCnext": {
         "message": "To get an additional GC, you have to add $NUM$ more neighbours",
         "placeholders": {

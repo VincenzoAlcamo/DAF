@@ -276,7 +276,7 @@ var guiTabs = (function(self) {
         if (flagModified) {
             if (isRowVisible(friend, pal)) updateRow(row);
             else row.parentNode.removeChild(row);
-            bgp.daGame.setFriend(friend)
+            bgp.daGame.setFriend(friend);
             showStats();
         }
     }
@@ -401,7 +401,7 @@ var guiTabs = (function(self) {
         if (friend) {
             var a = getFBFriendAnchor(fb_id);
             html.push('<td>', a, '<img height="50" width="50" src="', getFBFriendAvatarUrl(fb_id), '"/></a></td>');
-            html.push('<td>', a, friend.name, '</a></td>');
+            html.push('<td>', a, friend.name, '</a><br><input class="f-note" type="text" maxlength="50" placeholder="', guiString('fNoNote'), '" value="', Dialog.escapeHtml(friend.note || ''), '"></td>');
             html.push('<td>', created ? unixDate(created, false, false) + '<br>' + unixDaysAgo(created, today, 0) : '', '</td>');
             if (pal) {
                 html.push('<td>', friend.score, '</td>');
@@ -429,6 +429,38 @@ var guiTabs = (function(self) {
         row.classList.toggle('f-disabled', isDisabled);
         row.classList.toggle('f-ignored', isIgnored);
         row.classList.toggle('f-notmatched', isNotMatched);
+        row.querySelector('input.f-note').addEventListener('input', onNoteChanged);
+    }
+
+    var notesChanged = {},
+        notesHandler = 0;
+
+    function clearNoteHandler() {
+        if (notesHandler) clearTimeout(notesHandler);
+        notesHandler = 0;
+    }
+
+    function onNoteChanged(e) {
+        var input = e.target;
+        var fb_id = input.parentNode.parentNode.id.substr(3);
+        clearNoteHandler();
+        notesChanged[fb_id] = input.value;
+        notesHandler = setTimeout(saveNotes, 2000);
+    }
+
+    function saveNotes() {
+        clearNoteHandler();
+        var friendsToSave = [];
+        Object.keys(notesChanged).forEach(function(fb_id) {
+            var friend = bgp.daGame.getFriend(fb_id),
+                note = notesChanged[fb_id];
+            if (friend && friend.note != note) {
+                friend.note = note;
+                friendsToSave.push(friend);
+            }
+        });
+        notesChanged = {};
+        if (friendsToSave.length) bgp.daGame.setFriend(friendsToSave);
     }
 
     function getFBFriendAvatarUrl(fb_id) {

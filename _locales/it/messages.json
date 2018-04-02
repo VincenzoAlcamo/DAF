@@ -782,6 +782,9 @@
     "ManualMatchHelp": {
         "message": "Per abbinare questo vicino devi trovare un amico non abbinato e cliccare sulla casella dove c'è il simbolo ⭐."
     },
+    "fNoNote": {
+        "message": "Nessuna nota"
+    },
     "GCnext": {
         "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
         "placeholders": {
