@@ -1925,10 +1925,13 @@
 
                     if ((item.hasOwnProperty('cargo')) && item.cargo.hasOwnProperty('object')) {
                         var def_cgo = def ? def.cgo : null;
-                        data[id].cgo = gfItemCopy('oid', {}, def_cgo, item.cargo.object, 'object_id');
-                        data[id].cgo = gfItemCopy('typ', data[id].cgo, def_cgo, item.cargo.object, 'type');
-                        data[id].cgo = gfItemCopy('min', data[id].cgo, def_cgo, item.cargo.object, 'min');
-                        data[id].cgo = gfItemCopy('max', data[id].cgo, def_cgo, item.cargo.object, 'max');
+                        var cargo_object = item.cargo.object;
+                        // TO DO: we get the first item, but should get the "usable" one
+                        if (Array.isArray(cargo_object)) cargo_object = cargo_object[0];
+                        data[id].cgo = gfItemCopy('oid', {}, def_cgo, cargo_object, 'object_id');
+                        data[id].cgo = gfItemCopy('typ', data[id].cgo, def_cgo, cargo_object, 'type');
+                        data[id].cgo = gfItemCopy('min', data[id].cgo, def_cgo, cargo_object, 'min');
+                        data[id].cgo = gfItemCopy('max', data[id].cgo, def_cgo, cargo_object, 'max');
                     }
 
                     if ((item.hasOwnProperty('requirements')) && item.requirements.hasOwnProperty('cost')) {
