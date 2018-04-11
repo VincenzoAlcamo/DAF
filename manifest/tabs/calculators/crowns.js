@@ -446,9 +446,9 @@ var guiTabs = (function(self) {
             i = ignoredCrowns.indexOf(did),
             crown = daCrowns.find(item => item.decoration_id == did);
         cell.querySelector('input[type=checkbox]').checked = i >= 0;
+        ignoredCrowns = ignoredCrowns.filter(id => id != did && id != '');
         if (i >= 0) {
             // found -> remove
-            ignoredCrowns.splice(i, 1);
             el.classList.remove('ignored');
             crown.use = crown.qty || 0;
         } else {
