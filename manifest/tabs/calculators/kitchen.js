@@ -59,6 +59,15 @@ var guiTabs = (function(self) {
                 document.getElementById("potTimeHeader").innerHTML = Dialog.escapeHtmlBr(guiString("totalPotTime", [pots]));
         }
 
+        var level = parseInt(bgp.daGame.daUser.level);
+        var region = parseInt(bgp.daGame.daUser.region);
+
+        var cardinality = {};
+        Object.keys(bgp.daGame.daProduce).forEach(function(key) {
+            var item = bgp.daGame.daProduce[key];
+            cardinality[item.nid] = (cardinality[item.nid] || 0) + 1;
+        });
+
         Object.keys(bgp.daGame.daProduce).sort(function(a, b) {
             var o1 = bgp.daGame.daProduce[a];
             var o2 = bgp.daGame.daProduce[b];
@@ -80,8 +89,6 @@ var guiTabs = (function(self) {
             return u2 - u1;
         }).forEach(function(did, i, a) {
             var o = bgp.daGame.daProduce[did];
-            var level = parseInt(bgp.daGame.daUser.level);
-            var region = parseInt(bgp.daGame.daUser.region);
             var show = true;
 
             // Don't know why, but "Fried Mushrooms" and "Berry Muffin"
@@ -99,6 +106,10 @@ var guiTabs = (function(self) {
             /*********************************************************/
 
             if (o.rql > level || o.rid > region)
+                show = false;
+
+            // if cardinality is > 1 (segmented recipes) then we take only the recipe for the player's region
+            if (cardinality[o.nid] > 1 && o.rid != region)
                 show = false;
 
             if ((show) && bgp.exPrefs.rFilter != 'ALL') {
