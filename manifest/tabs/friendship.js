@@ -399,7 +399,7 @@ var guiTabs = (function(self) {
             created;
         created = friend && friend.adt;
         if (friend) {
-            var a = getFBFriendAnchor(fb_id);
+            var a = getFBFriendAnchor(fb_id, friend.uri);
             html.push('<td>', a, '<img height="50" width="50" src="', getFBFriendAvatarUrl(fb_id), '"/></a></td>');
             html.push('<td>', a, friend.name, '</a><br><input class="f-note" type="text" maxlength="50" placeholder="', guiString('fNoNote'), '" value="', Dialog.escapeHtml(friend.note || ''), '"></td>');
             html.push('<td>', created ? unixDate(created, false, false) + '<br>' + unixDaysAgo(created, today, 0) : '', '</td>');
@@ -429,7 +429,8 @@ var guiTabs = (function(self) {
         row.classList.toggle('f-disabled', isDisabled);
         row.classList.toggle('f-ignored', isIgnored);
         row.classList.toggle('f-notmatched', isNotMatched);
-        row.querySelector('input.f-note').addEventListener('input', onNoteChanged);
+        var input = row.querySelector('input.f-note');
+        if (input) input.addEventListener('input', onNoteChanged);
     }
 
     var notesChanged = {},
@@ -467,8 +468,9 @@ var guiTabs = (function(self) {
         return 'https://graph.facebook.com/v2.8/' + fb_id + '/picture';
     }
 
-    function getFBFriendAnchor(fb_id) {
-        return '<a target="_blank" href="https://www.facebook.com/' + fb_id + '">';
+    function getFBFriendAnchor(fb_id, uri) {
+        uri = uri || ('https://www.facebook.com/' + fb_id);
+        return '<a target="_blank" href="' + uri + '">';
     }
 
     function showStats() {

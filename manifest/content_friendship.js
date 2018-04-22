@@ -52,11 +52,14 @@ function collectStandard() {
             Array.from(ul.getElementsByTagName('li')).forEach(li => {
                 Array.from(li.getElementsByTagName('a')).forEach(item => {
                     if (item.innerText == '') return;
-                    var id, d;
+                    var id, d, uri, i;
                     if ((d = item.getAttribute('data-hovercard')) && d.indexOf('user.php?id=') >= 0 && (id = getId(d))) {
+                        uri = item.href;
+                        if ((i = uri.indexOf('?'))) uri = uri.substr(0, i);
                         friends.push({
                             fb_id: id,
-                            name: item.innerText
+                            name: item.innerText,
+                            uri: uri
                         });
                     } else if ((d = item.getAttribute('ajaxify')) && d.indexOf('/inactive/') >= 0 && (id = getId(d))) {
                         friends.push({
@@ -146,6 +149,7 @@ function collectAlternate() {
                         var friend = {
                             fb_id: item.id,
                             name: item.name,
+                            uri: item.uri
                         };
                         friends.push(friend);
                     }
