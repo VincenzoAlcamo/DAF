@@ -580,14 +580,13 @@ function onWebRequest(action, request) {
             } else if (url.pathname.indexOf('/dialog/apprequests') >= 0 && url.search.indexOf('app_id=470178856367913&') >= 0) {
                 console.log(url.pathname, exPrefs.autoClick);
                 if (exPrefs.autoClick) {
-                    chrome.tabs.executeScript(request.tabId, {
-                        code: `
-                        Array.from(document.getElementsByClassName('layerConfirm')).forEach(element => {
-                            if (element.name == '__CONFIRM__') {
-                                element.click();
-                            }
+                    chrome.tabs.get(request.tabId, tab => {
+                        chrome.windows.update(tab.windowId, {
+                            focused: false
                         });
-                        `,
+                    });
+                    chrome.tabs.executeScript(request.tabId, {
+                        file: '/manifest/content_portal_autoclick.js',
                         allFrames: false,
                         frameId: 0
                     });
