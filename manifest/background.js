@@ -580,16 +580,8 @@ function onWebRequest(action, request) {
             } else if (url.pathname.indexOf('/dialog/apprequests') >= 0 && url.search.indexOf('app_id=470178856367913&') >= 0) {
                 console.log(url.pathname, exPrefs.autoClick);
                 if (exPrefs.autoClick) {
-                    chrome.tabs.get(request.tabId, tab => {
-                        chrome.windows.update(tab.windowId, {
-                            focused: false
-                        });
-                    });
-                    chrome.tabs.executeScript(request.tabId, {
-                        file: '/manifest/content_portal_autoclick.js',
-                        allFrames: false,
-                        frameId: 0
-                    });
+                    focusTab(request.tabId, false);
+                    injectAutoClick(request.tabId, 2);
                 }
             } else if (gameData) {
                 // process it
@@ -634,6 +626,44 @@ function onWebRequest(action, request) {
     }
 
     url = null;
+}
+
+function focusTab(tabId, flag) {
+    chrome.tabs.get(tabId, tab => chrome.windows.update(tab.windowId, {
+        focused: flag
+    }));
+}
+
+function injectAutoClick(tabId, count) {
+    chrome.tabs.executeScript(tabId, {
+        code: `
+// we try several times (popup has not finished initializing)
+let clicked = false, timeout = 0, count = 10;
+function autoClick() {
+    Array.from(document.getElementsByClassName('layerConfirm')).forEach(element => {
+        if (element.name == '__CONFIRM__') {
+            clicked = true;
+            element.click();
+            // just in case the popup has not been closed
+            setTimeout(autoClick, 2000);
+            setTimeout(autoClick, 5000);
+        }
+    });
+    timeout += 200;
+    if (!clicked && --count > 0) setTimeout(autoClick, timeout);
+}
+autoClick();
+        `,
+        allFrames: false,
+        frameId: 0
+    }, function() {
+        if (chrome.runtime.lastError) {
+            console.log('Error in inject code', chrome.runtime.lastError);
+            count--;
+            if (count > 0) injectAutoClick(tabId, count);
+            else focusTab(tabId, true);
+        }
+    });
 }
 
 /*
