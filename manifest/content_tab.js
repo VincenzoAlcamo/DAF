@@ -434,6 +434,8 @@ function initialize() {
                     while (parent.parentNode.tagName != 'BODY') {
                         parent = parent.parentNode;
                     }
+                    // this is the Invite dialog
+                    if (parent.querySelector('.profileBrowserDialog')) return;
                     parent.style.zIndex = -1;
                     element.click();
                 }
