@@ -4,7 +4,7 @@
 var guiTabs = (function(self) {
     var tabID, active, menu = {
         progress: true,
-        camp: null,         // For now make this Dev Only
+        camp: true,
         kitchen: true,
         anvils: false,
         crowns: true,
