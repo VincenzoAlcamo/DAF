@@ -104,6 +104,7 @@
                         taskName: taskResult.taskName
                     };
                 }
+                if(!lastVisitedCamp.xml && !lastVisitedCamp.text) return;
                 lastVisitedCamp.processed = false;
                 lastVisitedCamp.neigh_id = getXmlChildValue(task, 'neigh_id');
                 signal(SIGNAL_GUI);

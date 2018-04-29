@@ -169,23 +169,28 @@ var guiTabs = (function(self) {
             var cap_total = parseInt(camp.max_stamina) || campResult.cap_tot,
                 reg_total = parseInt(camp.stamina_reg) || campResult.reg_tot,
                 fillTime = Math.ceil(cap_total / reg_total * 3600),
+                time;
+            if (fillTime) {
                 time = [];
-            time.unshift(String(fillTime % 60).padStart(2, '0'));
-            fillTime = Math.floor(fillTime / 60);
-            time.unshift(String(fillTime % 60).padStart(2, '0'));
-            time.unshift(Math.floor(fillTime / 60));
+                time.unshift(String(fillTime % 60).padStart(2, '0'));
+                fillTime = Math.floor(fillTime / 60);
+                time.unshift(String(fillTime % 60).padStart(2, '0'));
+                time.unshift(Math.floor(fillTime / 60));
+            }
 
             // table Regeneration
             html.push('<td><table class="camp_data">');
             html.push('<thead><tr class="energy_capacity"><th></th><th><img src="/img/energy.png" title="', value(guiString('camp_regen')), '"></th><th><img src="/img/capacity.png" title="', value(guiString('camp_capacity')), '"></th></tr></thead>');
             html.push('<tbody>');
-            html.push('<tr><td>', value(guiString('Total')), '</td><td>', value(reg_total), '</td><td>', value(cap_total), '</td></tr>');
+            html.push('<tr><td>', value(guiString('Total')), '</td><td>', value(reg_total || ''), '</td><td>', value(cap_total || ''), '</td></tr>');
             html.push('<tr><td>', value(guiString('camp_min_value')), '</td><td>', value(campResult.reg_min), '</td><td>', value(campResult.cap_min), '</td></tr>');
             html.push('<tr><td>', value(guiString('camp_max_value')), '</td><td>', value(campResult.reg_max), '</td><td>', value(campResult.cap_max), '</td></tr>');
             html.push('</tbody>');
-            html.push('<tbody>');
-            html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
-            html.push('</tbody>');
+            if (time) {
+                html.push('<tbody>');
+                html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
+                html.push('</tbody>');
+            }
             html.push('</table></td>');
         }
 
@@ -205,7 +210,7 @@ var guiTabs = (function(self) {
             html.push('<thead><tr><th colspan="2">', value(guiString('camp_windmills')), '</th></tr></thead>');
             html.push('<tbody>');
             html.push('<tr><td>', value(guiString('camp_windmill_num')), '</td><td>', value(wind_count + ' / ' + parseInt(camp.windmill_limit)), '</td></tr>');
-            if (isPublic) {
+            if (isPublic && camp.windmill_reg) {
                 html.push('<tr><td>', value(guiString('camp_windmill_regen')), '</td><td>', value(parseInt(camp.windmill_reg)), '</td></tr>');
             }
             html.push('</tbody>');
