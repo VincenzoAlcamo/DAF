@@ -690,7 +690,7 @@ function onXMLRequest(info) {
 }
 
 function onFBNavigation(info) {
-    if (info.frameId == 0 && exPrefs.facebookMenu && canBeInjected(info.tabId)) {
+    if (info.frameId == 0 && exPrefs.facebookMenu && info.url.indexOf('/dialog/') < 0 && canBeInjected(info.tabId)) {
         console.log("injecting facebook", info.url);
         chromeMultiInject(info.tabId, {
             file: [
