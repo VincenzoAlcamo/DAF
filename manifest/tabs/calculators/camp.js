@@ -30,6 +30,13 @@ var guiTabs = (function(self) {
             div.addEventListener('mouseover', onmousemove);
             div.addEventListener('mouseout', onmousemove);
         })
+    
+        // For now hide the neighbour card, as feature is not live
+        // Need to consider implications of this feature a bit more
+        if (!self.isDev()) {
+            var div = document.getElementById('camp2');
+            div.style.display = 'none';
+        }
     }
 
     function onmousemove(event) {
