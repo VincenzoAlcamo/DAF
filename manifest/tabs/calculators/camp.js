@@ -29,8 +29,9 @@ var guiTabs = (function(self) {
             div = div.querySelector('div');
             div.addEventListener('mouseover', onmousemove);
             div.addEventListener('mouseout', onmousemove);
+            div.addEventListener('mouseleave', onmousemove);
         })
-    
+
         // For now hide the neighbour card, as feature is not live
         // Need to consider implications of this feature a bit more
         if (!self.isDev()) {
@@ -41,7 +42,7 @@ var guiTabs = (function(self) {
 
     function onmousemove(event) {
         var el = event.target,
-            isOut = event.type == 'mouseout',
+            isOut = event.type == 'mouseout' || event.type == 'mouseleave',
             bid = 0;
         while (!el.classList.contains('card')) {
             if (el.hasAttribute('bid')) bid = el.getAttribute('bid');
@@ -104,9 +105,19 @@ var guiTabs = (function(self) {
     }
 
     function updateCamp(div, flagHeaderOnly = false) {
-        var info, camp, uid, pal, isPublic, campName, started;
+        var info, camp, uid, pal, isPlayer, isPublic, campName, started;
 
-        if (div.id == 'camp2') {
+        isPlayer = div.id == 'camp1';
+        if (isPlayer) {
+            info = bgp.daGame.daUser;
+            camp = info.camp;
+            pal = info.player;
+            uid = pal.uid;
+            ['region', 'windmill_limit', 'windmill_reg', 'stamina_reg', 'max_stamina'].forEach(key => camp[key] = info[key]);
+            campName = guiString('camp_your_camp');
+            isPublic = true;
+            started = new Date(bgp.exPrefs.gameDate);
+        } else {
             info = bgp.lastVisitedCamp;
             // not yet processed and we need the full data?
             if (info && info.processed === false && !flagHeaderOnly) {
@@ -124,15 +135,6 @@ var guiTabs = (function(self) {
             pal = uid ? bgp.daGame.getNeighbour(uid) : null;
             campName = (uid ? guiString('camp_player_name', [pal ? pal.name : '#' + uid]) : guiString('camp_no_player'));
             isPublic = uid == 1 || self.isDev();
-        } else {
-            info = bgp.daGame.daUser;
-            camp = info.camp;
-            pal = info.player;
-            uid = pal.uid;
-            ['region', 'windmill_limit', 'windmill_reg', 'stamina_reg', 'max_stamina'].forEach(key => camp[key] = info[key]);
-            campName = guiString('camp_your_camp');
-            isPublic = true;
-            started = new Date(bgp.exPrefs.gameDate);
         }
 
         div.querySelector('img').setAttribute('src', (camp ? '/img/regions/' + camp.region : '/img/camp') + '.png');
@@ -145,8 +147,17 @@ var guiTabs = (function(self) {
         }
 
         var windmillExpiryTime = getConfigValue('windmill_lifespan', 7 * 86400),
-            campResult = calculateCamp(camp, isPublic),
+            campResult = calculateCamp(camp, isPublic, true),
+            camps = [campResult],
             html = [];
+
+        if (isPlayer) {
+            var campResult2 = calculateCamp(camp, isPublic, false);
+            if(campResult2.reg_base != campResult2.reg_tot || campResult2.cap_base != campResult2.cap_tot) {
+                camps.push(campResult2);
+                if(campResult2.reg_tot > campResult.reg_tot) camps.reverse();
+            }
+        }
 
         html.push('<table class="camp_tables"><tr>');
 
@@ -166,32 +177,35 @@ var guiTabs = (function(self) {
         html.push('</table></td>');
 
         if (isPublic) {
-            var cap_total = parseInt(camp.max_stamina) || campResult.cap_tot,
-                reg_total = parseInt(camp.stamina_reg) || campResult.reg_tot,
-                fillTime = Math.ceil(cap_total / reg_total * 3600),
-                time;
-            if (fillTime) {
-                time = [];
-                time.unshift(String(fillTime % 60).padStart(2, '0'));
-                fillTime = Math.floor(fillTime / 60);
-                time.unshift(String(fillTime % 60).padStart(2, '0'));
-                time.unshift(Math.floor(fillTime / 60));
-            }
+            camps.forEach(function(campResult, index) {
+                var cap_total = campResult.cap_tot,
+                    reg_total = campResult.reg_tot,
+                    fillTime = Math.ceil(cap_total / reg_total * 3600),
+                    time;
+                if (fillTime) {
+                    time = [];
+                    time.unshift(String(fillTime % 60).padStart(2, '0'));
+                    fillTime = Math.floor(fillTime / 60);
+                    time.unshift(String(fillTime % 60).padStart(2, '0'));
+                    time.unshift(Math.floor(fillTime / 60));
+                }
 
-            // table Regeneration
-            html.push('<td><table class="camp_data">');
-            html.push('<thead><tr class="energy_capacity"><th></th><th><img src="/img/energy.png" title="', value(guiString('camp_regen')), '"></th><th><img src="/img/capacity.png" title="', value(guiString('camp_capacity')), '"></th></tr></thead>');
-            html.push('<tbody>');
-            html.push('<tr><td>', value(guiString('Total')), '</td><td>', value(reg_total || ''), '</td><td>', value(cap_total || ''), '</td></tr>');
-            html.push('<tr><td>', value(guiString('camp_min_value')), '</td><td>', value(campResult.reg_min), '</td><td>', value(campResult.cap_min), '</td></tr>');
-            html.push('<tr><td>', value(guiString('camp_max_value')), '</td><td>', value(campResult.reg_max), '</td><td>', value(campResult.cap_max), '</td></tr>');
-            html.push('</tbody>');
-            if (time) {
+                // table Regeneration
+                html.push('<td><table class="camp_data">');
+                var caption = camps.length == 1 ? '' : guiString(index == 0 ? 'camp_day_mode' : 'camp_night_mode');
+                html.push('<thead><tr class="energy_capacity"><th>', caption, '</th><th><img src="/img/energy.png" title="', value(guiString('camp_regen')), '"></th><th><img src="/img/capacity.png" title="', value(guiString('camp_capacity')), '"></th></tr></thead>');
                 html.push('<tbody>');
-                html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
+                html.push('<tr><td>', value(guiString('Total')), '</td><td>', value(reg_total || ''), '</td><td>', value(cap_total || ''), '</td></tr>');
+                html.push('<tr><td>', value(guiString('camp_min_value')), '</td><td>', value(campResult.reg_min), '</td><td>', value(campResult.cap_min), '</td></tr>');
+                html.push('<tr><td>', value(guiString('camp_max_value')), '</td><td>', value(campResult.reg_max), '</td><td>', value(campResult.cap_max), '</td></tr>');
                 html.push('</tbody>');
-            }
-            html.push('</table></td>');
+                if (time) {
+                    html.push('<tbody>');
+                    html.push('<tr><td>', value(guiString('camp_fill_time')), '</td><td colspan="2">', value(time.join(':')), '</td></tr>');
+                    html.push('</tbody>');
+                }
+                html.push('</table></td>');
+            });
         }
 
         if (true) {
@@ -240,19 +254,24 @@ var guiTabs = (function(self) {
         }
 
         html.push('</tr></table>');
-        html.push(campResult.html);
+
+        camps.forEach(function(campResult, index) {
+            if (camps.length > 1)
+                html.push('<table class="camp_caption"><thead><tr><th>', guiString(index == 0 ? 'camp_day_mode' : 'camp_night_mode'), '</th></tr></thead></table>');
+            html.push(campResult.html);
+        });
 
         div.querySelector('div').innerHTML = html.join('');
     }
 
-    function calculateCamp(camp, isPublic) {
+    function calculateCamp(camp, isPublic, current = true) {
         var lines_ids = camp.lines_ids.split(','),
             lines_blocked = camp.lines_blocked.split(','),
             buildings = bgp.daGame.daBuildings,
             html = [],
             lines = {},
             blocks = {},
-            reg_min, reg_max, cap_min, cap_max, reg_tot, cap_top;
+            reg_min, reg_max, cap_min, cap_max, reg_tot, cap_tot, reg_base, cap_base;
 
         // setup blocks
         [2, 3, 4].forEach(height => {
@@ -297,12 +316,15 @@ var guiTabs = (function(self) {
             blocks[height].blocked += blocked;
         });
 
+        reg_base = getConfigValue('stamina_reg', 60) + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (parseInt(camp.windmill_reg) || 5);
+        cap_base = getConfigValue('starting_stamina', 200);
+
         // position buildings
         reg_min = reg_max = cap_min = cap_max = reg_tot = cap_tot = 0;
-        reg_tot += getConfigValue('stamina_reg', 60) + Math.min((camp.windmills && camp.windmills.length) || 0, camp.windmill_limit || 5) * (camp.windmill_reg || 5);
-        cap_tot += getConfigValue('starting_stamina', 200);
+        reg_tot += reg_base;
+        cap_tot += cap_base;
 
-        var blds = camp.buildings;
+        var blds = current ? camp.buildings : camp.inactive_b;
         blds = blds ? (Array.isArray(blds) ? blds : [blds]) : [];
         blds.forEach(building => {
             var lid = parseInt(building.line_id),
@@ -316,15 +338,15 @@ var guiTabs = (function(self) {
                         capacity = parseInt(building.cap) || 0,
                         width = parseInt(building.wid) || 1,
                         value = Math.floor((regen || capacity) / width);
-                    cap_tot += slot.capacity;
-                    reg_tot += slot.regen;
                     if (capacity > 0) {
                         if (cap_min == 0 || value < cap_min) cap_min = value;
                         if (cap_max == 0 || value > cap_max) cap_max = value;
+                        cap_tot += capacity;
                     }
                     if (regen > 0) {
                         if (reg_min == 0 || value < reg_min) reg_min = value;
                         if (reg_max == 0 || value > reg_max) reg_max = value;
+                        reg_tot += regen;
                     }
                     line.slots[slot] = {
                         kind: 'building',
@@ -408,8 +430,10 @@ var guiTabs = (function(self) {
             reg_max: reg_max,
             cap_min: cap_min,
             cap_max: cap_max,
+            reb_base: reg_base,
+            cap_base: cap_base,
             reg_tot: reg_tot,
-            cap_top: cap_top
+            cap_tot: cap_tot
         };
     }
 

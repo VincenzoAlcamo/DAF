@@ -1266,6 +1266,12 @@
             }
         }
     },
+    "camp_day_mode": {
+        "message": "Modalità giorno"
+    },
+    "camp_night_mode": {
+        "message": "Modalità notte"
+    },
     "Top": {
         "message": "Inizio"
     },

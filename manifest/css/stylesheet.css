@@ -1460,6 +1460,16 @@ a.rlLink:hover {
   width: auto;
 }
 
+.camp_caption {
+  margin-bottom: -2px;
+  --size: 20px;
+  width: calc(var(--size) * 49 + 20px);
+}
+
+.camp_caption th {
+  padding: 0px;
+}
+
 .camp {
   --size: 20px;
   width: calc(var(--size) * 49);
