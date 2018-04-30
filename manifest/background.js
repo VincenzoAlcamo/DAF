@@ -94,6 +94,7 @@ var webData = {
     requestForm: null,
     requestHeaders: null,
 };
+var debugTarget;
 var lastVisitedCamp = null;
 
 var xmlRequests = {};
@@ -718,25 +719,31 @@ function onRewardNavigation(info) {
  ** Debugger Detach
  */
 function debuggerAttach(tabId = webData.tabId) {
-    chrome.debugger.attach({
-        tabId: webData.tabId
-    }, '1.0', function() {
-        if (exPrefs.debug) console.log("debugger.attach");
-        if (chrome.runtime.lastError) {
-            errorOnWebRequest('debugger.attach', -1, chrome.runtime.lastError.message);
-            return;
-        }
-        chrome.debugger.onEvent.addListener(debuggerEvent);
-        chrome.debugger.onDetach.addListener(debuggerDetached);
-        chrome.debugger.sendCommand({
+    chrome.debugger.getTargets(function(targets) {
+        debugTarget = {
             tabId: webData.tabId
-        }, "Network.enable", function(result) {
-            if (exPrefs.debug) console.log("debugger.sendCommand: Network.enable");
+        };
+        targets.forEach(function(t) {
+            if (t.url == 'https://diggysadventure.com/miner/') debugTarget = {
+                targetId: t.id
+            };
+        });
+        chrome.debugger.attach(debugTarget, '1.0', function() {
+            if (exPrefs.debug) console.log("debugger.attach");
             if (chrome.runtime.lastError) {
-                errorOnWebRequest('debugger.Network.enable', -1, chrome.runtime.lastError.message);
+                errorOnWebRequest('debugger.attach', -1, chrome.runtime.lastError.message);
                 return;
             }
-            webData.bugId = webData.tabId;
+            chrome.debugger.onEvent.addListener(debuggerEvent);
+            chrome.debugger.onDetach.addListener(debuggerDetached);
+            chrome.debugger.sendCommand(debugTarget, "Network.enable", function(result) {
+                if (exPrefs.debug) console.log("debugger.sendCommand: Network.enable");
+                if (chrome.runtime.lastError) {
+                    errorOnWebRequest('debugger.Network.enable', -1, chrome.runtime.lastError.message);
+                    return;
+                }
+                webData.bugId = webData.tabId;
+            });
         });
     });
 }
@@ -746,9 +753,7 @@ function debuggerAttach(tabId = webData.tabId) {
  */
 function debuggerDetach() {
     if (webData.bugId) {
-        chrome.debugger.detach({
-            tabId: webData.bugId
-        }, function() {
+        chrome.debugger.detach(debugTarget, function() {
             webData.bugId = 0;
             if (exPrefs.debug) console.log("debugger.detach");
             if (chrome.runtime.lastError) {
@@ -827,9 +832,7 @@ function debuggerEvent(bugId, message, params) {
 
         case 'Network.loadingFinished':
             if (debuggerEvent.requestID == params.requestId) {
-                chrome.debugger.sendCommand({
-                        tabId: bugId.tabId
-                    },
+                chrome.debugger.sendCommand(debugTarget,
                     "Network.getResponseBody", {
                         "requestId": params.requestId
                     },
