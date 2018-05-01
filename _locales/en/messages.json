@@ -1697,6 +1697,9 @@
     "possibleAlloys": {
         "message": "Possible Alloys"
     },
+    "timeToCraft": {
+        "message": "Time to Craft"
+    },    
     "totalAnvTime": {
         "message": "Crafting Time\n($ANVILS$ Anvils)",
         "placeholders": {
