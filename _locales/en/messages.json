@@ -1681,5 +1681,28 @@
     },
     "reloadNeeded": {
         "message": "DAF Has been updated and requires you to reload the game to refresh its data cache before you can proceed."
+    },
+    "allAlloys": {
+        "message": "All Alloys"
+    },
+    "allPossibleAlloys": {
+        "message": "All Possible Alloys"
+    },
+    "allPossibleRegionAlloys": {
+        "message": "All Possible Region Alloys"
+    },
+    "allPossibleEventAlloys": {
+        "message": "All Possible Event Alloys"
+    },
+    "possibleAlloys": {
+        "message": "Possible Alloys"
+    },
+    "totalAnvTime": {
+        "message": "Crafting Time\n($ANVILS$ Anvils)",
+        "placeholders": {
+            "anvils": {
+                "content": "$1"
+            }
+        }
     }
 }

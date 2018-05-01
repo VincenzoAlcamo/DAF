@@ -743,7 +743,8 @@
             static_root: null,
             cdn_root: null,
             tutorial_def_id: 1,
-
+            registered_on: null,
+            
             neighbours: null,
             un_gifts: null, // This MUST follow the neighbours
             f_actions: null,

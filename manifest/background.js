@@ -42,6 +42,7 @@ var exPrefs = {
     cFilter: 'ALL',
     fFilter: 'F',
     rFilter: 'ALL',
+    aFilter: 'ALL',
     crownGrid: false,
     capCrowns: true,
     ignoredCrowns: '',

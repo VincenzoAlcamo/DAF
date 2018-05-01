@@ -52,6 +52,7 @@ var guiTabs = (function(self) {
     let tokImg = {
         32: 'materials/g_ring.png',
         168: 'materials/f_worm.png',
+        1444: 'materials/j_key.png',
         1461: 'materials/e_worm.png',
         1642: 'materials/r_ring.png',
         4122: 'materials/leech.png'
