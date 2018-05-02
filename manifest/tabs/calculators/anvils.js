@@ -58,9 +58,9 @@ var guiTabs = (function(self) {
             return false;
         }
 
-        console.log(bgp.daGame.daProduce);
-        console.log(bgp.daGame.daUser.anvils);
-        console.log(bgp.daGame.daUser.alloys);
+        //console.log(bgp.daGame.daProduce);
+        //console.log(bgp.daGame.daUser.anvils);
+        //console.log(bgp.daGame.daUser.alloys);
 
         tbody.innerHTML = '';
 
@@ -93,24 +93,27 @@ var guiTabs = (function(self) {
             return u2 - u1;
         }).forEach(function(did, i, a) {
             var o = bgp.daGame.daProduce[did];
+            var ulk = bgp.daGame.daUser.alloys.indexOf(did) != -1;
             var show = true;
+
+            if (!ulk)
+                o.ulk = '0';    // Locked status seems to be messed up!
 
             if (o.rql > level || o.rid > region)
                 show = false;
 
             if ((show) && bgp.exPrefs.aFilter != 'ALL') {
-                //if (o.ulk == '0') {
+                if (o.ulk == '0') {
                     if (bgp.exPrefs.aFilter == 'PRD' && o.eid != 0)
                         show = false;
                     if (bgp.exPrefs.aFilter == 'PED' && o.eid == 0)
                         show = false;
-                //} else
-                    //show = false;
+                } else
+                    show = false;
             }
 
             if (did != 0 && o.typ == 'alloy' && o.hde == 0 && show /*&& o.eid == 0*/ ) {
                 var name = bgp.daGame.string(o.nid),
-                    lock = 0,   //bgp.daGame.daUser.pot_recipes.indexOf(did) == -1,
                     rspan = o.req.length,
                     anvTime = 0,
                     energy = 0,
@@ -119,7 +122,7 @@ var guiTabs = (function(self) {
                     anvImg = '',
                     html = [];
                 
-                console.log(did, name, rspan, lock, o);
+                console.log(did, name, rspan, ulk, o);
 
                 if (bgp.daGame.daUsables.hasOwnProperty(o.cgo.oid)) {
                     if (o.eid != 0) {
@@ -129,7 +132,6 @@ var guiTabs = (function(self) {
                             '/>';
                     } else
                         anvImg = self.objectImage(o.cgo.typ, o.cgo.oid, 32);
-                    console.log(anvImg);
                 }
   
                 html.push('<tr>');
@@ -152,7 +154,9 @@ var guiTabs = (function(self) {
 
                     anvTime = o.drn * Math.floor((maxPossible + anvils - 1) / anvils);
 
-                    html.push('<td class="right" rowspan="', rspan, '">', numberWithCommas(maxPossible), '</td>');
+                    var avg = (intOrDefault(o.cgo.min) + intOrDefault(o.cgo.max)) / 2;
+
+                    html.push('<td class="right" rowspan="', rspan, '">', numberWithCommas(Math.floor(avg * maxPossible)), '</td>');
                     html.push('<td class="right" rowspan="', rspan, '" sorttable_customkey="', anvTime, '">', self.duration(anvTime), '</td>');
 
                     if (bgp.exPrefs.aFilter != 'ALL' && !maxPossible)

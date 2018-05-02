@@ -137,6 +137,7 @@ tr.high-level td {
 }
 
 .crowns tbody tr td,
+.anvils tbody tr td,
 .recipes tbody tr td {
     background: #E4D2D2;
 }
