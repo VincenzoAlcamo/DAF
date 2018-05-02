@@ -1689,10 +1689,10 @@
         "message": "All Possible Alloys"
     },
     "allPossibleRegionAlloys": {
-        "message": "All Possible Region Alloys"
+        "message": "Possible Region Alloys"
     },
     "allPossibleEventAlloys": {
-        "message": "All Possible Event Alloys"
+        "message": "Possible Event Alloys"
     },
     "possibleAlloys": {
         "message": "Possible Alloys"
