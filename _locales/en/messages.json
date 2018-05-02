@@ -1707,5 +1707,8 @@
                 "content": "$1"
             }
         }
+    },
+    "craftedAnvil": {
+        "message": "Crafted per Anvil"
     }
 }

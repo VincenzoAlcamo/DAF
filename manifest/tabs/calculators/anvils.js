@@ -120,9 +120,10 @@ var guiTabs = (function(self) {
                     gold = 0,
                     energyHour = 0,
                     anvImg = '',
-                    html = [];
+                    html = [],
+                    avg = (intOrDefault(o.cgo.min) + intOrDefault(o.cgo.max)) / 2;
                 
-                console.log(did, name, rspan, ulk, o);
+                //console.log(did, name, rspan, ulk, o);
 
                 if (bgp.daGame.daUsables.hasOwnProperty(o.cgo.oid)) {
                     if (o.eid != 0) {
@@ -140,6 +141,7 @@ var guiTabs = (function(self) {
                 html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.rid, '">', self.regionImage(o.rid, true), '</td>');
                 html.push('<td rowspan="', rspan, '">', numberWithCommas(o.rql), '</td>');
                 html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.drn, '">', self.duration(o.drn), '</td>');
+                html.push('<td rowspan="', rspan, '">', numberWithCommas(avg), '</td>');
 
                 if (rspan > 0) {
                     ingredient(o.req[0].mid, o.req[0].amt, html);
@@ -154,7 +156,6 @@ var guiTabs = (function(self) {
 
                     anvTime = o.drn * Math.floor((maxPossible + anvils - 1) / anvils);
 
-                    var avg = (intOrDefault(o.cgo.min) + intOrDefault(o.cgo.max)) / 2;
 
                     html.push('<td class="right" rowspan="', rspan, '">', numberWithCommas(Math.floor(avg * maxPossible)), '</td>');
                     html.push('<td class="right" rowspan="', rspan, '" sorttable_customkey="', anvTime, '">', self.duration(anvTime), '</td>');

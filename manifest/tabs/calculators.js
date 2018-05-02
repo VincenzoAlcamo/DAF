@@ -6,7 +6,7 @@ var guiTabs = (function(self) {
         progress: true,
         camp: true,
         kitchen: true,
-        anvils: false,
+        anvils: true,
         crowns: true,
         cmines: true,
         g_ring: true,
