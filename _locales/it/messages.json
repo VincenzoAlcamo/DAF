@@ -1675,5 +1675,34 @@
     },
     "reloadNeeded": {
         "message": "DAF è stato aggiornato e ha bisogno che tu ricarichi il gioco prima di poter procedere (al fine di rinfrescare i dati nella cache)."
+    },
+    "allAlloys": {
+        "message": "Tutte le leghe"
+    },
+    "allPossibleAlloys": {
+        "message": "Tutte le leghe possibili"
+    },
+    "allPossibleRegionAlloys": {
+        "message": "Leghe possibili regionali"
+    },
+    "allPossibleEventAlloys": {
+        "message": "Leghe possibili da eventi"
+    },
+    "possibleAlloys": {
+        "message": "Leghe possibili"
+    },
+    "timeToCraft": {
+        "message": "Tempo di creazione"
+    },
+    "totalAnvTime": {
+        "message": "Tempo di creazione\n($ANVILS$ incudini)",
+        "placeholders": {
+            "anvils": {
+                "content": "$1"
+            }
+        }
+    },
+    "craftedAnvil": {
+        "message": "Creata per incudine"
     }
 }
