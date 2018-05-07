@@ -220,7 +220,7 @@ var guiTabs = (function(self) {
             flagModified = false,
             i, row2;
 
-        if (el.tagName == 'TD' && el.cellIndex == 2 && ifTable.classList.contains('f-matching') && matchingUid && friend && friend.score <= 0) {
+        if (el.tagName == 'TD' && el.cellIndex == 3 && ifTable.classList.contains('f-matching') && matchingUid && friend && friend.score <= 0) {
             // MANUAL MATCH
             pal = getNeighbour(matchingUid);
             row2 = document.getElementById('nb-' + pal.uid);
