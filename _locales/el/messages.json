@@ -1266,6 +1266,12 @@
             }
         }
     },
+    "camp_day_mode": {
+        "message": "Πρωί"
+    },
+    "camp_night_mode": {
+        "message": "Βράδυ"
+    },
     "Top": {
         "message": "Κορυφή"
     },
@@ -1669,5 +1675,34 @@
     },
     "reloadNeeded": {
         "message": "Το DAF ενημερώθηκε. Πριν συνεχίσετε πρέπει να επαναφορτώσετε το παιχνίδι για ανανέωση των αποθηκευμένων δεδομένων."
+    },
+    "allAlloys": {
+        "message": "Όλα τα Κράματα"
+    },
+    "allPossibleAlloys": {
+        "message": "Όλα τα Πιθανά Κράματα"
+    },
+    "allPossibleRegionAlloys": {
+        "message": "Πιθανά Κράματα Περιοχής"
+    },
+    "allPossibleEventAlloys": {
+        "message": "Πιθανά Κράματα Αποστολών"
+    },
+    "possibleAlloys": {
+        "message": "Πιθανά Κράματα"
+    },
+    "timeToCraft": {
+        "message": "Χρόνος για τη Χειροτεχνία"
+    },
+    "totalAnvTime": {
+        "message": "Χρόνος Χειροτεχνίας\n($ANVIL$ Αμόνια)",
+        "placeholders": {
+            "anvils": {
+                "content": "$1"
+            }
+        }
+    },
+    "craftedAnvil": {
+        "message": "Χειροτεχνίες ανά Αμόνια"
     }
 }
