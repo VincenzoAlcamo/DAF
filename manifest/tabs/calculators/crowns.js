@@ -2,385 +2,496 @@
  ** DA Friends Calculator - crowns.js
  */
 var guiTabs = (function(self) {
+    // Pillars
     var daCrowns = [{
-            decoration_id: 539,
-            name: "Stony Crown",
-            name_loc: "DENA154",
-            xp: 295000,
-            sell_price: 2950,
-            material_id: 22,
-            material_cost: 15000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/539.png"
-        },
-        {
-            decoration_id: 540,
-            name: "Apple Crown",
-            name_loc: "DENA360",
-            xp: 95000,
-            sell_price: 950,
-            material_id: 20,
-            material_cost: 10000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/540.png"
-        },
-        {
-            decoration_id: 553,
-            name: "Berry Crown",
-            name_loc: "DENA362",
-            xp: 92000,
-            sell_price: 920,
-            material_id: 29,
-            material_cost: 10000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/553.png"
-        },
-        {
-            decoration_id: 552,
-            name: "Wooden Crown",
-            name_loc: "DENA361",
-            xp: 255000,
-            sell_price: 2550,
-            material_id: 7,
-            material_cost: 15000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/552.png"
-        },
-        {
-            decoration_id: 559,
-            name: "Copper Crown",
-            name_loc: "DENA368",
-            xp: 287000,
-            sell_price: 2870,
-            material_id: 3,
-            material_cost: 8000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/559.png"
-        },
-        {
-            decoration_id: 560,
-            name: "Tin Crown",
-            name_loc: "DENA369",
-            xp: 405000,
-            sell_price: 4050,
-            material_id: 6,
-            material_cost: 5000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/560.png"
-        },
-        {
-            decoration_id: 563,
-            name: "Golden Crown",
-            name_loc: "DENA371",
-            xp: 1000000,
-            sell_price: 10000,
-            material_id: 1,
-            material_cost: 1000000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/563.png"
-        },
-        {
-            decoration_id: 564,
-            name: "Iron Crown",
-            name_loc: "DENA372",
-            xp: 1721500,
-            sell_price: 17215,
-            material_id: 8,
-            material_cost: 1200,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/564.png"
-        },
-        {
-            decoration_id: 570,
-            name: "Vegetable Root Crown",
-            name_loc: "DENA377",
-            xp: 153600,
-            sell_price: 1536,
-            material_id: 11,
-            material_cost: 5000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/570.png"
-        },
-        {
-            decoration_id: 571,
-            name: "Mushroom Crown",
-            name_loc: "DENA376",
-            xp: 86000,
-            sell_price: 860,
-            material_id: 19,
-            material_cost: 5000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/571.png"
-        },
-        {
-            decoration_id: 572,
-            name: "Coal Crown",
-            name_loc: "DENA378",
-            xp: 358000,
-            sell_price: 3580,
-            material_id: 9,
-            material_cost: 5000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/572.png"
-        },
-        {
-            decoration_id: 573,
-            name: "Iron Ore Crown",
-            name_loc: "DENA379",
-            xp: 550000,
-            sell_price: 5500,
-            material_id: 33,
-            material_cost: 5000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/573.png"
-        },
-        {
-            decoration_id: 577,
-            name: "Herb Crown",
-            name_loc: "DENA381",
-            xp: 142800,
-            sell_price: 1428,
-            material_id: 21,
-            material_cost: 5000,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/577.png"
-        },
-        {
-            decoration_id: 578,
-            name: "Amethyst Crown",
-            name_loc: "DENA382",
-            xp: 2375000,
-            sell_price: 23750,
-            material_id: 47,
-            material_cost: 300,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/578.png"
-        },
-        {
-            decoration_id: 579,
-            name: "Bronze Crown",
-            name_loc: "DENA383",
-            xp: 1485000,
-            sell_price: 14850,
-            material_id: 32,
-            material_cost: 1500,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/579.png"
-        },
-        {
-            decoration_id: 654,
-            name: "Fish Crown",
-            name_loc: "DENA420",
-            xp: 75000,
-            sell_price: 750,
-            material_id: 35,
-            material_cost: 500,
-            cart_id: 0,
-            level: 110,
-            img: "/img/crowns/654.png"
-        },
+        // Greece
+        decoration_id: 904,
+        name: "Octopus",
+        name_loc: "DENA539",
+        xp: 2500000,
+        sell_price: 16000,
+        material_id: 196,
+        material_cost: 500,
+        cart_id: 0,
+        level: 200,
+        img: "/img/pillars/904.png"
+    },
+    {
+        decoration_id: 903,
+        name: "Lemon",
+        name_loc: "DENA538",
+        xp: 4150000,
+        sell_price: 26000,
+        material_id: 195,
+        material_cost: 2500,
+        cart_id: 0,
+        level: 200,
+        img: "/img/pillars/903.png"        
+    },
+    {
+        decoration_id: 902,
+        name: "Olives",
+        name_loc: "DENA537",
+        xp: 3750000,
+        sell_price: 23000,
+        material_id: 194,
+        material_cost: 5000,
+        cart_id: 0,
+        level: 200,
+        img: "/img/pillars/902.png"        
+    },
+    {
+        decoration_id: 901,
+        name: "Sapphire",
+        name_loc: "DENA536",
+        xp: 63000000,
+        sell_price: 394000,
+        material_id: 197,
+        material_cost: 350,
+        cart_id: 0,
+        level: 200,
+        img: "/img/pillars/901.png"        
+    },
+    {
+        decoration_id: 900,
+        name: "Adamantine Steel",
+        name_loc: "DENA535",
+        xp: 55000000,
+        sell_price: 313000,
+        material_id: 199,
+        material_cost: 1000,
+        cart_id: 0,
+        level: 200,
+        img: "/img/pillars/900.png"        
+    },
+    {
+        decoration_id: 899,
+        name: "Adamantine Ore",
+        name_loc: "DENA534",
+        xp: 10300000,
+        sell_price: 64000,
+        material_id: 198,
+        material_cost: 2000,
+        cart_id: 0,
+        level: 200,
+        img: "/img/pillars/899.png"        
+    },
+    {
+        decoration_id: 898,
+        name: "Cedar Wood",
+        name_loc: "DENA533",
+        xp: 11400000,
+        sell_price: 71000,
+        material_id: 193,
+        material_cost: 4000,
+        cart_id: 0,
+        level: 200,
+        img: "/img/pillars/898.png"        
+    },
 
-        // Chinese Materials
-        {
-            decoration_id: 600,
-            name: "Ruby Crown",
-            name_loc: "DENA389",
-            xp: 10000000,
-            sell_price: 100000,
-            material_id: 92,
-            material_cost: 200,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/600.png"
-        },
-        {
-            decoration_id: 616,
-            name: "Bamboo Crown",
-            name_loc: "DENA399",
-            xp: 838000,
-            sell_price: 8380,
-            material_id: 94,
-            material_cost: 5000,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/616.png"
-        },
-        {
-            decoration_id: 617,
-            name: "Scrap Metal Crown",
-            name_loc: "DENA400",
-            xp: 1275000,
-            sell_price: 12750,
-            material_id: 95,
-            material_cost: 1300,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/617.png"
-        },
-        {
-            decoration_id: 630,
-            name: "Dragon Ingot Crown",
-            name_loc: "DENA407",
-            xp: 3210000,
-            sell_price: 32100,
-            material_id: 96,
-            material_cost: 250,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/630.png"
-        },
-        {
-            decoration_id: 631,
-            name: "Rice Crown",
-            name_loc: "DENA408",
-            xp: 582000,
-            sell_price: 5820,
-            material_id: 91,
-            material_cost: 10000,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/631.png"
-        },
-        {
-            decoration_id: 644,
-            name: "Shale Crown",
-            name_loc: "DENA413",
-            xp: 890000,
-            sell_price: 8900,
-            material_id: 99,
-            material_cost: 1500,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/644.png"
-        },
-        {
-            decoration_id: 645,
-            name: "Shiitake Crown",
-            name_loc: "DENA414",
-            xp: 245700,
-            sell_price: 2457,
-            material_id: 97,
-            material_cost: 500,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/645.png"
-        },
-        {
-            decoration_id: 655,
-            name: "Eel Crown",
-            name_loc: "DENA421",
-            xp: 475000,
-            sell_price: 4750,
-            material_id: 98,
-            material_cost: 500,
-            cart_id: 0,
-            level: 150,
-            img: "/img/crowns/655.png"
-        },
+    // Atlantis
+    {
+        decoration_id: 897,
+        name: "Seaweed",
+        name_loc: "DENA532",
+        xp: 6000000,
+        sell_price: 40000,
+        material_id: 144,
+        material_cost: 5000,
+        cart_id: 0,
+        level: 175,
+        img: "/img/pillars/897.png"        
+    },
+    {
+        decoration_id: 896,
+        name: "Lobster",
+        name_loc: "DENA531",
+        xp: 7000000,
+        sell_price: 46000,
+        material_id: 146,
+        material_cost: 2500,
+        cart_id: 0,
+        level: 175,
+        img: "/img/pillars/896.png"        
+    },
+    {
+        decoration_id: 895,
+        name: "Marble",
+        name_loc: "DENA530",
+        xp: 7200000,
+        sell_price: 48000,
+        material_id: 145,
+        material_cost: 4000,
+        cart_id: 0,
+        level: 175,
+        img: "/img/pillars/895.png"        
+    },
+    {
+        decoration_id: 894,
+        name: "Volcanic Ore",
+        name_loc: "DENA529",
+        xp: 7000000,
+        sell_price: 46000,
+        material_id: 147,
+        material_cost: 2000,
+        cart_id: 0,
+        level: 175,
+        img: "/img/pillars/894.png"        
+    },
+    {
+        decoration_id: 893,
+        name: "Orichalcum",
+        name_loc: "DENA528",
+        xp: 25000000,
+        sell_price: 166000,
+        material_id: 148,
+        material_cost: 1000,
+        cart_id: 0,
+        level: 175,
+        img: "/img/pillars/893.png"        
+    },
+    {
+        decoration_id: 892,
+        name: "Black Pearl",
+        name_loc: "DENA527",
+        xp: 42000000,
+        sell_price: 278000,
+        material_id: 149,
+        material_cost: 350,
+        cart_id: 0,
+        level: 175,
+        img: "/img/pillars/892.png"        
+    },
+    {
+        decoration_id: 891,
+        name: "Topaz",
+        name_loc: "DENA526",
+        xp: 52500000,
+        sell_price: 348000,
+        material_id: 143,
+        material_cost: 350,
+        cart_id: 0,
+        level: 175,
+        img: "/img/pillars/891.png"        
+    },
 
-        // Atlantean Materials
-        {
-            decoration_id: 667,
-            img: "/img/crowns/667.png",
-            name: "Orichalum Crown",
-            name_loc: "DENA424",
-            xp: 12500000,
-            sell_price: 50000,
-            material_id: 148,
-            material_cost: 500,
-            cart_id: 0,
-            level: 200
-        },
-        {
-            decoration_id: 668,
-            img: "/img/crowns/668.png",
-            name: "Topaz Crown",
-            name_loc: "DENA425",
-            xp: 30000000,
-            sell_price: 125000,
-            material_id: 143,
-            material_cost: 200,
-            cart_id: 0,
-            level: 200
-        },
-        {
-            decoration_id: 669,
-            img: "/img/crowns/669.png",
-            name: "Black Pearl Crown",
-            name_loc: "DENA426",
-            xp: 3000000,
-            sell_price: 110000,
-            material_id: 149,
-            material_cost: 100,
-            cart_id: 0,
-            level: 200
-        },
-        {
-            decoration_id: 670,
-            img: "/img/crowns/670.png",
-            name: "Marble Crown",
-            name_loc: "DENA427",
-            xp: 1500000,
-            sell_price: 15000,
-            material_id: 145,
-            material_cost: 1250,
-            cart_id: 0,
-            level: 200
-        },
-        {
-            decoration_id: 671,
-            img: "/img/crowns/671.png",
-            name: "Volcanic Ore Crown",
-            name_loc: "DENA428",
-            xp: 2500000,
-            sell_price: 15000,
-            material_id: 147,
-            material_cost: 1250,
-            cart_id: 0,
-            level: 200
-        },
-        {
-            decoration_id: 693,
-            img: "/img/crowns/693.png",
-            name: "Lobster Crown",
-            name_loc: "DENA438",
-            xp: 575000,
-            sell_price: 5750,
-            material_id: 146,
-            material_cost: 500,
-            cart_id: 0,
-            level: 200
-        },
-        {
-            decoration_id: 694,
-            img: "/img/crowns/694.png",
-            name: "Seaweed Crown",
-            name_loc: "DENA439",
-            xp: 1000000,
-            sell_price: 10000,
-            material_id: 144,
-            material_cost: 2500,
-            cart_id: 0,
-            level: 200
-        },
+    // China
+    {
+        decoration_id: 890,
+        name: "Rice",
+        name_loc: "DENA525",
+        xp: 400000,
+        sell_price: 2900,
+        material_id: 91,
+        material_cost: 5000,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/890.png"        
+    },
+    {
+        decoration_id: 889,
+        name: "Shitake",
+        name_loc: "DENA524",
+        xp: 1250000,
+        sell_price: 8900,
+        material_id: 97,
+        material_cost: 2500,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/889.png"        
+    },
+    {
+        decoration_id: 888,
+        name: "Eel",
+        name_loc: "DENA523",
+        xp: 800000,
+        sell_price: 5700,
+        material_id: 98,
+        material_cost: 500,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/888.png"        
+    },
+    {
+        decoration_id: 887,
+        name: "Bamboo",
+        name_loc: "DENA522",
+        xp: 2720000,
+        sell_price: 19000,
+        material_id: 94,
+        material_cost: 4000,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/887.png"        
+    },
+    {
+        decoration_id: 886,
+        name: "Shale",
+        name_loc: "DENA521",
+        xp: 2840000,
+        sell_price: 20000,
+        material_id: 99,
+        material_cost: 4000,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/886.png"        
+    },
+    {
+        decoration_id: 885,
+        name: "Scrap Metal",
+        name_loc: "DENA520",
+        xp: 4200000,
+        sell_price: 30000,
+        material_id: 95,
+        material_cost: 2000,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/885.png"        
+    },
+    {
+        decoration_id: 884,
+        name: "Dragon Ingot",
+        name_loc: "DENA519",
+        xp: 16500000,
+        sell_price: 118000,
+        material_id: 96,
+        material_cost: 1000,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/884.png"        
+    },
+    {
+        decoration_id: 883,
+        name: "Ruby",
+        name_loc: "DENA518",
+        xp: 35000000,
+        sell_price: 250000,
+        material_id: 92,
+        material_cost: 350,
+        cart_id: 0,
+        level: 150,
+        img: "/img/pillars/883.png"        
+    },
 
-        // Greek Materials
-    ];
+    // Scandi
+    {
+        decoration_id: 882,
+        name: "Amethyst",
+        name_loc: "DENA517",
+        xp: 14000000,
+        sell_price: 113000,
+        material_id: 47,
+        material_cost: 350,
+        cart_id: 0,
+        level: 125,
+        img: "/img/pillars/882.png"        
+    },
+    {
+        decoration_id: 881,
+        name: "Dill",
+        name_loc: "DENA516",
+        xp: 850000,
+        sell_price: 6900,
+        material_id: 181,
+        material_cost: 5000,
+        cart_id: 0,
+        level: 125,
+        img: "/img/pillars/881.png"        
+    },
+    {
+        decoration_id: 880,
+        name: "Cod",
+        name_loc: "DENA515",
+        xp: 450000,
+        sell_price: 3600,
+        material_id: 182,
+        material_cost: 500,
+        cart_id: 0,
+        level: 125,
+        img: "/img/pillars/880.png"        
+    },
+
+    // Egypt
+    {
+        decoration_id: 879,
+        name: "Iron Ore",
+        name_loc: "DENA514",
+        xp: 380000,
+        sell_price: 3800,
+        material_id: 33,
+        material_cost: 2000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/879.png"        
+    },
+    {
+        decoration_id: 878,
+        name: "Iron",
+        name_loc: "DENA513",
+        xp: 1450000,
+        sell_price: 15000,
+        material_id: 8,
+        material_cost: 1000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/878.png"        
+    },
+    {
+        decoration_id: 877,
+        name: "Bronze",
+        name_loc: "DENA512",
+        xp: 1000000,
+        sell_price: 10000,
+        material_id: 32,
+        material_cost: 1000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/877.png"        
+    },
+    {
+        decoration_id: 876,
+        name: "Tin",
+        name_loc: "DENA511",
+        xp: 300000,
+        sell_price: 3000,
+        material_id: 6,
+        material_cost: 2000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/876.png"        
+    },
+    {
+        decoration_id: 875,
+        name: "Copper",
+        name_loc: "DENA510",
+        xp: 120000,
+        sell_price: 1200,
+        material_id: 3,
+        material_cost: 2000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/875.png"        
+    },
+    {
+        decoration_id: 874,
+        name: "Mushroom",
+        name_loc: "DENA509",
+        xp: 150000,
+        sell_price: 1500,
+        material_id: 19,
+        material_cost: 5000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/874.png"        
+    },
+    {
+        decoration_id: 873,
+        name: "Berry",
+        name_loc: "DENA508",
+        xp: 100000,
+        sell_price: 1000,
+        material_id: 29,
+        material_cost: 5000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/873.png"        
+    },
+    {
+        decoration_id: 872,
+        name: "Wood",
+        name_loc: "DENA507",
+        xp: 120000,
+        sell_price: 1200,
+        material_id: 7,
+        material_cost: 4000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/872.png"        
+    },
+    {
+        decoration_id: 871,
+        name: "Fish",
+        name_loc: "DENA506",
+        xp: 130000,
+        sell_price: 1300,
+        material_id: 35,
+        material_cost: 500,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/871.png"        
+    },
+    {
+        decoration_id: 870,
+        name: "Apples",
+        name_loc: "DENA505",
+        xp: 100000,
+        sell_price: 1000,
+        material_id: 20,
+        material_cost: 5000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/870.png"        
+    },
+    {
+        decoration_id: 869,
+        name: "Root",
+        name_loc: "DENA504",
+        xp: 150000,
+        sell_price: 1500,
+        material_id: 11,
+        material_cost: 2500,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/869.png"        
+    },
+    {
+        decoration_id: 868,
+        name: "Stone",
+        name_loc: "DENA503",
+        xp: 200000,
+        sell_price: 2000,
+        material_id: 11,
+        material_cost: 4000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/868.png"        
+    },
+    {
+        decoration_id: 867,
+        name: "Coin",
+        name_loc: "DENA502",
+        xp: 1000000,
+        sell_price: 10000,
+        material_id: 1,
+        material_cost: 1000000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/867.png"        
+    },
+    {
+        decoration_id: 866,
+        name: "Herb",
+        name_loc: "DENA501",
+        xp: 150000,
+        sell_price: 1500,
+        material_id: 21,
+        material_cost: 2500,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/866.png"        
+    },
+    {
+        decoration_id: 865,
+        name: "Coal",
+        name_loc: "DENA500",
+        xp: 300000,
+        sell_price: 3000,
+        material_id: 9,
+        material_cost: 4000,
+        cart_id: 0,
+        level: 100,
+        img: "/img/pillars/865.png"        
+    }];
 
     var ccTable, tbody, tgrid, tabID, cappd;
 
@@ -437,7 +548,7 @@ var guiTabs = (function(self) {
 
     function toggleIgnore(did) {
         did = String(did);
-        var input = ccTable.querySelector('input[id="' + did  + '"]');
+        var input = ccTable.querySelector('input[id="' + did + '"]');
         if (!input) return;
         var cell = input.parentNode,
             row = cell.parentNode,
@@ -623,6 +734,7 @@ var guiTabs = (function(self) {
         });
 
         predictCrowns(tot_crowns, tot_use, tot_xp, tot_coin, true);
+
         if (bgp.exPrefs.crownGrid) {
             while ((ry) && cx < mgc) {
                 var cell0 = ry.insertCell();
@@ -762,8 +874,8 @@ var guiTabs = (function(self) {
      ** Define this tab's details
      */
     self.tabs.Calculators.menu.crowns = {
-        title: 'Crowns',
-        image: 'crowns.png',
+        title: 'Pillars',
+        image: 'pillars.png',
         html: true,
         onInit: onInit,
         onUpdate: onUpdate

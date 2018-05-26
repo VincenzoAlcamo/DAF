@@ -79,9 +79,9 @@
         "message": "Click here to get help."
     },
     "ccStats": {
-        "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
+        "message": "Max Possible: $QTY$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
         "placeholders": {
-            "crowns": {
+            "qty": {
                 "content": "$1"
             },
             "xp": {
@@ -252,19 +252,19 @@
         "message": "Level\nRequired"
     },
     "allCrowns": {
-        "message": "All Crowns"
+        "message": "All"
     },
     "possibleCrownsOnly": {
-        "message": "Possible Crowns Only"
+        "message": "Possible Only"
     },
     "pNextCrown": {
-        "message": "%\nNext Crown"
+        "message": "%\nNext"
     },
     "possibleCrowns": {
-        "message": "Possible\nCrowns"
+        "message": "Possible"
     },
     "predictedCrowns": {
-        "message": "Predicted\nCrowns"
+        "message": "Predicted\nQty"
     },
     "predictedGain": {
         "message": "Predicted\nXP Gain"
@@ -317,7 +317,7 @@
     },
     "Crowns": {
         "message": "Crowns"
-    },
+    },    
     "Days": {
         "message": "$DAYS$ Days",
         "placeholders": {
@@ -1710,5 +1710,8 @@
     },
     "craftedAnvil": {
         "message": "Crafted per Anvil"
+    },
+    "Pillars": {
+        "message": "Pillars"
     }
 }
