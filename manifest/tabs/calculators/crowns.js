@@ -14,7 +14,7 @@ var guiTabs = (function(self) {
         material_cost: 500,
         cart_id: 0,
         level: 200,
-        img: "/img/pillars/904.png"
+        region: 5
     },
     {
         decoration_id: 903,
@@ -26,7 +26,7 @@ var guiTabs = (function(self) {
         material_cost: 2500,
         cart_id: 0,
         level: 200,
-        img: "/img/pillars/903.png"        
+        region: 5
     },
     {
         decoration_id: 902,
@@ -38,7 +38,7 @@ var guiTabs = (function(self) {
         material_cost: 5000,
         cart_id: 0,
         level: 200,
-        img: "/img/pillars/902.png"        
+        region: 5
     },
     {
         decoration_id: 901,
@@ -50,7 +50,7 @@ var guiTabs = (function(self) {
         material_cost: 350,
         cart_id: 0,
         level: 200,
-        img: "/img/pillars/901.png"        
+        region: 5
     },
     {
         decoration_id: 900,
@@ -62,7 +62,7 @@ var guiTabs = (function(self) {
         material_cost: 1000,
         cart_id: 0,
         level: 200,
-        img: "/img/pillars/900.png"        
+        region: 5
     },
     {
         decoration_id: 899,
@@ -74,7 +74,7 @@ var guiTabs = (function(self) {
         material_cost: 2000,
         cart_id: 0,
         level: 200,
-        img: "/img/pillars/899.png"        
+        region: 5
     },
     {
         decoration_id: 898,
@@ -86,7 +86,7 @@ var guiTabs = (function(self) {
         material_cost: 4000,
         cart_id: 0,
         level: 200,
-        img: "/img/pillars/898.png"        
+        region: 5
     },
 
     // Atlantis
@@ -100,7 +100,7 @@ var guiTabs = (function(self) {
         material_cost: 5000,
         cart_id: 0,
         level: 175,
-        img: "/img/pillars/897.png"        
+        region: 4
     },
     {
         decoration_id: 896,
@@ -112,7 +112,7 @@ var guiTabs = (function(self) {
         material_cost: 2500,
         cart_id: 0,
         level: 175,
-        img: "/img/pillars/896.png"        
+        region: 4
     },
     {
         decoration_id: 895,
@@ -124,7 +124,7 @@ var guiTabs = (function(self) {
         material_cost: 4000,
         cart_id: 0,
         level: 175,
-        img: "/img/pillars/895.png"        
+        region: 4
     },
     {
         decoration_id: 894,
@@ -136,7 +136,7 @@ var guiTabs = (function(self) {
         material_cost: 2000,
         cart_id: 0,
         level: 175,
-        img: "/img/pillars/894.png"        
+        region: 4
     },
     {
         decoration_id: 893,
@@ -148,7 +148,7 @@ var guiTabs = (function(self) {
         material_cost: 1000,
         cart_id: 0,
         level: 175,
-        img: "/img/pillars/893.png"        
+        region: 4
     },
     {
         decoration_id: 892,
@@ -160,7 +160,7 @@ var guiTabs = (function(self) {
         material_cost: 350,
         cart_id: 0,
         level: 175,
-        img: "/img/pillars/892.png"        
+        region: 4
     },
     {
         decoration_id: 891,
@@ -172,7 +172,7 @@ var guiTabs = (function(self) {
         material_cost: 350,
         cart_id: 0,
         level: 175,
-        img: "/img/pillars/891.png"        
+        region: 4
     },
 
     // China
@@ -186,7 +186,7 @@ var guiTabs = (function(self) {
         material_cost: 5000,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/890.png"        
+        region: 3
     },
     {
         decoration_id: 889,
@@ -198,7 +198,7 @@ var guiTabs = (function(self) {
         material_cost: 2500,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/889.png"        
+        region: 3
     },
     {
         decoration_id: 888,
@@ -210,7 +210,7 @@ var guiTabs = (function(self) {
         material_cost: 500,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/888.png"        
+        region: 3
     },
     {
         decoration_id: 887,
@@ -222,7 +222,7 @@ var guiTabs = (function(self) {
         material_cost: 4000,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/887.png"        
+        region: 3
     },
     {
         decoration_id: 886,
@@ -234,7 +234,7 @@ var guiTabs = (function(self) {
         material_cost: 4000,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/886.png"        
+        region: 3
     },
     {
         decoration_id: 885,
@@ -246,7 +246,7 @@ var guiTabs = (function(self) {
         material_cost: 2000,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/885.png"        
+        region: 3
     },
     {
         decoration_id: 884,
@@ -258,7 +258,7 @@ var guiTabs = (function(self) {
         material_cost: 1000,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/884.png"        
+        region: 3
     },
     {
         decoration_id: 883,
@@ -270,7 +270,7 @@ var guiTabs = (function(self) {
         material_cost: 350,
         cart_id: 0,
         level: 150,
-        img: "/img/pillars/883.png"        
+        region: 3
     },
 
     // Scandi
@@ -284,7 +284,7 @@ var guiTabs = (function(self) {
         material_cost: 350,
         cart_id: 0,
         level: 125,
-        img: "/img/pillars/882.png"        
+        region: 2
     },
     {
         decoration_id: 881,
@@ -296,7 +296,7 @@ var guiTabs = (function(self) {
         material_cost: 5000,
         cart_id: 0,
         level: 125,
-        img: "/img/pillars/881.png"        
+        region: 2
     },
     {
         decoration_id: 880,
@@ -308,7 +308,7 @@ var guiTabs = (function(self) {
         material_cost: 500,
         cart_id: 0,
         level: 125,
-        img: "/img/pillars/880.png"        
+        region: 2
     },
 
     // Egypt
@@ -322,7 +322,7 @@ var guiTabs = (function(self) {
         material_cost: 2000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/879.png"        
+        region: 1
     },
     {
         decoration_id: 878,
@@ -334,7 +334,7 @@ var guiTabs = (function(self) {
         material_cost: 1000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/878.png"        
+        region: 1
     },
     {
         decoration_id: 877,
@@ -346,7 +346,7 @@ var guiTabs = (function(self) {
         material_cost: 1000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/877.png"        
+        region: 1
     },
     {
         decoration_id: 876,
@@ -358,7 +358,7 @@ var guiTabs = (function(self) {
         material_cost: 2000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/876.png"        
+        region: 1
     },
     {
         decoration_id: 875,
@@ -370,7 +370,7 @@ var guiTabs = (function(self) {
         material_cost: 2000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/875.png"        
+        region: 1
     },
     {
         decoration_id: 874,
@@ -382,7 +382,7 @@ var guiTabs = (function(self) {
         material_cost: 5000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/874.png"        
+        region: 1
     },
     {
         decoration_id: 873,
@@ -394,7 +394,7 @@ var guiTabs = (function(self) {
         material_cost: 5000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/873.png"        
+        region: 1
     },
     {
         decoration_id: 872,
@@ -406,7 +406,7 @@ var guiTabs = (function(self) {
         material_cost: 4000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/872.png"        
+        region: 1
     },
     {
         decoration_id: 871,
@@ -418,7 +418,7 @@ var guiTabs = (function(self) {
         material_cost: 500,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/871.png"        
+        region: 1
     },
     {
         decoration_id: 870,
@@ -430,7 +430,7 @@ var guiTabs = (function(self) {
         material_cost: 5000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/870.png"        
+        region: 1
     },
     {
         decoration_id: 869,
@@ -442,7 +442,7 @@ var guiTabs = (function(self) {
         material_cost: 2500,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/869.png"        
+        region: 1
     },
     {
         decoration_id: 868,
@@ -450,11 +450,11 @@ var guiTabs = (function(self) {
         name_loc: "DENA503",
         xp: 200000,
         sell_price: 2000,
-        material_id: 11,
+        material_id: 22,
         material_cost: 4000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/868.png"        
+        region: 1
     },
     {
         decoration_id: 867,
@@ -466,7 +466,7 @@ var guiTabs = (function(self) {
         material_cost: 1000000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/867.png"        
+        region: 1
     },
     {
         decoration_id: 866,
@@ -478,7 +478,7 @@ var guiTabs = (function(self) {
         material_cost: 2500,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/866.png"        
+        region: 1
     },
     {
         decoration_id: 865,
@@ -490,7 +490,7 @@ var guiTabs = (function(self) {
         material_cost: 4000,
         cart_id: 0,
         level: 100,
-        img: "/img/pillars/865.png"        
+        region: 1
     }];
 
     var ccTable, tbody, tgrid, tabID, cappd;
@@ -593,7 +593,8 @@ var guiTabs = (function(self) {
         var tot_xp = 0;
         var tot_use = 0;
         var exp = parseInt(bgp.daGame.daUser.exp);
-        var level = parseInt(bgp.daGame.daUser.level);
+        var region = intOrDefault(bgp.daGame.daUser.region, 1);
+        var level = intOrDefault(bgp.daGame.daUser.level, 1);
 
         tgrid.innerHTML = '';
         tbody.innerHTML = '';
@@ -623,7 +624,8 @@ var guiTabs = (function(self) {
             if (name == daCrowns[k].name_loc)
                 name = daCrowns[k].name;
             var did = daCrowns[k].decoration_id;
-            var cImg = '<img src="' + daCrowns[k].img + '" title="' + name + '&#10;' + guiString('ignoreCrown') + '" style="cursor:pointer" did="' + did + '"/>';
+            var fImg = "/img/pillars/" + did + ".png";
+            var cImg = '<img src="' + fImg + '" title="' + name + '&#10;' + guiString('ignoreCrown') + '" style="cursor:pointer" did="' + did + '"/>';
             var price = parseInt(daCrowns[k].sell_price);
             var mat = parseInt(daCrowns[k].material_cost);
             var xp = parseInt(daCrowns[k].xp);
@@ -639,7 +641,6 @@ var guiTabs = (function(self) {
                 use = Math.min(daCrowns[k].use, bgp.exPrefs.capCrowns ? qty : 999);
             }
             daCrowns[k].use = use;
-
             daCrowns[k].inv = nxt = ((inv - (mat * use)) / mat) * 100;
             daCrowns[k].pxp = pxp = xp * use;
             daCrowns[k].coins = coins = price * use;
@@ -647,7 +648,7 @@ var guiTabs = (function(self) {
             // Grid
             parentInput = null;
             if (bgp.exPrefs.crownGrid) {
-                if (level >= parseInt(daCrowns[k].level)) {
+                if (level >= parseInt(daCrowns[k].level) && region >= parseInt(daCrowns[k].region)) {
                     if ((!ry) || cx == mgc) {
                         ry = tgrid.insertRow();
                         ry.classList.add('grid');
@@ -695,7 +696,7 @@ var guiTabs = (function(self) {
                 cell8.innerText = numberWithCommas(qty);
                 cell8.setAttribute('sorttable_customkey', numberWithCommas(qty + nxt / 100));
 
-                if (level >= parseInt(daCrowns[k].level)) {
+                if (level >= parseInt(daCrowns[k].level) && region >= parseInt(daCrowns[k].region)) {
                     parentInput = cell9;
                     cell10.innerText = numberWithCommas(pxp);
                     cell11.innerText = numberWithCommas(coins);
