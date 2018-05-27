@@ -744,7 +744,7 @@
             cdn_root: null,
             tutorial_def_id: 1,
             registered_on: null,
-            
+
             neighbours: null,
             un_gifts: null, // This MUST follow the neighbours
             f_actions: null,
@@ -753,6 +753,7 @@
             achievs: null,
             artifacts: null,
             tablets: null,
+            skins: null,
             tokens: null,
             quests_f: null,
             quests_a: null,
@@ -1530,6 +1531,8 @@
             daMaterials: "xml/materials.xml",
             daBuildings: "xml/buildings.xml",
             daLines: "xml/lines.xml",
+            daDecorations: "xml/decorations.xml",
+            daSales: "xml/sales.xml",
 
             //daRecipes: "xml/recipes.xml",             // Not Needed?
         };
@@ -2411,6 +2414,56 @@
                 }
                 lastClip = '';
             })
+        };
+
+        /*
+         ** Extract Game Decorations
+         */
+        handlers['__gameFile_daDecorations'] = function(key, xml) {
+            return mapXML(xml.getElementsByTagName('decoration'), {
+                'def_id': 'did',
+                'sell_price': 'spr',
+                'name_loc': 'nid'
+            }, 'did');
+        };
+
+        /*
+         ** Extract Game Sales
+         */
+        function setItemIfGt0(item, child, name) {
+            var value = parseInt(child.textContent);
+            if (value > 0) item[name] = value;
+        }
+        handlers['__gameFile_daSales'] = function(key, xml) {
+            var req_object, req_type;
+            return mapXML(xml.getElementsByTagName('sale'), {
+                'def_id': 'id',
+                'object_id': 'oid',
+                'type': 'type',
+                'amount': (item, child) => setItemIfGt0(item, child, 'qty'),
+                'object_level': (item, child) => setItemIfGt0(item, child, 'lvl'),
+                'level': (item, child) => setItemIfGt0(item, child, 'rqlvl'),
+                'event_id': (item, child) => setItemIfGt0(item, child, 'eid'),
+                'event_region_id': (item, child) => setItemIfGt0(item, child, 'erid'),
+                'exp': (item, child) => setItemIfGt0(item, child, 'exp'),
+                'hide': (item, child) => setItemIfGt0(item, child, 'hdn'),
+                'req_object': (item, child) => req_object = parseInt(child.textContent),
+                'req_type': (item, child) => req_type = child.textContent,
+                'requirements': function(item, child) {
+                    if (item.id == '0') return;
+                    var data = mapXML(child.getElementsByTagName('cost'), {
+                        'material_id': 'id',
+                        'amount': 'amount'
+                    }, 'id');
+                    Object.keys(data).forEach(key => data[key] = parseInt(data[key].amount) || 0);
+                    item.req = data;
+                }
+            }, 'id', function(sale) {
+                if (req_object) {
+                    if (req_type == 'camp_skin') sale.rqskn = req_object;
+                }
+                req_object = req_type = undefined;
+            });
         };
 
         /*
