@@ -79,9 +79,9 @@
         "message": "Clicca qui per il manuale."
     },
     "ccStats": {
-        "message": "Massimo possibile - Corone: $CROWNS$, Punti XP: $XP$, Monete: $COINS$, Energia: $BOOST$",
+        "message": "Massimo possibile: $QTY$, Punti XP: $XP$, Monete: $COINS$, Energia: $BOOST$",
         "placeholders": {
-            "crowns": {
+            "qty": {
                 "content": "$1"
             },
             "xp": {
@@ -249,19 +249,19 @@
         "message": "Livello\nrichiesto"
     },
     "allCrowns": {
-        "message": "Tutte le corone"
+        "message": "Tutti"
     },
     "possibleCrownsOnly": {
-        "message": "Solo le corone possibili"
+        "message": "Solo i possibili"
     },
     "pNextCrown": {
-        "message": "%\nprossima corona"
+        "message": "%\nprossimo"
     },
     "possibleCrowns": {
-        "message": "Corone\npossibili"
+        "message": "Possibili"
     },
     "predictedCrowns": {
-        "message": "Corone\npreviste"
+        "message": "Quantità\nprevista"
     },
     "predictedGain": {
         "message": "XP guadagnati\nprevisti"
@@ -1704,5 +1704,8 @@
     },
     "craftedAnvil": {
         "message": "Creata per incudine"
+    },
+    "Pillars": {
+        "message": "Pilastri"
     }
 }
