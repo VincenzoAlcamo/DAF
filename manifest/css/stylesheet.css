@@ -412,6 +412,11 @@ tr.no-crowns td {
   padding: 4px;
 }
 
+#cctb1 td img {
+  min-height: 50px;
+  max-height: 50px;
+}
+
 .crowns tbody tr {
   padding: 150px 150px;
 }

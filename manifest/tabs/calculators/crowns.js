@@ -3,6 +3,8 @@
  */
 var guiTabs = (function(self) {
     // Pillars
+    const NEW_METHOD = true;
+    console.log("NEW_METHOD", NEW_METHOD);
     var daCrowns = [{
         // Greece
         decoration_id: 904,
@@ -493,6 +495,36 @@ var guiTabs = (function(self) {
         region: 1
     }];
 
+    if (NEW_METHOD) {
+        daCrowns = getCrowns();
+
+        function getCrowns() {
+            var crowns = [];
+            // Get all the id of the pillar decorations
+            var ids = {};
+            for (var i = 865; i <= 904; i++) ids[i] = true;
+            var decorations = bgp.daGame.daDecorations;
+            Object.values(bgp.daGame.daSales)
+                .filter(sale => sale.type == 'decoration' && sale.oid in ids && sale.hdn != 1)
+                .forEach(sale => {
+                    var decoration = decorations[sale.oid];
+                    var req = Object.entries(sale.req)[0];
+                    if (decoration && req)
+                        crowns.push({
+                            decoration_id: sale.oid,
+                            name_loc: decoration.nid,
+                            xp: sale.exp,
+                            sell_price: parseInt(decoration.spr),
+                            material_id: parseInt(req[0]),
+                            material_cost: req[1],
+                            level: sale.rqlvl,
+                            skin: sale.rqskn
+                        });
+                });
+            return crowns;
+        }
+    }
+
     var ccTable, tbody, tgrid, tabID, cappd;
 
     /*
@@ -596,6 +628,15 @@ var guiTabs = (function(self) {
         var region = intOrDefault(bgp.daGame.daUser.region, 1);
         var level = intOrDefault(bgp.daGame.daUser.level, 1);
 
+        // Get skins available to player
+        var skins = {};
+        (bgp.daGame.daUser.skins || '').split(',').forEach(id => skins[id] = true);
+
+        function isAvailable(crown) {
+            if (NEW_METHOD) return level >= crown.level && (crown.skin === undefined || crown.skin in skins);
+            else return level >= parseInt(crown.level) && region >= parseInt(crown.region);
+        }
+
         tgrid.innerHTML = '';
         tbody.innerHTML = '';
 
@@ -624,8 +665,6 @@ var guiTabs = (function(self) {
             if (name == daCrowns[k].name_loc)
                 name = daCrowns[k].name;
             var did = daCrowns[k].decoration_id;
-            var fImg = "/img/pillars/" + did + ".png";
-            var cImg = '<img src="' + fImg + '" title="' + name + '&#10;' + guiString('ignoreCrown') + '" style="cursor:pointer" did="' + did + '"/>';
             var price = parseInt(daCrowns[k].sell_price);
             var mat = parseInt(daCrowns[k].material_cost);
             var xp = parseInt(daCrowns[k].xp);
@@ -648,7 +687,7 @@ var guiTabs = (function(self) {
             // Grid
             parentInput = null;
             if (bgp.exPrefs.crownGrid) {
-                if (level >= parseInt(daCrowns[k].level) && region >= parseInt(daCrowns[k].region)) {
+                if (isAvailable(daCrowns[k])) {
                     if ((!ry) || cx == mgc) {
                         ry = tgrid.insertRow();
                         ry.classList.add('grid');
@@ -657,7 +696,7 @@ var guiTabs = (function(self) {
                     var cell = ry.insertCell();
                     if (isIgnored) cell.classList.add('ignored');
                     var e = document.createElement("INPUT");
-                    cell.innerHTML = cImg;
+                    appendCrownImage(cell, did, name);
                     parentInput = cell;
 
                     cx++;
@@ -685,7 +724,7 @@ var guiTabs = (function(self) {
                 if (qty == 0)
                     row.classList.add('no-crowns');
 
-                cell0.innerHTML = cImg;
+                appendCrownImage(cell0, did, name);
                 cell1.innerText = name;
                 cell2.innerText = daCrowns[k].level;
                 cell3.innerText = numberWithCommas(mat);
@@ -696,7 +735,7 @@ var guiTabs = (function(self) {
                 cell8.innerText = numberWithCommas(qty);
                 cell8.setAttribute('sorttable_customkey', numberWithCommas(qty + nxt / 100));
 
-                if (level >= parseInt(daCrowns[k].level) && region >= parseInt(daCrowns[k].region)) {
+                if (isAvailable(daCrowns[k])) {
                     parentInput = cell9;
                     cell10.innerText = numberWithCommas(pxp);
                     cell11.innerText = numberWithCommas(coins);
@@ -747,6 +786,17 @@ var guiTabs = (function(self) {
         }
 
         return true;
+    }
+
+    function appendCrownImage(parent, did, name) {
+        var img = document.createElement('img');
+        // This will set a default image if the specified image was not found
+        img.addEventListener('error', () => img.src = '/img/pillars.png', false);
+        img.title = name + '\n' + guiString('ignoreCrown');
+        img.style.cursor = 'pointer';
+        img.setAttribute('did', did);
+        img.src = '/img/pillars/' + +did + ".png";
+        parent.appendChild(img);
     }
 
     function onInput() {
